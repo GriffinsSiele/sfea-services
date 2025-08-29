@@ -1,1 +1,0 @@
-# nomerogram-mobile-api
