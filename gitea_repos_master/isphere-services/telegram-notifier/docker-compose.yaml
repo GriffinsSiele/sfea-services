@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    ports:
+      - '8081:80'
+    volumes:
+      - ./:/app

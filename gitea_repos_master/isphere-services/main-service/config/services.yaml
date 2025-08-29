@@ -1,0 +1,107 @@
+parameters:
+  app.egrul_path: '%kernel.logs_dir%/%kernel.environment%/egrul/'
+  app.xml_path: '%kernel.logs_dir%/%kernel.environment%/xml/'
+  app.bulk_path: '%kernel.logs_dir%/%kernel.environment%/bulk/'
+
+  app.antigate.host: '%env(ANTIGATE_HOST)%'
+  app.antigate.key: '%env(ANTIGATE_KEY)%'
+  app.antigate.host2: '%env(ANTIGATE_HOST2)%'
+  app.antigate.key2: '%env(ANTIGATE_KEY2)%'
+
+  app.capcha.host: '%env(CAPTCHA_HOST)%'
+  app.capcha.key: '%env(CAPTCHA_KEY)%'
+  app.capcha.host2: '%env(CAPTCHA_KEY2)%'
+  app.capcha.key2: '%env(CAPTCHA_KEY)%'
+  app.captcha.timeout: '%env(int:CAPTCHA_TIMEOUT)%'
+
+  app.captcha_v3.host: '%env(CAPTCHAV3_HOST)%'
+  app.captcha_v3.key: '%env(CAPTCHAV3_KEY)%'
+  app.captcha_v3.host2: '%env(CAPTCHAV3_HOST2)%'
+  app.captcha_v3.key2: '%env(CAPTCHAV3_KEY2)%'
+
+  app.h_captcha.host: '%env(HCAPTCHA_HOST)%'
+  app.h_captcha.key: '%env(HCAPTCHA_KEY)%'
+  app.h_captcha.host2: '%env(HCAPTCHA_HOST2)%'
+  app.h_captcha.key2: '%env(HCAPTCHA_KEY2)%'
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+    bind:
+      bool $debug: '%kernel.debug%'
+      Doctrine\DBAL\Connection $cbrConnection: '@doctrine.dbal.cbr_connection'
+      Doctrine\DBAL\Connection $fnsConnection: '@doctrine.dbal.fns_connection'
+      Doctrine\ORM\EntityManagerInterface $statsEntityManager: '@doctrine.orm.stats_entity_manager'
+      iterable $bulkParsers: !tagged 'app.bulk_parser'
+      iterable $bulkPrinters: !tagged 'app.bulk_printer'
+      string $bulkpath: '%app.bulk_path%'
+      string $xmlpath: '%app.xml_path%'
+      $messengerTransportAsync: '@messenger.transport.async'
+
+  _instanceof:
+    App\Component\Bulk\ParserInterface:
+      tags: [ 'app.bulk_parser' ]
+
+    App\Component\Bulk\PrinterInterface:
+      tags: [ 'app.bulk_printer' ]
+
+    Psr\Log\LoggerAwareInterface:
+      calls:
+        - [ setLogger, [ '@app.logger' ] ]
+
+    Symfony\Component\DependencyInjection\ContainerAwareInterface:
+      calls:
+        - [ setContainer, [ '@service_container' ] ]
+
+  Psr\Log\LoggerInterface: '@app.logger'
+
+  app.logger:
+    public: true
+    class: Monolog\Logger
+    parent: "monolog.formatter.json"
+    arguments:
+      $name: "app.logger"
+    calls:
+      - [ setHandlers, [ "@=service('monolog.logger').getHandlers()" ] ]
+      - [ useMicrosecondTimestamps, [ "%monolog.use_microseconds%" ] ]
+      - [ useLoggingLoopDetection, [ false ] ]
+
+  app.menu_builder:
+    class: App\Menu\MenuBuilder
+    tags:
+      - { name: knp_menu.menu_builder, method: createMainMenu, alias: main }
+      - { name: knp_menu.menu_builder, method: createCheckersMenu, alias: checkers }
+      - { name: knp_menu.menu_builder, method: createTopMenu, alias: top }
+
+  app.normalizer:
+    alias: 'serializer'
+
+  app.security.token_storage:
+    alias: security.token_storage
+
+  app.serializer:
+    alias: 'serializer'
+
+  app.url_generator:
+    alias: Symfony\Component\Routing\Generator\UrlGeneratorInterface
+
+  app.validator:
+    alias: 'validator'
+
+  App\:
+    resource: '../src'
+    exclude:
+      - '../src/Component/Bulk/Model'
+      - '../src/Doctrine/DQL'
+      - '../src/Entity'
+      - '../src/Http/Response/LegacyResponse.php'
+      - '../src/Kernel.php'
+      - '../src/Message'
+      - '../src/Model'
+      - '../src/Test/Model'
+
+  App\Controller\:
+    resource: '../src/Controller/'
+    tags: [ controller.service_arguments ]

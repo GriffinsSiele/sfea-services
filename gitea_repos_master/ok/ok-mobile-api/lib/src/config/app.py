@@ -1,0 +1,5 @@
+class ConfigApp:
+    APP_KEY = "CBAFJIICABABABABA"
+    MAX_SESSION_USE = 3
+
+    WAIT_NEXT_USE_INTERVAL = 0.6  # hour

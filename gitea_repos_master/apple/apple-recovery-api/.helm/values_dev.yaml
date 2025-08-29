@@ -1,0 +1,63 @@
+kind: Deployment
+
+replicaCount: 3
+
+image:
+  repository: ${GIT_HTTP_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  tag: ${IMAGE_TAG}
+
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 250Mi
+  requests:
+    cpu: 20m
+    memory: 190Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /status
+    port: 80
+  initialDelaySeconds: 10
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+
+nodeSelector: {}
+
+
+env:
+- name: CAPTCHA_PROVIDER
+  value: ${CAPTCHA_PROVIDER}
+- name: SENTRY_URL
+  value: ${SENTRY_URL}
+
+envFrom:
+- secretRef:
+    name: settings-kube

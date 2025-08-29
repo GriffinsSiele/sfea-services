@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  proxy_check:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - ./public:/opt/proxy-check/src

@@ -1,0 +1,815 @@
+apiVersion: v1
+items:
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"ahtyamova","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-08-09T18:31:47Z"
+    generation: 3
+    name: ahtyamova
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "30110651"
+    uid: cfa5cf06-21a2-427e-9ff9-ed4905a662c3
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: ahtyamova-peer
+    address: 10.8.0.11
+    downloadSpeed: {}
+    publicKey: OBe7ffrWQgcg5iGPVhkWYvCJiNwA8XE1V/hoEyETozA=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret ahtyamova-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.11
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"anistatov","namespace":"wireguard-system"},"spec":{"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-08-27T17:17:52Z"
+    generation: 3
+    name: anistatov
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "43552395"
+    uid: 9f6aba5f-9817-4fab-89e2-da31fa62b44c
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: anistatov-peer
+    address: 10.8.0.15
+    downloadSpeed: {}
+    publicKey: 7nxvgtjuP0xJL24MH0w59OTg0GGFkZ5rsHsEDjMJFB4=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret anistatov-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.15
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"backup","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-08-09T19:00:29Z"
+    generation: 3
+    name: backup
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "30128200"
+    uid: 12268845-d6e3-44fd-a308-0d9b0b5a55d5
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: backup-peer
+    address: 10.8.0.12
+    downloadSpeed: {}
+    publicKey: niK7jdmvtwdSFal0V5Rcoq8ZFrX/Cjk4GVi2zicJF18=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret backup-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.12
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"kodentsov","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-07-04T08:46:13Z"
+    generation: 3
+    name: kodentsov
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "3598941"
+    uid: 568fb55d-7ab9-43cb-b63d-5a5ddf7520af
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: kodentsov-peer
+    address: 10.8.0.3
+    downloadSpeed: {}
+    publicKey: vt4NvZ98Tjl8UIq2hyf69BCevJSl6uw3JC69FzJ9zHo=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret kodentsov-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.3
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"kodentsov2","namespace":"wireguard-system"},"spec":{"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-07-21T06:39:08Z"
+    generation: 3
+    name: kodentsov2
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "15768716"
+    uid: 4c2d476c-df1c-4ab1-a9c6-dfbb386ea9b4
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: kodentsov2-peer
+    address: 10.8.0.8
+    downloadSpeed: {}
+    publicKey: kMy/VmKqDtkhU3Wc4Xi5anB2e+uXbrIkF81ieIdYGjg=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret kodentsov2-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.8
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"kovinev","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-07-12T17:41:31Z"
+    generation: 3
+    name: kovinev
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "9461250"
+    uid: a121101c-be39-47c8-b1d7-0a87bff667e3
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: kovinev-peer
+    address: 10.8.0.6
+    downloadSpeed: {}
+    publicKey: kUhXJoVtL77F83dZF9pZ8nd44SN4QoNngkQzs+JjMBY=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret kovinev-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.6
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"kovinev2","namespace":"wireguard-system"},"spec":{"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-07-21T08:20:02Z"
+    generation: 3
+    name: kovinev2
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "15818764"
+    uid: 5e3d70ce-8404-4243-b7d1-82c7f5413642
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: kovinev2-peer
+    address: 10.8.0.9
+    downloadSpeed: {}
+    publicKey: vPxlH5Iz08g8mct4v/dj3i98xfT4Ui3lRUuG28eC3WE=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret kovinev2-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.9
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"mainserver","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-07-10T04:41:50Z"
+    generation: 3
+    name: mainserver
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "7699125"
+    uid: 023f9d66-4941-4734-908a-4fd08821765c
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: mainserver-peer
+    address: 10.8.0.5
+    downloadSpeed: {}
+    publicKey: gV1BSGG+bDLjbjyH6949FRzPp208Kc5B7nPskW9oDjE=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret mainserver-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.5
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"rudakov","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-08-09T17:13:47Z"
+    generation: 3
+    name: rudakov
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "30065742"
+    uid: 615e7287-2be6-4954-bf86-8c3813727069
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: rudakov-peer
+    address: 10.8.0.10
+    downloadSpeed: {}
+    publicKey: tYiAfOoX0d7GJSaEHCKxq2Jsoa693ByG3Ijyi/j5XX8=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret rudakov-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.10
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"rudakov-ultrabook","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-07-08T05:28:20Z"
+    generation: 3
+    name: rudakov-ultrabook
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "6324821"
+    uid: d430d5d3-a56a-487a-9d38-de0e0d18bb3c
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: rudakov-ultrabook-peer
+    address: 10.8.0.2
+    downloadSpeed: {}
+    publicKey: nvnT4xwQA6BBGTGoSXB14FEA1hG1PtRPoZeK/M6dlzU=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret rudakov-ultrabook-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.2
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"sec","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-08-21T08:06:06Z"
+    generation: 3
+    name: sec
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "38760926"
+    uid: 3fb8e9df-8c34-418e-8eca-81cab567d00a
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: sec-peer
+    address: 10.8.0.14
+    downloadSpeed: {}
+    publicKey: jHF4W7U1dbPHldb9itruPZiCYXS5p2HUhpA2zSIXIQc=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret sec-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.14
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"volovik","namespace":"wireguard-system"},"spec":{"downloadSpeed":{},"uploadSpeed":{},"wireguardRef":"i-sphere"}}
+    creationTimestamp: "2023-07-04T22:22:42Z"
+    generation: 3
+    name: volovik
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: i-sphere
+      uid: 4669983d-8e9d-4234-9680-bbe038f7993b
+    resourceVersion: "4009639"
+    uid: d42da900-d8fe-48c7-b988-8fc736e7793b
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: volovik-peer
+    address: 10.8.0.4
+    downloadSpeed: {}
+    publicKey: 9b6Y1Cn8qaEZTSR6Ro4q8R1tZQK1oYcRvhUQO2dGcns=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret volovik-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.4
+      DNS = 1.1.1.1
+      MTU = 1380
+
+      [Peer]
+      PublicKey = 18TZ+XV2ctB7B1bvF4TrYbR9+NMsXduuxpo5cGNLpEA=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32285"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"wg-proxy","namespace":"wireguard-system"},"spec":{"wireguardRef":"wg-i-sphere"}}
+    creationTimestamp: "2023-09-06T15:30:59Z"
+    generation: 3
+    name: wg-proxy
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: wg-i-sphere
+      uid: 5f0331bc-366e-4f02-bf7e-173ba508b325
+    resourceVersion: "50604217"
+    uid: 80ae5232-c150-4522-b48e-1bada946a694
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: wg-proxy-peer
+    address: 10.8.0.2
+    downloadSpeed: {}
+    publicKey: EOvCElzl0Ieqboewrkrdh4hev5LbEwN+STWgZrCaEAg=
+    uploadSpeed: {}
+    wireguardRef: wg-i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret wg-proxy-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.2
+      DNS = 10.43.0.10
+      MTU = 1380
+
+      [Peer]
+      PublicKey = gzFAXDxTjSvmML0iShub0XeE+gTfiwI3zDVjTPrCVRE=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32597"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"wg-semigolov","namespace":"wireguard-system"},"spec":{"wireguardRef":"wg-i-sphere"}}
+    creationTimestamp: "2023-09-12T09:54:41Z"
+    generation: 3
+    name: wg-semigolov
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: wg-i-sphere
+      uid: 5f0331bc-366e-4f02-bf7e-173ba508b325
+    resourceVersion: "54650009"
+    uid: cdb1d09d-b3a6-4310-9773-c87e5ea16eb8
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: wg-semigolov-peer
+    address: 10.8.0.7
+    downloadSpeed: {}
+    publicKey: WD1GfWui9sPxyUE994KjytiI4BE4fJdVNWssRKtK8F0=
+    uploadSpeed: {}
+    wireguardRef: wg-i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret wg-semigolov-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.7
+      DNS = 10.43.0.10
+      MTU = 1380
+
+      [Peer]
+      PublicKey = gzFAXDxTjSvmML0iShub0XeE+gTfiwI3zDVjTPrCVRE=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32597"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"wg-win1","namespace":"wireguard-system"},"spec":{"wireguardRef":"wg-i-sphere"}}
+    creationTimestamp: "2023-09-11T10:57:02Z"
+    generation: 3
+    name: wg-win1
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: wg-i-sphere
+      uid: 5f0331bc-366e-4f02-bf7e-173ba508b325
+    resourceVersion: "53965866"
+    uid: 63cd3d5e-e8eb-4e8d-af28-c77b77d92d9e
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: wg-win1-peer
+    address: 10.8.0.3
+    downloadSpeed: {}
+    publicKey: 5PYKcS7YJlcvqxGfB9I1zz5yKhRvdnLC5ti5ppZMEnc=
+    uploadSpeed: {}
+    wireguardRef: wg-i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret wg-win1-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.3
+      DNS = 10.43.0.10
+      MTU = 1380
+
+      [Peer]
+      PublicKey = gzFAXDxTjSvmML0iShub0XeE+gTfiwI3zDVjTPrCVRE=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32597"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"wg-win2","namespace":"wireguard-system"},"spec":{"wireguardRef":"wg-i-sphere"}}
+    creationTimestamp: "2023-09-11T10:57:14Z"
+    generation: 3
+    name: wg-win2
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: wg-i-sphere
+      uid: 5f0331bc-366e-4f02-bf7e-173ba508b325
+    resourceVersion: "53965977"
+    uid: eedecfc1-bdd2-4198-b572-ab449e4aec09
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: wg-win2-peer
+    address: 10.8.0.4
+    downloadSpeed: {}
+    publicKey: y/7OrjpIpdoffdLD39Erq7qwDBXnLm9dBPzGlJxM8mk=
+    uploadSpeed: {}
+    wireguardRef: wg-i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret wg-win2-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.4
+      DNS = 10.43.0.10
+      MTU = 1380
+
+      [Peer]
+      PublicKey = gzFAXDxTjSvmML0iShub0XeE+gTfiwI3zDVjTPrCVRE=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32597"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"wg-win3","namespace":"wireguard-system"},"spec":{"wireguardRef":"wg-i-sphere"}}
+    creationTimestamp: "2023-09-11T10:57:25Z"
+    generation: 3
+    name: wg-win3
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: wg-i-sphere
+      uid: 5f0331bc-366e-4f02-bf7e-173ba508b325
+    resourceVersion: "53966082"
+    uid: 7e8ff940-02c7-400b-9fd5-3585565c60b4
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: wg-win3-peer
+    address: 10.8.0.5
+    downloadSpeed: {}
+    publicKey: zQSJNeui/F67wA/V6Sx7iU97lIBpEwFAVnZD9/UFtFk=
+    uploadSpeed: {}
+    wireguardRef: wg-i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret wg-win3-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.5
+      DNS = 10.43.0.10
+      MTU = 1380
+
+      [Peer]
+      PublicKey = gzFAXDxTjSvmML0iShub0XeE+gTfiwI3zDVjTPrCVRE=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32597"
+    message: Peer configured
+    status: ready
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"vpn.wireguard-operator.io/v1alpha1","kind":"WireguardPeer","metadata":{"annotations":{},"name":"wg-win4","namespace":"wireguard-system"},"spec":{"wireguardRef":"wg-i-sphere"}}
+    creationTimestamp: "2023-09-11T10:57:35Z"
+    generation: 3
+    name: wg-win4
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Wireguard
+      name: wg-i-sphere
+      uid: 5f0331bc-366e-4f02-bf7e-173ba508b325
+    resourceVersion: "53966175"
+    uid: 9c6a09bc-3bfe-4e3e-b3d4-00ab11fd636d
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: wg-win4-peer
+    address: 10.8.0.6
+    downloadSpeed: {}
+    publicKey: iW8HsBOZNaqnzPQO4uVjWILk6hbyN0lsAdVFBVCtmxQ=
+    uploadSpeed: {}
+    wireguardRef: wg-i-sphere
+  status:
+    config: |2-
+
+      echo "
+      [Interface]
+      PrivateKey = $(kubectl get secret wg-win4-peer --template={{.data.privateKey}} -n wireguard-system | base64 -d)
+      Address = 10.8.0.6
+      DNS = 10.43.0.10
+      MTU = 1380
+
+      [Peer]
+      PublicKey = gzFAXDxTjSvmML0iShub0XeE+gTfiwI3zDVjTPrCVRE=
+      AllowedIPs = 0.0.0.0/0
+      Endpoint = 5.200.56.3:32597"
+    message: Peer configured
+    status: ready
+kind: List
+metadata:
+  resourceVersion: ""

@@ -1,0 +1,69 @@
+check_types:
+  fns_disfind:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fns_disfind, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_disfind }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              fns_disqualifiedpersons_aggregate(where: {inn: {_eq: $inn}}) {
+                  aggregate {
+                      count
+                  }
+              }
+              
+              fns_registerdisqualified_aggregate(where: {organization_inn: {_eq: $inn}}) {
+                  aggregate {
+                      count
+                  }
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- if gt .fns_disqualifiedpersons_aggregate.aggregate.count 0.0 }}
+          - Type:         disfind
+            Result:       ЧИСЛИТСЯ в реестре организаций с дисквалифицированными лицами в составе исполнительного органа
+            ResultCode:   FOUND
+          {{- end }}
+
+          {{- if gt .fns_registerdisqualified_aggregate.aggregate.count 0.0 }}
+          - Type:         disqualified
+            Result:       ЧИСЛИТСЯ в реестре дисквалифицированных лиц
+            ResultCode:   FOUND
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        oneOf:
+          - properties:
+              Type: { type: string, enum: ["disfind"] }
+              Result:
+                {
+                  type: string,
+                  enum:
+                    [
+                      "ЧИСЛИТСЯ в реестре организаций с дисквалифицированными лицами в составе исполнительного органа",
+                    ],
+                }
+              ResultCode: { type: string, enum: ["FOUND"] }
+          - properties:
+              Type: { type: string, enum: ["disqualified"] }
+              Result:
+                {
+                  type: string,
+                  enum: ["ЧИСЛИТСЯ в реестре дисквалифицированных лиц"],
+                }
+              ResultCode: { type: string, enum: ["FOUND"] }

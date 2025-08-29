@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  php-fpm:
+    build:
+      dockerfile: docker/php/Dockerfile
+      context: .
+      args:
+        UID: 1000
+        GID: 1000
+    env_file:
+      - .env
+    volumes:
+      - ./src:/var/www/html/dashbord
+
+  nginx:
+    build:
+      dockerfile: docker/nginx/Dockerfile
+      context: .
+    depends_on:
+      - php-fpm
+    environment:
+      - PHP_FPM_SERVICE_NAME=php-fpm
+    ports:
+      - '8000:80'

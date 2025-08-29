@@ -1,0 +1,8 @@
+Name = {{ hostname }}
+Mode = switch
+Port = 655
+AddressFamily = ipv4
+Interface = tun0
+{% for host in servers_vpn %}
+ConnectTo = {{ hostvars[host].hostname }}
+{% endfor %}

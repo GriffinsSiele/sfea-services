@@ -1,0 +1,4 @@
+#!/bin/sh
+ip route del {{ route }} dev $INTERFACE
+ip addr del {{ vpn_ip }} dev $INTERFACE
+ip link set $INTERFACE down

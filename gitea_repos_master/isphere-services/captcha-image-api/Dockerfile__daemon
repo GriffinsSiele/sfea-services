@@ -1,0 +1,13 @@
+FROM git.i-sphere.local/isphere-images/python:3.11-alpine
+WORKDIR /app
+ARG GIT_HTTP_URL_WITH_CREDENTIALS
+ENV TZ="Europe/Moscow"
+COPY daemon/Pipfile .
+RUN pip install --no-cache-dir pipenv==2022.1.8 && \
+    pipenv install --skip-lock --system --deploy && \
+    pip uninstall pipenv -y
+COPY src /app/src
+COPY daemon /app/daemon
+ENV PYTHONPATH "${PYTHONPATH}:/daemon"
+RUN chmod +x /app/daemon/start.sh
+CMD [ "./daemon/start.sh" ]

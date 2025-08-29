@@ -1,0 +1,2 @@
+FROM python:3.11
+RUN pip install --no-cache-dir twine build bumpversion pipenv==2022.1.8 pipenv-to-requirements

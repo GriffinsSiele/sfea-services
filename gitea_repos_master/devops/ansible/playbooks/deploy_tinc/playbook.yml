@@ -1,0 +1,102 @@
+---
+
+- name: Deploy tinc
+  hosts: '{{ target }}'
+  become: true
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+
+  - name: Install tinc
+    apt: 
+      name:  tinc
+      state: present
+      update_cache: yes
+
+  - name: Create directory if it doesn't exist
+    file:
+      path:  "{{ tinc_dir_hosts }}"
+      state: directory
+
+  - name: Generate server hosts address
+    template:
+      src:  "{{ template_server_host_path }}"
+      dest: "{{ tinc_dir_hosts }}/{{ hostname }}"
+      force: false
+    when: inventory_hostname in groups['server_tinc']
+  
+  - name: Generate "tinc.conf"
+    template: 
+      src:  "{{ template_tinc_conf_path }}"
+      dest: "{{ tinc_dir }}/tinc.conf"
+      mode: 0755
+
+  - name: Delete line
+    lineinfile:
+      path: "{{ tinc_dir }}/tinc.conf"
+      regexp: '^ConnectTo = {{ hostname }}'
+      state: absent
+
+  - name: Check tinc private key
+    stat:
+      path: "{{ tinc_private_key }}"
+    register: check_tinc_private_key
+
+  - name: Check tinc public key
+    stat:
+      path: "{{ tinc_dir_hosts }}/{{ hostname }}"
+    register: check_tinc_public_key
+
+  - name: Generate RSA keys 
+    shell:
+      cmd: "tincd -n {{ tinc_net_name }} -K4096 > /dev/null"
+    register: output_generate_rsa_1
+    when: not check_tinc_private_key.stat.exists or not check_tinc_public_key.stat.exists
+
+  - name: Generate "tinc-up"
+    template:
+      src:  "{{ template_tinc_up_path }}"
+      dest: "{{ tinc_dir }}/tinc-up"
+      mode: 0755
+
+  - name: Generate "tinc-down"
+    template:
+      src:  "{{ template_tinc_down_path }}"
+      dest: "{{ tinc_dir }}/tinc-down"
+      mode: 0755
+
+  - name: Copy keys to localhost
+    fetch:
+      src: "{{ tinc_dir_hosts }}/{{ hostname }}"
+      dest: "{{ sync_keys_local_dir }}/{{ hostname }}"
+      flat: yes
+
+  - name: Fetch public key
+    slurp: 
+      src: "{{ sync_keys_local_dir }}/{{ hostname }}"
+    register: "server_key"
+    delegate_to: localhost
+
+  - name: Put public key
+    copy:
+      content: "{{ server_key.content  | b64decode }}"
+      dest: "{{ tinc_dir_hosts }}/{{ hostname }}"
+    delegate_to: "{{ item }}"
+    with_items: "{{ groups.all }}"
+    notify:
+      - Reload service tinc@
+
+  - name: Start service tinc@
+    service:
+      name: "{{ service_tinc_name }}"
+      state: started
+      enabled: yes
+  
+  handlers:
+
+  - name: Reload service tinc@
+    service:
+      name: "{{ service_tinc_name }}"
+      state: reloaded

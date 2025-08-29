@@ -1,0 +1,56 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 0
+
+image:
+  repository: git.i-sphere.ru/hlr/sender-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+resources: {}
+
+
+env:
+- name: KEYDB_HOST
+  value: 172.16.11.3
+- name: KEYDB_PASSWORD
+  value: n1vTY76fuCT59MH
+- name: APPLICATION
+  value: hlr
+- name: REDSMS_LOGIN
+  value: i-sphere
+- name: REDSMS_API_KEY
+  value: vBtgOiDCBZFprnoGyuKoMgKE
+- name: SMSPILOT_API_KEY
+  value: 702O825T8PERL66536E82HED5W1Z85VQ32562287FCC8HOQ6FW99WGQ3A4MFTI3B
+- name: SMSPILOT_CALLBACK
+  value: http://smspilot.callback.i-sphere.ru
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

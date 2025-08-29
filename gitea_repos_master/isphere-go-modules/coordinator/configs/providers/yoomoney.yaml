@@ -1,0 +1,3 @@
+providers:
+  yoomoney:
+    endpoint: "$MODULE_YOOMONEY_ENDPOINT"

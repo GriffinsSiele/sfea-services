@@ -1,0 +1,3 @@
+providers:
+  apple:
+    endpoint: "$MODULE_APPLE_ENDPOINT"

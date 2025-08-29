@@ -1,0 +1,3 @@
+[submodule "tinc-keys"]
+	path = hosts
+	url = ssh://git@git.i-sphere.ru:30122/isphere-secrets/tinc-keys.git

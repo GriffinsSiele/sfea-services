@@ -1,0 +1,11 @@
+--extra-index-url https://drone-bot:a5b69b895c6c61722c686760a61b380118f12783@git.i-sphere.ru/api/packages/isphere-classes/pypi/simple
+requests-logic==16.1.0
+queue-logic==2.0.0
+requests~=2.28.1
+pydash~=5.1.0
+ImageHash~=4.3.0
+Pillow~=9.2.0
+six==1.16.0
+pymongo~=4.2.0
+python-dotenv~=0.21.0
+parameterized~=0.8.1

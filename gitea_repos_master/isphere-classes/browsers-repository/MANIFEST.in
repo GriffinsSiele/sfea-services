@@ -1,0 +1,3 @@
+prune tests
+include requirements.txt
+recursive-include browsers_repository/browsers/extensions/proxy *

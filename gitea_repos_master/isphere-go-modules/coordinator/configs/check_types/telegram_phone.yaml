@@ -1,0 +1,222 @@
+check_types:
+  telegram_phone:
+    enabled: true
+    source:
+      code: main-service
+    schema:
+      allOf:
+      - $ref: '#/definitions/schema/default'
+      - $ref: '#/definitions/schema/phone'
+    mutator:
+      template:
+        records: |
+          {{- range .records }}
+          - {{ UnsafeField "phone" .phone }}
+            {{ UnsafeField "name" .name }}
+            {{ UnsafeField "lastvisited" .lastvisited }}
+            {{ UnsafeField "login" .login }}
+            {{ UnsafeField "Photo" .Photo }}
+            {{ UnsafeField "about" .about }}
+            {{ UnsafeField "first_name" .first_name }}
+            {{ UnsafeField "last_name" .last_name }}
+            {{ UnsafeField "state" .state }}
+            {{ UnsafeField "id" .id }}
+            {{ UnsafeField "Photo2" .Photo2 }}
+            {{ UnsafeField "Photo3" .Photo3 }}
+            {{ UnsafeField "Photo4" .Photo4 }}
+            {{ UnsafeField "Photo5" .Photo5 }}
+            {{ UnsafeField "Photo6" .Photo6 }}
+            {{ UnsafeField "Photo7" .Photo7 }}
+            {{ UnsafeField "Photo8" .Photo8 }}
+            {{ UnsafeField "Photo9" .Photo9 }}
+            {{ UnsafeField "Photo10" .Photo10 }}
+            {{ UnsafeField "Photo11" .Photo11 }}
+            {{ UnsafeField "Photo12" .Photo12 }}
+            {{ UnsafeField "Photo13" .Photo13 }}
+            {{ UnsafeField "Photo14" .Photo14 }}
+            {{ UnsafeField "Photo15" .Photo15 }}
+            {{ UnsafeField "Photo16" .Photo16 }}
+            {{ UnsafeField "Photo17" .Photo17 }}
+            {{ UnsafeField "Photo18" .Photo18 }}
+            {{ UnsafeField "Photo19" .Photo19 }}
+            {{ UnsafeField "Photo20" .Photo20 }}
+            {{ UnsafeField "Photo21" .Photo21 }}
+            {{ UnsafeField "Photo22" .Photo22 }}
+            {{ UnsafeField "Photo23" .Photo23 }}
+            {{ UnsafeField "Photo24" .Photo24 }}
+            {{ UnsafeField "username" .username }}
+            {{ UnsafeField "link" .link }}
+            {{ UnsafeField "has_photo" .has_photo }}
+            {{ UnsafeField "status" .status }}
+            {{ UnsafeField "emoji_status" .emoji_status }}
+            {{ UnsafeField "premium" .premium }}
+            {{ UnsafeField "bot" .bot }}
+            {{ UnsafeField "verified" .verified }}
+            {{ UnsafeField "restricted" .restricted }}
+            {{ UnsafeField "support" .support }}
+            {{ UnsafeField "scam" .scam }}
+            {{ UnsafeField "fake" .fake }}
+            {{ UnsafeField "phone_calls_available" .phone_calls_available }}
+            {{ UnsafeField "video_calls_available" .video_calls_available }}
+            {{ UnsafeField "voice_messages_forbidden" .voice_messages_forbidden }}
+            {{ UnsafeField "image" .image }}
+            {{ UnsafeField "description" .description }}
+            {{ UnsafeField "usernames" .usernames }}
+          {{- end }}
+      status_code:
+        non_standard: true
+        format: json
+        property_path: code
+        detail_property_path: message
+    upstream:
+      provider: main-service
+      keydb:
+        enabled: true
+        scope: telegram_phone
+        ttl: 24h0m0s
+        ttl_failed: 30s
+      rabbitmq:
+        enabled: true
+        scope: telegram_phone
+      tcp:
+        template:
+          query: |
+            GET /2.00/handler.php?{{ QueryArguments
+            "auth" (Env "MODULE_MAIN_SERVICE_ACCESS_TOKEN")
+            "plugin" "TelegramPlugin"
+            "checktype" "telegram_phone"
+            "phone" (trimPrefix "+" .phone)
+            }} HTTP/1.1
+    produce:
+      items:
+        properties:
+          Photo:
+            contentEncoding: base64
+            type: string
+          Photo2:
+            contentEncoding: base64
+            type: string
+          Photo3:
+            contentEncoding: base64
+            type: string
+          Photo4:
+            contentEncoding: base64
+            type: string
+          Photo5:
+            contentEncoding: base64
+            type: string
+          Photo6:
+            contentEncoding: base64
+            type: string
+          Photo7:
+            contentEncoding: base64
+            type: string
+          Photo8:
+            contentEncoding: base64
+            type: string
+          Photo9:
+            contentEncoding: base64
+            type: string
+          Photo10:
+            contentEncoding: base64
+            type: string
+          Photo11:
+            contentEncoding: base64
+            type: string
+          Photo12:
+            contentEncoding: base64
+            type: string
+          Photo13:
+            contentEncoding: base64
+            type: string
+          Photo14:
+            contentEncoding: base64
+            type: string
+          Photo15:
+            contentEncoding: base64
+            type: string
+          Photo16:
+            contentEncoding: base64
+            type: string
+          Photo17:
+            contentEncoding: base64
+            type: string
+          Photo18:
+            contentEncoding: base64
+            type: string
+          Photo19:
+            contentEncoding: base64
+            type: string
+          Photo20:
+            contentEncoding: base64
+            type: string
+          Photo21:
+            contentEncoding: base64
+            type: string
+          Photo22:
+            contentEncoding: base64
+            type: string
+          Photo23:
+            contentEncoding: base64
+            type: string
+          Photo24:
+            contentEncoding: base64
+            type: string
+          about:
+            type: string
+          bot:
+            type: string
+          description:
+            type: string
+          emoji_status:
+            type: string
+          fake:
+            type: string
+          first_name:
+            type: string
+          has_photo:
+            type: string
+          id:
+            type: string
+          image:
+            contentEncoding: base64
+            type: string
+          last_name:
+            type: string
+          lastvisited:
+            type: string
+          link:
+            format: url
+            type: string
+          login:
+            type: string
+          name:
+            type: string
+          phone:
+            type: string
+          phone_calls_available:
+            type: string
+          premium:
+            type: string
+          restricted:
+            type: string
+          scam:
+            type: string
+          state:
+            type: string
+          status:
+            type: string
+          support:
+            type: string
+          username:
+            type: string
+          usernames:
+            type: string
+          verified:
+            type: string
+          video_calls_available:
+            type: string
+          voice_messages_forbidden:
+            type: string
+        type: object
+      type: array

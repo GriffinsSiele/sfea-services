@@ -1,0 +1,59 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 2
+
+image:
+  repository: git.i-sphere.ru/yandex/yandex-maps-web-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- "/bin/sleep"
+args:
+- "5000"
+
+
+
+resources: {}
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+
+env:
+- name: MONGO_COLLECTION
+  value: yandex-maps
+- name: KEYDB_QUEUE
+  value: yamap
+
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

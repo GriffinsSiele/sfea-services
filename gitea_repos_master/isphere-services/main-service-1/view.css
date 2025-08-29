@@ -1,0 +1,132 @@
+img {
+	max-width: 600px;
+}
+.header1 {
+	background-color: #e5ecf9;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 8px 3px 8px 3px;
+	font-weight: bolder;
+}
+.key_cell {
+	font-family: Arial, Helvetica, sans-serif;
+	padding:2px;
+}
+.value_cell {
+	background-color: #F2F2F2;
+	font-family: Arial, Helvetica, sans-serif;
+	padding:2px;
+}
+h1 {
+	font-weight: bold;
+        font-size: 120%;
+}
+h2 {
+	font-weight: bold;
+        font-size: 120%;
+}
+.error {
+/*	color: #B00080;
+	background-color: #CCCCCC;*/
+        background-color: #FFCCCC;
+}
+.resultscount {
+	font-weight: bold;
+}
+.even {
+	background-color: #EEEEEE;
+}
+.odd {
+	background-color: #CCCCCC;
+}
+
+.result {
+	font-weight: bold;
+}
+
+.bankrot .found,
+.cbr .found,
+.fssp .closereason {
+	color: #B00000;
+}
+
+.fns_inn .inn,
+.fssp .closereason,
+.fssp .casedate,
+.fssp .total,
+.fssp .subject,
+.gisgmp .total,
+.gisgmp .subject,
+.notariat .name,
+.notariat .birthdate,
+.hh .name,
+.hh .birthdate,
+.facebook_phone .name,
+.facebook_email .name,
+.vk_person .phone,
+.vk_person .email,
+.vk_phone .name,
+.vk_phone .birthdate,
+.vk_phone .email,
+.vk_email .name,
+.vk_email .birthdate,
+.vk_email .phone,
+.vk_url .phone,
+.vk_url .email,
+.vk_url .name,
+.vk_url .birthday,
+.ok_phone .name,
+.ok_phone .email,
+.ok_phone .age,
+.ok_email .name,
+.ok_email .phone,
+.ok_email .age,
+.ok_url .phone,
+.ok_url .email,
+.ok_url .name,
+.ok_url .birthdate,
+.ok_url .birthday,
+.mailru_email .phone,
+.mailru_email .email,
+.googleplus .name,
+.skype .name,
+.skype .birthday,
+.phonenumber .name,
+.tc .name,
+.truecaller .name,
+.callapp .name,
+.simpler .name,
+.eyecon .name,
+.numbuster .name,
+.numbusterpro .name,
+.getcontact .name,
+.getcontacttags .name,
+.names .name,
+.emt .name,
+.yamap .name,
+.telegram .name,
+.icq .name,
+.viber .name,
+.test .name,
+.tinkoff .name,
+.sberbank .name,
+.alfabank .name,
+.psbank .name,
+.rosbank .name,
+.raiffeisen .name,
+.sovcombank .name,
+.gazprombank .name,
+.qiwibank .name,
+.visa .name,
+.webmoney .name,
+.commerce .fullname,
+.announcement .contact_name,
+.announcement .date,
+.boards .name,
+.boards .time,
+.avtokod .pr,
+.avtokod .kollish,
+.hlr .hlrstatus,
+.smsc .hlrstatustext,
+.infobip .hlrstatus {
+	font-weight: bold;
+}

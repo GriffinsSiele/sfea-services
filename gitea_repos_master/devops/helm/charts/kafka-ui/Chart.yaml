@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kafka-ui
+description: kafka-ui
+type: application
+version: '1715068239'
+appVersion: '1715068239'

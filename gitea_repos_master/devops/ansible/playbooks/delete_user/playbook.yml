@@ -1,0 +1,16 @@
+---
+
+- name: Delete user
+  hosts: '{{ target }}'
+  become: true
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+  
+  - name: delete user
+    user:
+      name: "{{ user_name }}"
+      state: absent
+      remove: yes

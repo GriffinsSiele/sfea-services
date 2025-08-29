@@ -1,0 +1,53 @@
+kind: StatefulSet
+#StatefulSet
+
+replicaCount: 3
+
+image:
+  repository: git.i-sphere.ru/papajohns/papajohns-mobile-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- python
+args:
+- start.py
+
+
+
+resources: {}
+
+
+env:
+- name: MONGO_COLLECTION
+  value: papajohns
+- name: KEYDB_QUEUE
+  value: papajohns
+
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

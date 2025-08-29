@@ -1,0 +1,6 @@
+apiVersion: v2
+name: one-cloud-storage
+description: one-cloud-storage
+type: application
+version: '1702453535'
+appVersion: '1702453535'

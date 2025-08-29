@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}-memcached
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "chart.name" . }}-memcached
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: memcached-http
+      port: {{ .Values.memcached.service.port }}
+      targetPort: memcached-http
+  type: {{ .Values.service.type }}

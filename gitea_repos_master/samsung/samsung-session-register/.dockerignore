@@ -1,0 +1,6 @@
+__pycache__
+.env
+.env.example
+tests
+geckodriver_mac
+docs

@@ -1,0 +1,98 @@
+check_types:
+  censys:
+    enabled: true
+    source: { code: censys }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/ip"
+    upstream:
+      provider: censys
+      keydb: { enabled: true, scope: censys, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: censys }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($ip: String!) {
+              censys(ip: $ip) {
+                  __typename
+                  
+                  ... on ip {
+                      country_code
+                      country
+                      province
+                      city
+                      timezone
+                      location {
+                          coords
+                          text
+                      }
+                      asn
+                      organization
+                  }
+                  
+                  ... on service {
+                      port
+                      service
+                      transport
+                  }
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .censys }}
+          - recordtype: {{ Quote .__typename }}
+
+            {{- if eq .__typename "ip" }}
+            country_code: {{ Quote .country_code }}
+            country:      {{ Quote .country }}
+            province:     {{ Quote .province }}
+            city:         {{ Quote .city }}
+            timezone:     {{ Quote .timezone }}
+            {{- if not (eq .location nil) }}
+            location:
+              coords: 
+                {{- range .location.coords }}
+                - !!float {{ Quote . }}
+                {{- end }}
+              text: {{ Quote .location.text }}
+            {{- end }}
+            asn:          {{ Quote .asn }}
+            organization: {{ Quote .organization }}
+            {{- end }}
+
+            {{- if eq .__typename "service" }}
+            port:         !!string    {{ Quote .port }}
+            service:                  {{ Quote .service }}
+            transport:                {{ Quote .transport }}
+            {{- end }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        oneOf:
+          - properties:
+              recordtype: { type: string, enum: ["ip"] }
+              country_code: { type: string }
+              country: { type: string }
+              province: { type: string }
+              city: { type: string }
+              timezone: { type: string }
+              location:
+                type: object
+                properties:
+                  coords:
+                    type: array
+                    items: { type: number, minItems: 2, maxItems: 2 }
+              asn: { type: string }
+              organization: { type: string }
+          - properties:
+              recordtype: { type: string, enum: ["service"] }
+              port: { type: string }
+              service: { type: string }
+              transport: { type: string }

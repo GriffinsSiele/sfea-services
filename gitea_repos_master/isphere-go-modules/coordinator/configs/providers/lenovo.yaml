@@ -1,0 +1,3 @@
+providers:
+  lenovo:
+    endpoint: "https://passport.lenovo.com"

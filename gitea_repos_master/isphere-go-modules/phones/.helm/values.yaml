@@ -1,0 +1,99 @@
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+fullNameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  tlsEnabled: false
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: { }
+
+podSecurityContext: { }
+
+nodeSelector: { }
+
+tolerations: [ ]
+
+serviceAccount:
+  create: true
+  annotations: { }
+  createRole: true
+  affinity: { }
+
+persistence:
+  enabled: false
+
+http_serve:
+  replicaCount: 1
+
+  service:
+    port: 80
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 32Mi
+
+  env:
+    D00_TOKEN: "${D00_TOKEN}"
+    D0O_URL: "${D0O_URL}"
+    MESSENGER_TRANSPORT_DSN: "${MESSENGER_TRANSPORT_DSN}"
+    KEYDB_ADDR: "${KEYDB_ADDR}"
+    KEYDB_PASSWORD: "${KEYDB_PASSWORD}"
+    KEYDB_DATABASE: "${KEYDB_DATABASE}"
+    KEYDB_KEY: "${KEYDB_KEY}"
+    KEYDB_DEFAULT_TTL: "${KEYDB_DEFAULT_TTL}"
+
+messenger_consume:
+  replicaCount: 1
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 32Mi
+
+  env:
+    D00_TOKEN: "${D00_TOKEN}"
+    D0O_URL: "${D0O_URL}"
+    MESSENGER_TRANSPORT_DSN: "${MESSENGER_TRANSPORT_DSN}"
+    KEYDB_ADDR: "${KEYDB_ADDR}"
+    KEYDB_PASSWORD: "${KEYDB_PASSWORD}"
+    KEYDB_DATABASE: "${KEYDB_DATABASE}"
+    KEYDB_KEY: "${KEYDB_KEY}"
+    KEYDB_DEFAULT_TTL: "${KEYDB_DEFAULT_TTL}"

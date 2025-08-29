@@ -1,0 +1,6 @@
+{{ include "cronjob" (dict "Root" . "Name" "bik" "Schedule" "0 0 * * *" "Command" "bik") }}
+{{ include "cronjob" (dict "Root" . "Name" "fedsfm" "Schedule" "30 0 * * *" "Command" "fedsfm") }}
+{{ include "cronjob" (dict "Root" . "Name" "fsin" "Schedule" "0 1 * * *" "Command" "fsin") }}
+{{ include "cronjob" (dict "Root" . "Name" "minjust-foreigns" "Schedule" "30 1 * * *" "Command" "minjust:foreigns") }}
+{{ include "cronjob" (dict "Root" . "Name" "rosstat-activities" "Schedule" "0 2 * * *" "Command" "rosstat:activities") }}
+{{ include "cronjob" (dict "Root" . "Name" "rossvyaz" "Schedule" "30 2 * * *" "Command" "rossvyaz") }}

@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Response">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Request">
+					<xs:annotation>
+						<xs:documentation>Исходный запрос</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="UserIP" type="xs:string" minOccurs="0"/>
+							<xs:element name="UserID" type="xs:string"/>
+							<xs:element name="requestDateTime" type="xs:dateTime"/>
+							<xs:element name="requestId" type="xs:string" minOccurs="0"/>
+							<xs:element name="requestType" type="xs:string" minOccurs="0"/>
+							<xs:element name="sources" type="xs:string"/>
+							<xs:element name="rules" type="xs:string" minOccurs="0"/>
+							<xs:element name="recursive" type="xs:int" minOccurs="0"/>
+							<xs:element name="async" type="xs:int" minOccurs="0"/>
+							<xs:element name="PersonReq" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="first" type="xs:string" minOccurs="0"/>
+										<xs:element name="middle" type="xs:string" minOccurs="0"/>
+										<xs:element name="paternal" type="xs:string" minOccurs="0"/>
+										<xs:element name="birthDt" type="xs:string" minOccurs="0"/>
+										<xs:element name="passport_series" type="xs:string" minOccurs="0"/>
+										<xs:element name="passport_number" type="xs:string" minOccurs="0"/>
+										<xs:element name="issueDate" type="xs:string" minOccurs="0"/>
+										<xs:element name="issueAuthority" type="xs:string" minOccurs="0"/>
+										<xs:element name="inn" type="xs:string" minOccurs="0"/>
+										<xs:element name="snils" type="xs:string" minOccurs="0"/>
+										<xs:element name="driver_number" type="xs:string" minOccurs="0"/>
+										<xs:element name="driver_date" type="xs:string" minOccurs="0"/>
+										<xs:element name="region_id" type="xs:int" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="PhoneReq" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="phone" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="EmailReq" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="email" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="IPReq" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ip" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="SkypeReq" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="skype" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Логин skype</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="TelegramReq" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="telegram" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Имя telegram</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="NickReq" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="nick" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Псевдоним</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="URLReq" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="url" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Ссылка на профиль</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CarReq" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="vin" type="xs:string" minOccurs="0"/>
+										<xs:element name="bodynum" type="xs:string" minOccurs="0"/>
+										<xs:element name="chassis" type="xs:string" minOccurs="0"/>
+										<xs:element name="regnum" type="xs:string" minOccurs="0"/>
+										<xs:element name="ctc" type="xs:string" minOccurs="0"/>
+										<xs:element name="pts" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="OrgReq" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="inn" type="xs:string" minOccurs="0"/>
+										<xs:element name="ogrn" type="xs:string" minOccurs="0"/>
+										<xs:element name="name" type="xs:string" minOccurs="0"/>
+										<xs:element name="address" type="xs:string" minOccurs="0"/>
+										<xs:element name="region_id" type="xs:int" minOccurs="0"/>
+										<xs:element name="bik" type="xs:int" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Source" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Ответ источника</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Name" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Имя источника</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Title" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Заголовок источника</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="CheckTitle" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Заголовок проверки</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Request" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Метод и данные запроса</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:choice>
+								<xs:element name="Error" type="xs:string">
+									<xs:annotation>
+										<xs:documentation>Описание ошибки</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:sequence>
+									<xs:element name="ResultsCount" type="xs:int">
+										<xs:annotation>
+											<xs:documentation>Количество найденных записей</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Record" minOccurs="0" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>Запись с найденными данными</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Field" maxOccurs="unbounded">
+													<xs:annotation>
+														<xs:documentation>Поле</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="FieldType">
+																<xs:annotation>
+																	<xs:documentation>Тип поля</xs:documentation>
+																</xs:annotation>
+																<xs:simpleType>
+																	<xs:restriction base="xs:string">
+																		<xs:enumeration value="address"/>
+																		<xs:enumeration value="datetime"/>
+																		<xs:enumeration value="email"/>
+																		<xs:enumeration value="image"/>
+																		<xs:enumeration value="integer"/>
+																		<xs:enumeration value="float"/>
+																		<xs:enumeration value="map"/>
+																		<xs:enumeration value="nick"/>
+																		<xs:enumeration value="phone"/>
+																		<xs:enumeration value="skype"/>
+																		<xs:enumeration value="string"/>
+																		<xs:enumeration value="telegram"/>
+																		<xs:enumeration value="text"/>
+																		<xs:enumeration value="url"/>
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:element>
+															<xs:element name="FieldName" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Имя поля</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="FieldTitle" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Заголовок поля</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="FieldDescription" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Описание поля</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="FieldValue" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Значение поля</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="Contact" minOccurs="0" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>Найденный контакт</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="ContactType">
+													<xs:annotation>
+														<xs:documentation>Тип контакта</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:enumeration value="email"/>
+															<xs:enumeration value="phone"/>
+															<xs:enumeration value="skype"/>
+															<xs:enumeration value="telegram"/>
+															<xs:enumeration value="url"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="ContactTitle" type="xs:string">
+													<xs:annotation>
+														<xs:documentation>Заголовок контакта</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="ContactId" type="xs:string">
+													<xs:annotation>
+														<xs:documentation>Контактные данные</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:choice>
+						</xs:sequence>
+						<xs:attribute name="code" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>Код источника</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="checktype" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>Код проверки</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="start" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>Стартовый параметр запроса</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="param" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>Параметр поиска</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="path" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>Путь поиска</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="level" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>Уровень вложенности</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="index" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>Индекс объекта поиска</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="request_id" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>Идентификатор запроса в источник</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="process_time" type="xs:double" use="required">
+							<xs:annotation>
+								<xs:documentation>Продолжительность обработки запроса в источник</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Decision" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Принятое решение</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="RulesLog">
+								<xs:annotation>
+									<xs:documentation>Протокол принятия решения</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Rule" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Сработавшее правило</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="RuleCode" type="xs:string"/>
+													<xs:element name="RuleResult" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="DataLog" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Вычисленные значения переменных</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Data" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Вычисленное значение</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="DataCode" type="xs:string"/>
+													<xs:element name="DataValue" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ResultData" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Параметр принятого решения</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ResultCode" type="xs:string"/>
+										<xs:element name="ResultValue" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Result" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Принятое решение</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:int" use="required">
+				<xs:annotation>
+					<xs:documentation>ID запроса в системе</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="status" type="xs:int" use="required">
+				<xs:annotation>
+					<xs:documentation>Статус запроса в системе</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="datetime" type="xs:dateTime" use="required">
+				<xs:annotation>
+					<xs:documentation>Дата и время получения запроса</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="result" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Ссылка на xml ответа</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="view" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Ссылка на просмотр ответа</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

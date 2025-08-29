@@ -1,0 +1,7 @@
+apiVersion: v2
+name: glitchtip
+description: glitchtip
+type: application
+version: '1705654585'
+appVersion: '1705654585'
+

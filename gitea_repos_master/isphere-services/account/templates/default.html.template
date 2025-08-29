@@ -1,0 +1,20 @@
+{{ template "header" }}
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <header>
+            <h1>Вы вошли</h1>
+            <p class="lead">Имя пользователя <b>{{ .Username }}</b></p>
+        </header>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-10 offset-md-2">
+        <main>
+            <a href="/logout" class="btn btn-danger">Выйти</a>
+        </main>
+    </div>
+</div>
+
+{{ template "footer" }}

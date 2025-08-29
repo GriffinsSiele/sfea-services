@@ -1,0 +1,51 @@
+kind: StatefulSet
+#StatefulSet
+
+replicaCount: 16
+
+image:
+  repository: git.i-sphere.ru/whatsapp/whatsapp-baileys-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- /bin/sh - -c - yarn run healthtest 600
+
+
+
+resources: {}
+
+
+
+env:
+- name: MONGO_COLLECTION
+  value: whatsapp
+- name: KEYDB_QUEUE
+  value: whatsapp
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

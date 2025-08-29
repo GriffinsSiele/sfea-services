@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.fullname" . }}-configmap
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+  APP_ENV: "prod"
+  TLS_CA_COMMON_NAME: "iSphere Proxy"
+  TLS_CA_COMMON_ORG: "iSphere"
+  TLS_CA_PRIVATE_KEY: "var/ca.key"
+  TLS_CA_CERT: "var/ca.crt"
+  TLS_COMMON_NAME: 'iSphere Proxy'
+  TLS_COMMON_ORG: "iSphere"
+  TLS_HOST: "localhost"
+  TLS_PRIVATE_KEY: "var/server.key"
+  TLS_CERT: "var/server.crt"
+  HASURA_ENDPOINT: "http://hasura.hasura.svc.cluster.local/v1/graphql"

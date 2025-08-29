@@ -1,0 +1,6 @@
+apiVersion: v2
+name: yandex tools
+description: yandex tools
+type: application
+version: '1702448543'
+appVersion: '1702448543'

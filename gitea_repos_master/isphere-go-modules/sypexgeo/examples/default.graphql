@@ -1,0 +1,73 @@
+{
+    sypexgeo(ip: "78.140.221.69") {
+        ip
+        city {
+            id
+            lat
+            lon
+            name_ru
+            name_en
+            name_uk
+            name_de
+            name_fr
+            name_it
+            name_es
+            name_pt
+            okato
+            vk
+            population
+            tel
+            post
+        }
+        region {
+            id
+            lat
+            lon
+            name_ru
+            name_en
+            name_uk
+            name_de
+            name_fr
+            name_it
+            name_es
+            name_pt
+            okato
+            vk
+            iso
+            timezone
+            auto
+            utc
+        }
+        country {
+            id
+            lat
+            lon
+            name_ru
+            name_en
+            name_uk
+            name_de
+            name_fr
+            name_it
+            name_es
+            name_pt
+            okato
+            vk
+            iso
+            continent
+            timezone
+            area
+            population
+            capital_id
+            capital_ru
+            capital_en
+            cur_code
+            phone
+            neighbours
+            utc
+        }
+        error
+        request
+        created
+        timestamp
+    }
+}

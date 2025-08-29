@@ -1,0 +1,35 @@
+{{ define "ui_node_input_button" }}
+    <div
+            {{ if IsDebug }}
+                data-debug-button-id="{{ .Node.Attributes.UiNodeInputAttributes.Name }}"
+            {{ end }}
+    >
+        <button
+                class="btn {{ if eq .Node.Attributes.UiNodeInputAttributes.Type "submit" }}btn-primary{{ else }}btn-secondary{{ end }}"
+                name="{{ .Node.Attributes.UiNodeInputAttributes.Name }}"
+                {{ if .Node.Attributes.UiNodeInputAttributes.Type }}
+                    type="{{ .Node.Attributes.UiNodeInputAttributes.Type }}"
+                {{ else }}
+                    type="button"
+                {{ end }}
+                {{ if .Node.Attributes.UiNodeInputAttributes.Value }}
+                    value="{{ .Node.Attributes.UiNodeInputAttributes.Value }}"
+                {{ end }}
+                {{ if .Node.Attributes.UiNodeInputAttributes.Disabled }}disabled{{ end }}
+                {{ if .Node.Attributes.UiNodeInputAttributes.Onclick }}
+                    onclick="{{ .Node.Attributes.UiNodeInputAttributes.GetOnclick }}"
+                {{ end }}
+        >
+            {{ GetNodeLabel .Node }}
+        </button>
+
+        {{ range .Node.Messages }}
+            <p
+                    class="text-danger"
+                    {{ if IsDebug }}
+                        data-debug-message-id="{{ .Id }}"
+                    {{ end }}
+            >{{ .Text }}</p>
+        {{ end }}
+    </div>
+{{ end }}

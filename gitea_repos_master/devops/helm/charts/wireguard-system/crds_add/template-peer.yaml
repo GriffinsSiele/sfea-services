@@ -1,0 +1,11 @@
+# заполнить поле "name: <your new name>" 
+# sw1 () ( cat template-peer.yaml | sed "s/tempate1/$1/" - | kubectl apply -f -  | kubectl get wireguardpeer $1 -n wireguard-system --template={{.status.config}} | bash | sed 's/0.0.0.0\/0/10.8.0.0\/24, 10.43.0.0\/16, 172.16.0.0\/16, 10.42.0.0\/16/' - )
+# Запустить 2 раза команду ниже!!!!!!
+# sw1 <your new name>
+apiVersion: vpn.wireguard-operator.io/v1alpha1
+kind: WireguardPeer
+metadata:
+  name:  template1
+  namespace: wireguard-system
+spec:
+  wireguardRef: i-sphere

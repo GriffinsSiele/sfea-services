@@ -1,0 +1,63 @@
+check_types:
+  minjust_org:
+    enabled: true
+    source: { code: minjust }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: minjust_org, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: minjust_org }
+      graphql:
+        # @formatter:off
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              minjust_foreign_organizations(where: {
+                  inn: {_eq: $inn }
+              }) {
+                  name
+                  inn
+                  reg_num
+                  address
+                  reason
+                  created_at
+                  deleted_at
+              }
+          }
+        # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .minjust_foreign_organizations }}
+          - name:         {{ Quote .name }}
+            inn:          {{ Quote .inn }}
+            reg_num:      {{ Quote .reg_num }}
+            address:      {{ Quote .address }}
+            reason:       {{ Quote .reason }}
+            created_at:   {{ Quote .created_at }}
+            deleted_at:   {{ Quote .deleted_at }}
+            {{ if eq .deleted_at nil }}
+            status: included
+            {{ else }}
+            status: excluded
+            {{ end }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          inn: { type: string }
+          reg_num: { type: string }
+          address: { type: string }
+          reason: { type: string }
+          created_at: { type: string, format: date }
+          deleted_at: { type: string }
+          status: { type: string, enum: [included, excluded] }

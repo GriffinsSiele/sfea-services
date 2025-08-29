@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  sypexgeo:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    networks:
+      - isphere
+
+networks:
+  isphere:
+    external: true

@@ -1,0 +1,13 @@
+screen_snaps/
+runners/
+__pycache__
+.git
+.idea
+.helm
+.DS_Store
+.mypy_cache
+.env
+.env.example
+tests
+tasks.json
+proxy_cache.json

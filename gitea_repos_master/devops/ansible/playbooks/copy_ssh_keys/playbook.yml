@@ -1,0 +1,17 @@
+---
+
+- name: Copy SSH keys
+  hosts: '{{ target }}'
+  become: true
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+
+  - name: Copy SSH keys
+    copy: 
+      src: "{{ src_path }}"
+      dest: "{{ dest_path }}"
+      owner: "{{ owner_keys }}"
+      mode: 0600

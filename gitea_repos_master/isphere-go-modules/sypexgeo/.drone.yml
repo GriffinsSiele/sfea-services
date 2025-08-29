@@ -1,0 +1,136 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+node_selector:
+  development: "yes"
+
+steps:
+  - name: vendor
+    image: golang:1.20
+    commands:
+      - go mod vendor
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: build
+    image: plugins/kaniko
+    depends_on:
+      - vendor
+    environment:
+      container: kube
+      PLUGIN_CACHE_REPO: "${DRONE_REPO}"
+      PLUGIN_CONTEXT: .
+      PLUGIN_DOCKERFILE: Dockerfile
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_PASSWORD: { from_secret: GIT_TOKEN }
+      PLUGIN_REGISTRY: { from_secret: GIT_HTTP_DOMAIN }
+      PLUGIN_REPO: "${DRONE_REPO}"
+      PLUGIN_TAGS: "${DRONE_COMMIT_BRANCH}"
+      PLUGIN_USERNAME: { from_secret: GIT_USER }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy_staging
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      CI_REGISTRY_IMAGE: "git.i-sphere.local/isphere-go-modules/sypexgeo"
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+      SENTRY_DSN: { from_secret: SENTRY_DSN }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy_prod
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      CI_REGISTRY_IMAGE: "git.i-sphere.local/isphere-go-modules/sypexgeo"
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: prod_k8s_CONFIG }
+      SENTRY_DSN: { from_secret: SENTRY_DSN }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: DOCKER
+get: { path: settings-kube, name: DOCKER }
+
+---
+kind: secret
+name: DOMAIN
+get: { path: settings-kube, name: DOMAIN }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: GIT_HTTP_DOMAIN
+get: { path: settings-kube, name: GIT_HTTP_DOMAIN }
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }
+
+---
+kind: secret
+name: prod_k8s_CONFIG
+get: { path: settings-kube, name: prod_k8s_CONFIG }
+
+---
+kind: secret
+name: SENTRY_DSN
+get: { path: settings-kube, name: SENTRY_DSN_SYPEXGEO }

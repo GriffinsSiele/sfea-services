@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hoppscotch
+description: hoppscotch
+type: application
+version: '1715064743'
+appVersion: '1715064743'

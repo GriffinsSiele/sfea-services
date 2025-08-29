@@ -1,0 +1,74 @@
+{% if totalPages > 1 %}
+    <div class="card-footer">
+        <div class="d-flex">
+            <ul class="pagination mb-0 flex-grow-1">
+                <li class="page-item">
+                    {% set args = app.request.query.all | merge({ page: null }) %}
+                    <a href="{{ path(route, args) }}"
+                       class="page-link {% if currentPage == 0 %}disabled{% endif %}"
+                       title="Первая страница">
+                        <i class="fa fa-solid fa-angles-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    {% set args = app.request.query.all | merge({ page: currentPage - 1 }) %}
+                    <a href="{{ path(route, args) }}"
+                       class="page-link {% if currentPage == 0 %}disabled{% endif %}"
+                       title="Предыдущая страница">
+                        <i class="fa fa-solid fa-angle-left"></i>
+                    </a>
+                </li>
+                {% set min = currentPage - 2 %}
+                {% if min < 0 %}
+                    {% set min = 0 %}
+                {% endif %}
+                {% set max = currentPage + 2 %}
+                {% if max > (totalPages - 1) %}
+                    {% set max = (totalPages - 1) %}
+                {% endif %}
+                {% for i in range(min, max) %}
+                    <li class="page-item {% if currentPage == i %}disabled{% endif %}">
+                        {% set args = app.request.query.all | merge({ page: i }) %}
+                        <a href="{{ path(route, args) }}" class="page-link">{{ i + 1 }}</a>
+                    </li>
+                {% endfor %}
+                <li class="page-item">
+                    {% set args = app.request.query.all | merge({ page: (currentPage + 1) }) %}
+                    <a href="{{ path(route, args) }}"
+                       class="page-link {% if currentPage == totalPages - 1 %}disabled{% endif %}"
+                       title="Следующая страница">
+                        <i class="fa fa-solid fa-angle-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    {% set args = app.request.query.all | merge({ page: (totalPages - 1) }) %}
+                    <a href="{{ path(route, args) }}"
+                       class="page-link {% if currentPage == totalPages - 1 %}disabled{% endif %}"
+                       title="Последняя страница">
+                        <i class="fa fa-solid fa-angles-right"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <div>
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <label for="total-pages">Количество записей на странице</label>
+                    </div>
+                    <div class="col-auto">
+                        <select id="total-pages"
+                                class="form-select"
+                                data-args="{{ app.request.query.all | json_encode }}"
+                        >
+                            <option value="10" {% if countPerPage == 10 %}selected{% endif %}>10</option>
+                            <option value="20" {% if countPerPage == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if countPerPage == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if countPerPage == 100 %}selected{% endif %}>100</option>
+                            <option value="500" {% if countPerPage == 500 %}selected{% endif %}>500</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

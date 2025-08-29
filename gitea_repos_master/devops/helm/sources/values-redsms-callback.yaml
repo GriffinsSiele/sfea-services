@@ -1,0 +1,47 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 0
+
+image:
+  repository: git.i-sphere.ru/hlr/redsms-fastapi
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+resources: {}
+
+
+env:
+- name: KEYDB_HOST
+  value: keydb.keydb.svc.cluster.local
+- name: KEYDB_PASSWORD
+  value: n1vTY76fuCT59MH
+- name: APPLICATION
+  value: hlr
+  image: git.i-sphere.ru/hlr/redsms-fastapi:latest
+  imagePullPolicy: IfNotPresent
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

@@ -1,0 +1,71 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    privateKey: Mk81S3p3WE56Vml2NWdTR2l1ZkJ4QVl0YUZGbzc5ZmxnQjJDSG5DRUtVTT0=
+    publicKey: bmlLN2pkbXZ0d2RTRmFsMFY1UmNvcThaRnJYL0NqazRHVmkyemljSkYxOD0=
+  kind: Secret
+  metadata:
+    creationTimestamp: "2023-08-09T19:00:29Z"
+    labels:
+      app: wireguard
+      instance: backup
+    name: backup-peer
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: WireguardPeer
+      name: backup
+      uid: 12268845-d6e3-44fd-a308-0d9b0b5a55d5
+    resourceVersion: "30128191"
+    uid: 0f0008b2-8925-4e99-b316-ccee8003d137
+  type: Opaque
+- apiVersion: v1
+  data:
+    privateKey: c0NMRUpIUlR3cCtGUTN5eUk5LzYyR293SkZ5dnYzbkpzU1BKaElPamhWZz0=
+    publicKey: akhGNFc3VTFkYlBIbGRiOWl0cnVQWmlDWVhTNXAySFVocEEyelNJWElRYz0=
+  kind: Secret
+  metadata:
+    creationTimestamp: "2023-08-21T08:06:07Z"
+    labels:
+      app: wireguard
+      instance: sec
+    name: sec-peer
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: WireguardPeer
+      name: sec
+      uid: 3fb8e9df-8c34-418e-8eca-81cab567d00a
+    resourceVersion: "38760917"
+    uid: 05f52f0a-3896-43c5-8d05-c186399e9f48
+  type: Opaque
+- apiVersion: v1
+  data:
+    privateKey: dUlqRy91ZmhaK1NUdjR2WVVGYStKcitlQ0g0SldRSFM5aitwa2lZNjhVWT0=
+    publicKey: Z1YxQlNHRytiRExqYmp5SDY5NDlGUnpQcDIwOEtjNUI3blBza1c5b0RqRT0=
+  kind: Secret
+  metadata:
+    creationTimestamp: "2023-07-10T04:41:50Z"
+    labels:
+      app: wireguard
+      instance: mainserver
+    name: mainserver-peer
+    namespace: wireguard-system
+    ownerReferences:
+    - apiVersion: vpn.wireguard-operator.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: WireguardPeer
+      name: mainserver
+      uid: 023f9d66-4941-4734-908a-4fd08821765c
+    resourceVersion: "7699118"
+    uid: 07666c0d-e46c-4155-8967-e84e11e92b40
+  type: Opaque
+kind: List
+metadata:
+  resourceVersion: ""

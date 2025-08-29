@@ -1,0 +1,75 @@
+check_types:
+  skype_phone:
+    enabled: true
+    source:
+      code: main-service
+    schema:
+      allOf:
+      - $ref: '#/definitions/schema/default'
+      - $ref: '#/definitions/schema/phone'
+    mutator:
+      template:
+        records: |
+          {{- range .records }}
+          - {{ UnsafeField "Login" .Login }}
+            {{ UnsafeField "Type" .Type }}
+            {{ UnsafeField "Name" .Name }}
+            {{ UnsafeField "Birthday" .Birthday }}
+            {{ UnsafeField "City" .City }}
+            {{ UnsafeField "Avatar" .Avatar }}
+            {{ UnsafeField "HomePage" .HomePage }}
+            {{ UnsafeField "About" .About }}
+            {{ UnsafeField "Country" .Country }}
+            {{ UnsafeField "Language" .Language }}
+          {{- end }}
+      status_code:
+        non_standard: true
+        format: json
+        property_path: code
+        detail_property_path: message
+    upstream:
+      provider: main-service
+      keydb:
+        enabled: true
+        scope: skype_phone
+        ttl: 24h0m0s
+        ttl_failed: 30s
+      rabbitmq:
+        enabled: true
+        scope: skype_phone
+      tcp:
+        template:
+          query: |
+            GET /2.00/handler.php?{{ QueryArguments
+            "auth" (Env "MODULE_MAIN_SERVICE_ACCESS_TOKEN")
+            "plugin" "SkypePlugin"
+            "checktype" "skype_phone"
+            "phone" (trimPrefix "+" .phone)
+            }} HTTP/1.1
+    produce:
+      items:
+        properties:
+          About:
+            type: string
+          Avatar:
+            contentEncoding: base64
+            type: string
+          Birthday:
+            type: string
+          City:
+            type: string
+          Country:
+            type: string
+          HomePage:
+            format: url
+            type: string
+          Language:
+            type: string
+          Login:
+            type: string
+          Name:
+            type: string
+          Type:
+            type: string
+        type: object
+      type: array

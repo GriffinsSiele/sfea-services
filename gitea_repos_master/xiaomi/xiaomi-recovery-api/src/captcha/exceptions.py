@@ -1,0 +1,2 @@
+class CaptchaConfiguredError(Exception):
+    pass

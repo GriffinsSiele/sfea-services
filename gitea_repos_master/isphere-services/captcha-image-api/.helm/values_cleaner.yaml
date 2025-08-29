@@ -1,0 +1,92 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 1
+
+image:
+  repository: ${GIT_HTTP_DOMAIN}/${CI_REPO}-cleaner-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the latest.
+  tag: ${IMAGE_TAG}
+
+
+resources:
+  limits:
+    cpu: 75m
+    memory: 100Mi
+  requests:
+    cpu: 50m
+    memory: 30Mi
+
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 1200
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+affinity:
+podAntiAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+  - labelSelector:
+      matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - ${DRONE_REPO_NAME}
+    topologyKey: kubernetes.io/hostname
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+env:
+- name: S3_BUCKET_MAIN
+  value: ${S3_BUCKET_MAIN}
+- name: S3_DEFAULT_REGION
+  value: ${S3_DEFAULT_REGION}
+- name: S3_ACCESS_KEY_ID
+  value: ${S3_ACCESS_KEY_ID}
+- name: S3_SECRET_ACCESS_KEY
+  value: ${S3_SECRET_ACCESS_KEY}
+- name: S3_URL_PATH
+  value: ${S3_URL_PATH}
+- name: S3_PREFIX_IMAGES
+  value: ${S3_PREFIX_IMAGES}
+- name: POSTGRES_URL_ASYNC
+  value: ${POSTGRES_URL_ASYNC}
+- name: SENTRY_URL_CLEANER
+  value: ${SENTRY_URL_CLEANER}
+- name: DB_CLEANUP_CRON_RULE
+  value: ${DB_CLEANUP_CRON_RULE}
+- name: DB_CLEANUP_TOKEN_DAYS
+  value: ${DB_CLEANUP_TOKEN_DAYS}
+- name: DB_CLEANUP_IMAGE_EXTERNAL_DAYS
+  value: ${DB_CLEANUP_IMAGE_EXTERNAL_DAYS}
+- name: DB_CLEANUP_IMAGE_NNETWORK_DAYS
+  value: ${DB_CLEANUP_IMAGE_NNETWORK_DAYS}
+
+envFrom:
+- secretRef:
+    name: settings-kube

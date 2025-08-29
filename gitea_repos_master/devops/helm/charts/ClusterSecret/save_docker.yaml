@@ -1,0 +1,10 @@
+apiVersion: clustersecret.io/v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2dpdC5pLXNwaGVyZS5ydS8iOnsidXNlcm5hbWUiOiJkcm9uZS1ib3QiLCJwYXNzd29yZCI6IklMOHdvSEMwajQ5SXlOaTIiLCJhdXRoIjoiWkhKdmJtVXRZbTkwT2tsTU9IZHZTRU13YWpRNVNYbE9hVEk9In19fQ==
+kind: ClusterSecret
+matchNamespace:
+- .*
+metadata:
+  name: docker-registry
+  namespace: clustersecret
+type: kubernetes.io/dockerconfigjson

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-tls
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.tls.autoScaling.minReplicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}-tls
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}-tls
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: web
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.all.image.repository }}:{{ .Values.all.image.tag }}"
+          imagePullPolicy: {{ .Values.all.image.pullPolicy }}
+          ports:
+            - name: tls
+              containerPort: {{ .Values.tls.service.port }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.tls.service.port }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.tls.service.port }}
+          startupProbe:
+            tcpSocket:
+              port: {{ .Values.tls.service.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.fullname" . }}-configmap
+            - secretRef:
+                name: {{ include "chart.fullname" . }}-secret
+          command: [ sh ]
+          args:
+            - -exc
+            - |
+              bin/console generate-certificate
+              bin/console server/tls
+          resources:
+            {{- toYaml .Values.tls.resources | nindent 12 }}
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

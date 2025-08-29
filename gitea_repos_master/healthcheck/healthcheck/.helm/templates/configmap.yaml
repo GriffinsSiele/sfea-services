@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.fullname" . }}-configmap
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+  LISTEN_ADDR: ":8000"
+
+  MYSQL_HOST: "172.16.99.3"
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "isphere"
+
+  METRIC_RESPONSES_COUNT_TIMEOUT_DURATION: "5m"
+  METRIC_RESPONSES_DURATION_TIMEOUT_DURATION: "5m"
+  METRIC_SESSIONS_ENOUGH_COUNT_TIMEOUT_DURATION: "1h"

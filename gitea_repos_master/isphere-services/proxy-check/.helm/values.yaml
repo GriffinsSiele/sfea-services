@@ -1,0 +1,18 @@
+imageCredentials: { enabled: false, registry: "", username: "", password: "" }
+nameOverride: ""
+fullNameOverride: ""
+DOCKER: "${DOCKER}"
+securityContext: { capabilities: { drop: [ FOWNER, KILL, MKNOD, SETGID, SETUID ] } }
+podAnnotations: { }
+podSecurityContext: { }
+nodeSelector: { }
+tolerations:
+  - { key: prod, operator: Equal, value: "yes", effect: NoSchedule }
+serviceAccount: { create: true, annotations: { }, createRole: true, affinity: { } }
+persistence: { enabled: false, existingClaim: "", accessMode: "", size: 0, storageClass: "" }
+app:
+  restartPolicy: Always
+  image: { repository: "${CI_REGISTRY_IMAGE}", tag: "${DRONE_BRANCH}", pullPolicy: Always }
+  resources:
+    limits: { cpu: 50m, memory: 96Mi }
+    requests: { cpu: 40m, memory: 64Mi }

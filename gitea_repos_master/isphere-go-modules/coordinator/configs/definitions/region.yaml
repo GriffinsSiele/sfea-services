@@ -1,0 +1,9 @@
+definitions:
+  schema:
+    region:
+      type: object
+      properties:
+        region:
+          type: string
+          minLength: 2
+          maxLength: 2

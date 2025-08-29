@@ -1,0 +1,41 @@
+check_types:
+  facebook_phoneurl:
+    enabled: true
+    source: {code: hasura}
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: hasura
+      keydb:
+        {enabled: true, scope: facebook_phoneurl, ttl: 24h, ttl_failed: 30s}
+      rabbitmq: {enabled: true, scope: facebook_phoneurl}
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            {
+                facebook_facebook_{{ Region .phone }}(where: {phone: {_eq: {{ Quote (PhoneNum .phone) }} {{`}}`}}) {
+                    id
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range (Root . (print "facebook_facebook_" (Region ._input.phone))) }}
+          - facebook_id:    !!string  {{ Quote .id }}
+            url:                      https://www.facebook.com/profile.php?id={{ .id }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          facebook_id: {type: string}
+          url: {type: string, format: url}

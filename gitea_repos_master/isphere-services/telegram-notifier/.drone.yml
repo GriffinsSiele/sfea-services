@@ -1,0 +1,103 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+  - name: build
+    image: plugins/kaniko
+    pull: always
+    settings:
+      registry: gitea-http.gitea.svc.cluster.local
+      username: { from_secret: GIT_USER }
+      password: { from_secret: GIT_TOKEN }
+      repo: "${DRONE_REPO}"
+      tags: "${DRONE_COMMIT_BRANCH}"
+      cache: true
+      target: prod
+      build_args:
+        - BUILD_TARGET=prod
+    environment:
+      COMPOSER_ALLOW_SUPERUSER: "1"
+      container: kube
+      PLUGIN_CACHE_REPO: gitea-http.gitea.svc.cluster.local/isphere-services/telegram-notifier
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_REGISTRY: gitea-http.gitea.svc.cluster.local
+      PLUGIN_SKIP_UNUSED_STAGES: true
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      CI_REGISTRY_IMAGE: "gitea-http.gitea.svc.cluster.local/isphere-services/telegram-notifier"
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+      TELEGRAM_BOT_TOKEN: { from_secret: TELEGRAM_TOKEN_BOT }
+      TELEGRAM_CHAT_ID: { from_secret: TELEGRAM_CHAT_ID }
+      SENTRY_DSN: { from_secret: SENTRY_DSN }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: DOCKER
+get: { path: settings-kube, name: DOCKER }
+
+---
+kind: secret
+name: DOMAIN
+get: { path: settings-kube, name: DOMAIN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: TELEGRAM_TOKEN_BOT
+get: { path: settings-kube, name: TELEGRAM_TOKEN_BOT }
+
+---
+kind: secret
+name: TELEGRAM_CHAT_ID
+get: { path: settings-kube, name: TELEGRAM_CHAT_ID }
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }
+
+---
+kind: secret
+name: SENTRY_DSN
+get: { path: settings-kube, name: SENTRY_DSN_TELEGRAM_NOTIFIER }

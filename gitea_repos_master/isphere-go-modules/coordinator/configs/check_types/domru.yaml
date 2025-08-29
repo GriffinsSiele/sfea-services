@@ -1,0 +1,42 @@
+check_types:
+  domru:
+    enabled: true
+    source: { code: domru }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: domru
+      keydb: { enabled: true, scope: domru, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: domru }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST /search HTTP/1.1
+            Content-Type: application/json
+            
+            {
+                "phone": {{ Quote (trimPrefix "+" .phone) }}
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .records }}
+          - contactId: {{ .contactId }}
+            agreementId: {{ .agreementId }}
+            address: {{ Quote .address }}
+          {{- end }}
+        # @formatter:on
+      status_code: { non_standard: true, format: json, property_path: code, detail_property_path: message }
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          contactId: { type: number }
+          agreementId: { type: number }
+          address: { type: string }

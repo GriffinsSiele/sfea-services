@@ -1,0 +1,285 @@
+<?php
+
+class SBPSPlugin implements PluginInterface
+{
+    private $aes;
+
+    private $banks = array(
+        'gazprombank_phone' => array('id'=>1,'name'=>'Gazprombank','title'=>'Газпромбанк'),
+        'rnko_phone' => array('id'=>2,'name'=>'RNKO','title'=>'РНКО Платежный центр'),
+        'skb_phone' => array('id'=>3,'name'=>'SKB','title'=>'СКБ'),
+        'tinkoff_phone' => array('id'=>4,'name'=>'Tinkoff','title'=>'Тинькофф'),
+        'vtb_phone' => array('id'=>5,'name'=>'VTB','title'=>'ВТБ'),
+        'akbars_phone' => array('id'=>6,'name'=>'AkBars','title'=>'Ак Барс Банк'),
+        'raiffeisen_phone' => array('id'=>7,'name'=>'Raiffeisen','title'=>'Райффайзенбанк'),
+        'alfabank_phone' => array('id'=>8,'name'=>'Alfabank','title'=>'Альфа Банк'),
+        'qiwibank_phone' => array('id'=>9,'name'=>'Qiwibank','title'=>'Киви Банк'),
+        'psbank_phone' => array('id'=>10,'name'=>'PSBank','title'=>'Промсвязьбанк'),
+        'rosbank_phone' => array('id'=>12,'name'=>'Rosbank','title'=>'Росбанк'),
+        'sovcombank_phone' => array('id'=>13,'name'=>'Sovcombank','title'=>'Совкомбанк'),
+        'rsb_phone' => array('id'=>14,'name'=>'RSB','title'=>'Русский стандарт'),
+        'openbank_phone' => array('id'=>15,'name'=>'Openbank','title'=>'Открытие'),
+        'pochtabank_phone' => array('id'=>16,'name'=>'Pochtabank','title'=>'Почта Банк'),
+        'rshb_phone' => array('id'=>20,'name'=>'RSHB','title'=>'Россельхозбанк'),
+        'yandexmoney_phone' => array('id'=>22,'name'=>'YandexMoney','title'=>'Яндекс.Деньги'),
+        'mkb_phone' => array('id'=>25,'name'=>'MKB','title'=>'МКБ'),
+        'avangard_phone' => array('id'=>28,'name'=>'Avangard','title'=>'Банк Авнгард'),
+        'unicredit_phone' => array('id'=>30,'name'=>'Unicredit','title'=>'ЮниКредит Банк'),
+        'finam_phone' => array('id'=>40,'name'=>'Finam','title'=>'Банк ФИНАМ'),
+        'gazenergobank_phone' => array('id'=>43,'name'=>'Gazenergobank','title'=>'Газэнергобанк'),
+        'zenit_phone' => array('id'=>45,'name'=>'Zenit','title'=>'Банк Зенит'),
+        'absolutbank_phone' => array('id'=>47,'name'=>'Absolutbank','title'=>'Абсолютбанк'),
+        'platina_phone' => array('id'=>48,'name'=>'Platina','title'=>'Банк Платина'),
+        'vbrr_phone' => array('id'=>49,'name'=>'VBRR','title'=>'ВБРР'),
+        'levoberezhniy_phone' => array('id'=>52,'name'=>'Levoberezhniy','title'=>'Банк Левобережный'),
+        'vestabank_phone' => array('id'=>53,'name'=>'Vestabank','title'=>'Банк Веста'),
+        'neyvabank_phone' => array('id'=>63,'name'=>'Neyvabank','title'=>'Банк Нейва'),
+    );
+
+    public function getName($checktype = '')
+    {
+        return ($checktype && isset($this->banks[$checktype]))?$this->banks[$checktype]['name']:'SBP';
+//        return 'SBP';
+    }
+
+    public function getTitle($checktype = '')
+    {
+        return 'Поиск в '.(($checktype && isset($this->banks[$checktype]))?$this->banks[$checktype]['title']:'СБП');
+//        return 'Поиск в СБП';
+    }
+
+    public function encrypt($text)
+    {
+        $key = hex2bin(substr($this->aes,0,32));
+        $iv = hex2bin(substr($this->aes,32,32));
+        $cipher = "aes-128-cbc";
+        $raw = openssl_encrypt($text, $cipher, $key, $options=OPENSSL_RAW_DATA, $iv);
+        $result = base64_encode($raw);
+        return $result;
+    }
+
+    public function getSessionData()
+    {
+        global $mysqli;
+        $sessionData = null;
+
+        $result = $mysqli->query("SELECT id,cookies,starttime,lasttime,captcha,token,data,proxyid,(SELECT concat(server,':',port) FROM proxy WHERE id=s.proxyid) proxy,(SELECT concat(login,':',password) FROM proxy WHERE id=s.proxyid) proxy_auth FROM isphere.session s WHERE sessionstatusid=2 AND unix_timestamp(now())-unix_timestamp(lasttime)>5 AND data>'' AND sourceid=33 AND unix_timestamp(now())-unix_timestamp(lasttime)>3 ORDER BY lasttime limit 1");
+
+        if($result)
+        {
+            $row = $result->fetch_object();
+
+            if ($row)
+            {
+                $sessionData = new \StdClass;
+
+                $sessionData->id = $row->id;
+                $sessionData->code = $row->captcha;
+                $sessionData->token = $row->token;
+                $sessionData->data = $row->data;
+                $sessionData->starttime = $row->starttime;
+                $sessionData->lasttime = $row->lasttime;
+                $sessionData->cookies = $row->cookies;
+                $sessionData->proxyid = $row->proxyid;
+                $sessionData->proxy = $row->proxy;
+                $sessionData->proxy_auth = strlen($row->proxy_auth)>1?$row->proxy_auth:false;
+
+//                $mysqli->query("UPDATE isphere.session SET lasttime=now(),used=ifnull(used,0)+1 WHERE id=".$sessionData->id);
+                $mysqli->query("UPDATE isphere.session SET statuscode='used',used=ifnull(used,0)+1 WHERE id=".$sessionData->id);
+            }
+        }
+
+        return $sessionData;
+    }
+
+    public function prepareRequest(&$rContext)
+    {
+        $initData = $rContext->getInitData();
+        $swapData = $rContext->getSwapData();
+
+        $checktype = $initData['checktype'];
+
+        if (!isset($this->banks[$checktype])) {
+            $rContext->setFinished();
+            $rContext->setError('Неверный код банка-участника СБП '.$checktype);
+
+            return false;
+        }
+
+        $bank_id = 100000000000+$this->banks[$checktype]['id'];
+
+        if(!isset($initData['phone'])) {
+            $rContext->setFinished();
+            $rContext->setError('Указаны не все обязательные параметры (телефон)');
+
+            return false;
+        }
+
+        if (strlen($initData['phone'])==10)
+            $initData['phone']='7'.$initData['phone'];
+        if ((strlen($initData['phone'])==11) && (substr($initData['phone'],0,1)=='8'))
+            $initData['phone']='7'.substr($initData['phone'],1);
+/*
+        if(substr($initData['phone'],0,2)!='79')
+        {
+            $rContext->setFinished();
+            $rContext->setError('Поиск производится только по мобильным телефонам в коде 9xx');
+
+            return false;
+        }
+*/
+        if(substr($initData['phone'],0,1)!='7'){
+            $rContext->setFinished();
+//            $rContext->setError('Поиск производится только по российским телефонам');
+            return false;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        $swapData['session'] = $this->getSessionData();
+        (!isset($swapData['iteration']))?$swapData['iteration']=1:$swapData['iteration']++;
+
+        if(!$swapData['session']) {
+            if ($swapData['iteration']>10) {
+                $rContext->setFinished();
+                $rContext->setError('Нет доступных аккаунтов для выполнения запроса');
+            }
+            $rContext->setSleep(1);
+            return false;
+        }
+
+        $rContext->setSwapData($swapData);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        $ch = $rContext->getCurlHandler();
+
+        $host = 'https://online.sovcombank.ru';
+        $url = $host.'/ib.php?';
+        $this->aes = $swapData['session']->data;
+
+        if (!isset($swapData['operationId'])) {
+            $url .= 'do=sbp_identification';
+            $params = array(
+                'ibPaySBP_sum' => $this->encrypt('100'),
+                'ibPaySBP_phone' => $this->encrypt(substr($initData['phone'],1)),
+                'ibPaySBP_text' => '', //$this->encrypt(''),
+                'ibPaySBP_account' => $this->encrypt('40817810050117793356'),
+                '_ts' => round(microtime(true)*1000),
+                '_nts' => $swapData['session']->token,
+            );
+        } else {
+            $url .= 'do=sbp_payment_check';
+            $params = array(
+                'bank_code' => $this->encrypt($bank_id),
+                'operationId' => $this->encrypt($swapData['operationId']),
+                'message' => '',//$this->encrypt(''),
+                'sum' => $this->encrypt('100.00'),
+                'phone' => $this->encrypt(substr($initData['phone'],1)),
+                'account' => $this->encrypt('40817810050117793356'),
+                '_ts' => round(microtime(true)*1000),
+                '_nts' => $swapData['session']->token,
+            );
+        }
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+        curl_setopt($ch, CURLOPT_COOKIE, $swapData['session']->cookies);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Referer: https://online.sovcombank.ru/?_nts='.$swapData['session']->token,
+            'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept: */*',
+            'X-Requested-With: XMLHttpRequest'));
+        $rContext->setCurlHandler($ch);
+
+        return true;
+    }
+
+    public function computeRequest(&$rContext)
+    {
+        global $mysqli;
+
+        $initData = $rContext->getInitData();
+        $swapData = $rContext->getSwapData();
+
+        $swapData['iteration'] = (!isset($swapData['iteration']))?1:$swapData['iteration'] + 1;
+        $error = ($swapData['iteration']>5) && curl_error($rContext->getCurlHandler());
+        if(!$error) {
+            $content = curl_multi_getcontent($rContext->getCurlHandler());
+
+            $res = json_decode($content, true);               
+            if($res && !isset($swapData['operationId'])) {
+                file_put_contents('./logs/sovcombank/sovcombank_id_'.time().'.txt',$content);
+                if (isset($res['data']['operationId'])) {
+                    $swapData['operationId'] = $res['data']['operationId'];
+                    $rContext->setSwapData($swapData);
+                    $rContext->setSleep(1);
+                } else {
+                    file_put_contents('./logs/sovcombank/sovcombank_id_err_'.time().'.txt',$content);
+                    $error = "Ошибка при отправке запроса";
+                }
+            } elseif($res && isset($swapData['operationId'])) {
+                file_put_contents('./logs/sovcombank/sovcombank_'.time().'.txt',$content);
+                $resultData = new ResultDataList();
+                if (isset($res['data'])) {
+                    $data = array();
+                    if (isset($res['data']['fullName'])) {
+                        $name = $res['data']['fullName'].'.';
+                        $data['name'] = new ResultDataField('string','name',$name,'ФИО','ФИО');
+                        if (isset($initData['first_name'])) {
+                            $split_name = explode(' ',mb_strtoupper($name));
+                            $first_name='';
+                            for($i=0; $i<sizeof($split_name)-(isset($initData['patronymic'])?1:2); $i++)
+                                $first_name = trim($first_name.' '.$split_name[$i]);
+                            $last_name = $split_name[sizeof($split_name)-1];
+
+                            if (mb_strtoupper($initData['first_name'] . (isset($initData['patronymic']) ? ' '.mb_strtoupper($initData['patronymic']) :''))==$first_name) {
+                                if (isset($initData['last_name']) && (mb_strtoupper(mb_substr($initData['last_name'],0,1))==mb_substr($last_name,0,1))) {
+                                    $match_code = 'MATCHED';
+                                } else {
+                                    $match_code = 'MATCHED_NAME_ONLY';
+                                }
+                            } else {
+                                $match_code = 'NOT_MATCHED';
+                            }
+                            $data['match_code'] = new ResultDataField('string','match_code', $match_code, 'Результат сравнения имени', 'Результат сравнения имени');
+                        }
+//                        $data['account'] = new ResultDataField('string','account',$res['data']['accountNumber'],'Расчетный счет','Расчетный счет');
+                        $data['result'] = new ResultDataField('string','result', 'По телефону '.$initData['phone'].' найден 1 клиент', 'Результат', 'Результат');
+                        $data['result_code'] = new ResultDataField('string','result_code', 'FOUND', 'Код результата', 'Код результата');
+                        $resultData->addResult($data);
+                    }
+                } 
+                $rContext->setResultData($resultData);
+                $rContext->setFinished();
+            } elseif (isset($res['message']) && strpos($res['message'],'истекло')) {
+                if (isset($swapData['session']))
+//                    $mysqli->query("UPDATE isphere.session SET unlocktime=date_add(current_date(),interval 1 day),sessionstatusid=6,statuscode='exceeded' WHERE id=" . $swapData['session']->id);
+                    $mysqli->query("UPDATE isphere.session SET endtime=now(),sessionstatusid=3,statuscode='expired' WHERE id=" . $swapData['session']->id);
+                unset($swapData['session']);
+                $rContext->setSwapData($swapData);
+                return true;
+            } elseif (isset($res['message'])) {
+                file_put_contents('./logs/sovcombank/sovcombank_err_'.time().'.txt',$content);
+                if (!strpos($res['message'],'administrator'))
+                    $error = $res['message'];
+            } else {
+                file_put_contents('./logs/sovcombank/sovcombank_err_'.time().'.txt',$content);
+                $error = "Некорректный ответ";
+            }
+        }
+
+        if(!$error && isset($swapData['iteration']) && $swapData['iteration']>=5)
+            $error='Превышено количество попыток получения ответа';
+
+        if ($error) {
+            $rContext->setError($error);
+            $rContext->setFinished();
+            return false;
+        }
+
+        return true;
+    }
+
+}
+
+?>

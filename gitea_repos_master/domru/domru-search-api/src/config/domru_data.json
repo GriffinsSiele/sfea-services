@@ -1,0 +1,455 @@
+[
+    {
+        "id": 1,
+        "providerId": 2,
+        "name": "Брянск",
+        "city": "Bryansk",
+        "phone_code": 483,
+        "region_code": ["32"]
+    },
+    {
+        "id": 2,
+        "providerId": 3,
+        "name": "Екатеринбург",
+        "city": "Ekaterinburg",
+        "phone_code": 343,
+        "region_code": ["66"]
+    },
+    {
+        "id": 3,
+        "providerId": 4,
+        "name": "Иркутск",
+        "city": "Irkutsk",
+        "phone_code": 395,
+        "region_code": ["38"]
+    },
+    {   "id": 4,
+        "providerId": 5,
+        "name": "Казань",
+        "city": "Republic of Tatarstan",
+        "phone_code": 843,
+        "region_code": ["16", "116", "716"]
+    },
+    {
+        "id": 5,
+        "providerId": 6,
+        "name": "Краснодар",
+        "city": "Krasnodar Territory",
+        "phone_code": 861,
+        "region_code": ["23"]
+    },
+    {
+        "id": 6,
+        "providerId": 10,
+        "name": "Нижний Новгород",
+        "city": "Nizhni Novgorod",
+        "phone_code": 831,
+        "region_code": ["52"]
+    },
+    {
+        "id": 7,
+        "providerId": 47,
+        "name": "Пермь",
+        "city": "Perm",
+        "phone_code": 342,
+        "region_code": ["59"]
+    },
+    {
+        "id": 8,
+        "providerId": 11,
+        "name": "Оренбург",
+        "city": "Оренбургская область, р-н Тюльганский",
+        "phone_code": 353,
+        "region_code": ["56"]
+    },
+    {   "id": 9,
+        "providerId": 35,
+        "name": "Набережные Челны",
+        "city": "Naberezhnye Chelny",
+        "phone_code": 855,
+        "region_code": ["16", "116", "716"]
+    },
+    {
+        "id": 10,
+        "providerId": 12,
+        "name": "Пенза",
+        "city": "Penza",
+        "phone_code": 841,
+        "region_code": ["58"]
+    },
+    {   
+        "id": 11,
+        "providerId": 13,
+        "name": "Ростов-на-Дону",
+        "city": "Ростовская область, г. Ростов-на-Дону",
+        "phone_code": 863,
+        "region_code": ["61", "161", "761"]
+    },
+    {
+        "id": 12,
+        "providerId": 59,
+        "name": "Санкт-Петербург",
+        "city": "г. Санкт-Петербург",
+        "phone_code": 812,
+        "region_code": ["78", "98", "178", "198"]
+    },
+    {
+        "id": 13,
+        "providerId": 16,
+        "name": "Ярославль",
+        "city": "Yaroslavl",
+        "phone_code": 485,
+        "region_code": ["76"]
+    },
+    {   "id": 14,
+        "providerId": 20,
+        "name": "Курск",
+        "city": "Kursk",
+        "phone_code": 471,
+        "region_code": ["46"]
+    },
+    {
+        "id": 15,
+        "providerId": 21,
+        "name": "Липецк",
+        "city": "Lipetsk",
+        "phone_code": 474,
+        "region_code": ["48"]
+    },
+    {
+        "id": 16,
+        "providerId": 53,
+        "name": "Челябинск",
+        "city": "Chelyabinsk",
+        "phone_code": 351,
+        "region_code": ["74", "174"]
+    },
+    {
+        "id": 17,
+        "providerId": 24,
+        "name": "Новосибирск",
+        "city": "Novosibirsk",
+        "phone_code": 383,
+        "region_code": ["54", "154"]
+    },
+    {
+        "id": 18,
+        "providerId": 25,
+        "name": "Самара",
+        "city": "Samara",
+        "phone_code": 846,
+        "region_code": ["63", "163", "763"]
+    },
+    {
+        "id": 19,
+        "providerId": 27,
+        "name": "Томск",
+        "city": "Tomsk",
+        "phone_code": 382,
+        "region_code": ["70"]
+    },
+    {
+        "id": 20,
+        "providerId": 29,
+        "name": "Волгоград",
+        "city": "Volgograd",
+        "phone_code": 844,
+        "region_code": ["34", "134"]
+    },
+    {
+        "id": 21,
+        "providerId": 30,
+        "name": "Воронеж",
+        "city": "Voronezh",
+        "phone_code": 473,
+        "region_code": ["36", "136"]
+    },
+    {
+        "id": 22,
+        "providerId": 51,
+        "name": "Ульяновск",
+        "city": "Ulyanovsk",
+        "phone_code": 842,
+        "region_code": ["73", "173"]
+    },
+    {
+        "id": 23,
+        "providerId": 32,
+        "name": "Ижевск",
+        "city": "Udmurtian Republic",
+        "phone_code": 341,
+        "region_code": ["18"]
+    },
+    {
+        "id": 24,
+        "providerId": 33,
+        "name": "Йошкар-Ола",
+        "city": "Republic of Marij El",
+        "phone_code": 836,
+        "region_code": ["12"]
+    },
+    {
+        "id": 25,
+        "providerId": 34,
+        "name": "Курган",
+        "city": "Kurgan",
+        "phone_code": 352,
+        "region_code": ["45"]
+    },
+    {
+        "id": 26,
+        "providerId": 36,
+        "name": "Рязань",
+        "city": "Ryazan",
+        "phone_code": 491,
+        "region_code": ["62"]
+    },
+    {
+        "id": 27,
+        "providerId": 37,
+        "name": "Саратов",
+        "city": "Saratov",
+        "phone_code": 845,
+        "region_code": ["64", "164"]
+    },
+    {
+        "id": 28,
+        "providerId": 38,
+        "name": "Тверь",
+        "city": "Tver",
+        "phone_code": 482,
+        "region_code": ["69"]
+    },
+    {
+        "id": 29,
+        "providerId": 39,
+        "name": "Чебоксары",
+        "city": "Chuvashi Republic",
+        "phone_code": 835,
+        "region_code": ["21", "121"]
+    },
+    {
+        "id": 30,
+        "providerId": 41,
+        "name": "Москва",
+        "city": "г. Москва,Moscow",
+        "phone_code": 495,
+        "region_code": ["77", "97", "99", "177", "197", "199", "777", "797", "799", "50", "90", "150", "190", "750", "790"]
+    },
+    {
+        "id": 31,
+        "providerId": 45,
+        "name": "Барнаул",
+        "city": "Altai Territory",
+        "phone_code": 385,
+        "region_code": ["22"]
+    },
+    {
+        "id": 32,
+        "providerId": 46,
+        "name": "Омск",
+        "city": "Omsk",
+        "phone_code": 381,
+        "region_code": ["55", "155"]
+    },
+    {
+        "id": 33,
+        "providerId": 50,
+        "name": "Тюмень",
+        "city": "Tyumen",
+        "phone_code": 345,
+        "region_code": ["72"]
+    },
+    {
+        "id": 34,
+        "providerId": 57,
+        "name": "Киров",
+        "city": "Kirov",
+        "phone_code": 833,
+        "region_code": ["43"]
+    },
+    {
+        "id": 35, 
+        "providerId": 58,
+        "name": "Красноярск",
+        "city": "Krasnoyarsk Territory",
+        "phone_code": 391,
+        "region_code": ["24", "124"]
+    },
+    {
+        "id": 36,
+        "providerId": 61,
+        "name": "Тула",
+        "city": "Tula",
+        "phone_code": 487,
+        "region_code": ["71"]
+    },
+    {
+        "id": 37,
+        "providerId": 62,
+        "name": "Уфа",
+        "city": "Republic of Bashkortostan",
+        "phone_code": 347,
+        "region_code": ["02", "102", "702"]
+    },
+    {
+        "id": 38,
+        "providerId": 64,
+        "name": "Улан-Удэ",
+        "city": "Republic of Buryatia",
+        "phone_code": 301,
+        "region_code": ["03"]
+    },
+    {
+        "id": 39,
+        "providerId": 23,
+        "name": "Мичуринск",
+        "city": "Tambov",
+        "phone_code": 47545,
+        "region_code": ["68"]
+    },
+
+    {
+        "id": 301,
+        "providerId": 15,
+        "name": "Усолье-Сибирское",
+        "city": "Irkutsk",
+        "phone_code": 39543,
+        "parent_id": 3
+    },
+    {
+        "id": 302,
+        "providerId": 17,
+        "name": "Тайшет",
+        "city": "Irkutsk",
+        "phone_code": 39563,
+        "parent_id": 3
+    },
+    {
+        "id": 303,
+        "providerId": 28,
+        "name": "Ангарск",
+        "city": "Иркутская область, р-н Ангарский",
+        "phone_code": 3955,
+        "parent_id": 3
+    },
+    {
+        "id": 304,
+        "providerId":65,
+        "name": "Нижнеудинск",
+        "city": "Irkutsk",
+        "phone_code": 39557,
+        "parent_id": 3
+    },
+    {
+        "id": 601,
+        "providerId": 19,
+        "name": "Дзержинск",
+        "city": "Нижегородская область, г. Дзержинск",
+        "phone_code": 8313,
+        "parent_id": 6
+    },
+    {
+        "id": 701,
+        "providerId": 7,
+        "name": "Кунгур",
+        "city": "Perm",
+        "phone_code": 34271,
+        "parent_id": 7 
+    },
+    {
+        "id": 702,
+        "providerId": 48,
+        "name": "Соликамск",
+        "city": "Perm",
+        "phone_code": 34253,
+        "parent_id": 7
+    },
+    {
+        "id": 703,
+        "providerId": 55,
+        "name": "Березники",
+        "city": "Perm",
+        "phone_code": 3424,
+        "parent_id": 7
+    },
+    {
+        "id": 704,
+        "providerId": 63,
+        "name": "Чусовой",
+        "city": "Perm",
+        "phone_code": 34256,
+        "parent_id": 7
+    },
+    {   "id": 901,
+        "providerId": 9,
+        "name": "Нижнекамск",
+        "city": "Naberezhnye Chelny",
+        "phone_code": 8555,
+        "parent_id": 9
+    },
+    {   "id": 1201,
+        "providerId": 14,
+        "name": "Сосновый Бор",
+        "city": "Ленинградская область,р-н Ломоносовский",
+        "phone_code": 81369,
+        "region_code": ["47"],
+        "parent_id": 12
+    },
+    {
+        "id": 1601,
+        "providerId": 22,
+        "name": "Магнитогорск",
+        "city": "Chelyabinsk",
+        "phone_code": 3519,
+        "parent_id": 16
+    },
+    {
+        "id": 1801,
+        "providerId": 26,
+        "name": "Сызрань",
+        "city": "Samara",
+        "phone_code": 8464,
+        "parent_id": 18
+    },
+    {
+        "id": 1901,
+        "providerId": 60,
+        "name": "Северск",
+        "city": "Tomsk",
+        "phone_code": 3823,
+        "parent_id": 19
+    },
+    {
+        "id": 2201,
+        "providerId": 31,
+        "name": "Димитровград",
+        "city": "Ulyanovsk",
+        "phone_code": 84235,
+        "parent_id": 22
+    },
+    {
+        "id": 2701,
+        "providerId": 40,
+        "name": "Энгельс",
+        "city": "Saratov",
+        "phone_code": 8453,
+        "parent_id": 27
+    },
+    {
+        "id": 2301,
+        "providerId": 42,
+        "name": "Воткинск",
+        "city": "Udmurtian Republic",
+        "phone_code": 34145,
+        "parent_id": 23
+    },
+    {
+        "id": 2001,
+        "providerId": 56,
+        "name": "Волжский",
+        "city": "Волгоградская область, г. Волжский",
+        "phone_code": 8443,
+        "parent_id": 20
+    }
+]

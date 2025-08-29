@@ -1,0 +1,25 @@
+global:
+  storageClass: csi-s3
+image:
+  tag: 10.4.5-debian-12-r5
+service:
+  type: LoadBalancer
+  ports:
+    grafana: 80
+persistence:
+  enabled: true
+  storageClass: csi-s3
+  accessMode: ReadWriteOnce
+  size: 10Gi
+config:
+  useGrafanaIniFile: true
+  grafanaIniConfigMap: grafana-config
+  grafanaIniSecret: ""
+smtp:
+  enabled: true
+  user: adm1n.infosfera@yandex.ru
+  password: vmxqjotpivaiheor
+  host: smtp.yandex.ru:465
+  fromAddress: adm1n.infosfera@yandex.ru
+  skipVerify: "true"
+plugins: "hamedkarbasi93-kafka-datasource,alexanderzobnin-zabbix-app,grafana-singlestat-panel"

@@ -1,0 +1,121 @@
+check_types:
+  sypexgeo:
+    enabled: true
+    source:
+      code: sypexgeo
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/ip"
+    upstream:
+      provider: sypexgeo
+      keydb: { enabled: true, scope: sypexgeo, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: sypexgeo }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($ip: String!) {
+              sypexgeo(ip: $ip) {
+                  ip
+                  city {
+                      id
+                      lat
+                      lon
+                      name_ru
+                      name_en
+                      name_uk
+                      name_de
+                      name_fr
+                      name_it
+                      name_es
+                      name_pt
+                      okato
+                      vk
+                      population
+                      tel
+                      post
+                  }
+                  region {
+                      id
+                      lat
+                      lon
+                      name_ru
+                      name_en
+                      name_uk
+                      name_de
+                      name_fr
+                      name_it
+                      name_es
+                      name_pt
+                      okato
+                      vk
+                      iso
+                      timezone
+                      auto
+                      utc
+                  }
+                  country {
+                      id
+                      lat
+                      lon
+                      name_ru
+                      name_en
+                      name_uk
+                      name_de
+                      name_fr
+                      name_it
+                      name_es
+                      name_pt
+                      okato
+                      vk
+                      iso
+                      continent
+                      timezone
+                      area
+                      population
+                      capital_id
+                      capital_ru
+                      capital_en
+                      cur_code
+                      phone
+                      neighbours
+                      utc
+                  }
+                  error
+                  request
+                  created
+                  timestamp
+              }
+          }
+    mutator:
+      template:
+        # language=GoTemplate
+        records: |
+          {{/* @formatter:off */}}
+          {{- range .sypexgeo }}
+          - country_code: {{ Quote .country.iso }}
+            country:      {{ Quote .country.name_ru }}
+            region:       {{ Quote .region.name_ru }}
+            city:         {{ Quote .city.name_ru }}
+            location:
+              coords:
+                - !!float {{ Quote .city.lat }}
+                - !!float {{ Quote .city.lon }}
+              text: {{ Quote .city.name_ru }}
+          {{- end }}
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          country_code: { type: string }
+          country: { type: string }
+          region: { type: string }
+          city: { type: string }
+          location:
+            type: object
+            properties:
+              coords:
+                type: array
+                items: { type: number, minItems: 2, maxItems: 2 }
+              text: { type: string }

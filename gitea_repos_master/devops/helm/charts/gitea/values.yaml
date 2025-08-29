@@ -1,0 +1,131 @@
+gitea:
+  config:
+    database:
+      DB_TYPE: "postgres"
+      #HOST: "gitea-rw.cnpg-system.svc.cluster.local:5432"
+      HOST: "172.16.99.1:5432"
+      #NAME: "app"
+      NAME: "gitea_prod"
+      #USER: "app"
+      USER: "gitea"
+      #PASSWD: "n4fqrFaL63GAeJoq0Hdp1cO2RGYEkUMLgvhf2sGKxSpo9Yvc4oqr4qDcKPmnRTkC"
+      PASSWD: "ML3kSAmdR6xa54FJjXHrPn"
+      SSL_MODE: "disable"
+    service:
+      DISABLE_REGISTRATION: "true"
+    webhook:
+      ALLOWED_HOST_LIST: "redmine.redmine.svc.cluster.local,drone.gitea.svc.cluster.local"
+    server:
+      SSH_PORT: "30122"
+      SSH_LISTEN_PORT: "30122"
+      ROOT_URL: "http://git.i-sphere.local"
+      SSH_DOMAIN: "git.i-sphere.local"
+      DOMAIN: "git.i-sphere.local"
+      LOCAL_ROOT_URL: "http://git.i-sphere.local"
+      APP_URL: "http://git.i-sphere.local"
+      #ROOT_URL: "http://gitea-http.gitea.svc.cluster.local"
+      #SSH_DOMAIN: "http://gitea-ssh.gitea.svc.cluster.local"
+      #DOMAIN: "http://gitea-http.gitea.svc.cluster.local"
+    session:
+      PROVIDER: "memory"
+    cache:
+      ADAPTER: "memory"
+    queue:
+      TYPE: "dummy"
+
+#  additionalConfigFromEnvs:
+#   - name: ENV_TO_INI__SESSION__PROVIDER
+#      value: memory
+#    - name: ENV_TO_INI__QUEUE__TYPE
+#      value: memory
+#    - name: ENV_TO_INI__CACHE__ADAPTER 
+#      value: memory
+    #- name: ENV_TO_INI__SERVER__SSH_DOMAIN
+      #value: git.i-sphere.ru
+    #- name: ENV_TO_INI__DATABASE__DB_TYPE
+      #value: "postgres"
+    #- name: ENV_TO_INI__DATABASE__HOST
+      #value: "gitea-rw.cnpg-system.svc.cluster.local:5432"
+    #- name: ENV_TO_INI__DATABASE__NAME
+      #value: "app"
+    #- name: ENV_TO_INI__DATABASE__USER
+      #value: "app"
+    #- name: ENV_TO_INI__DATABASE__PASSWD
+      #value: "n4fqrFaL63GAeJoq0Hdp1cO2RGYEkUMLgvhf2sGKxSpo9Yvc4oqr4qDcKPmnRTkC"
+    #- name: ENV_TO_INI__DATABASE__SSL_MODE
+      #value: "disable"
+    #- name: ENV_TO_INI__SERVICE__DISABLE_REGISTRATION
+      #value: "true"
+    #- name: ENV_TO_INI__WEBHOOK__ALLOWED_HOST_LIST
+      #value: "redmine.redmine.svc.cluster.local"
+
+  admin:
+    email: noreply@i-sphere.ru
+
+global:
+  storageClass: local-path
+
+persistence:
+  storageClass: local-path
+  claimName: data-gitea-0
+  #annotations:
+    #'app.kubernetes.io/managed-by': Helm
+    #'meta.helm.sh/release-name': gitea
+    #'meta.helm.sh/release-namespace': gitea
+
+postgresql-ha:
+  enabled: false
+
+postgresql:
+  enabled: false
+
+redis-cluster:
+  enabled: false
+
+# ingress:
+#   enabled: true
+#   annotations:
+#     cert-manager.io/cluster-issuer: letsencrypt
+#     certmanager.k8s.io/acme-challenge-type: http01
+#     kubernetes.io/ingress.class: nginx
+#     nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+# #    nginx.ingress.kubernetes.io/whitelist-source-range: '5.200.56.3,176.118.224.34,62.76.65.31,46.147.123.245'
+#   hosts:
+#     - host: git.i-sphere.ru
+#       paths:
+#         - path: /
+#           pathType: Prefix
+#   tls:
+#     - secretName: git.i-sphere.ru
+#       hosts:
+#         - git.i-sphere.ru
+
+service:
+  http:
+    annotations:
+      metallb.universe.tf/allow-shared-ip: key-gitea
+    port: 80
+    type: LoadBalancer
+    loadBalancerIP: 172.16.0.128
+
+  ssh:
+    annotations:
+      metallb.universe.tf/allow-shared-ip: key-gitea
+    port: 22
+    type: LoadBalancer
+    #externalIPs:
+    #  - "5.200.56.3"
+    loadBalancerIP: 172.16.0.128
+
+config:
+  SSH_PORT: 30122
+
+nodeSelector: 
+  gitea: gitea
+
+tolerations:
+  - operator: "Exists"
+
+serviceAccount:
+  create: true
+

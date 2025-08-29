@@ -1,0 +1,30 @@
+password: "n1vTY76fuCT59MH"
+#imageTag: x86_64_v6.3.2
+#multiMaster: "yes"
+#activeReplicas: "yes"
+#protectedMode: "no"
+#appendonly: "no"
+
+configExtraArgs:
+  # - somesimple: "argument"
+    - multi-master-no-forward: ["yes"]
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - '{{ include "keydb.name" . }}'
+          - key: app.kubernetes.io/instance
+            operator: In
+            values:
+            - '{{ .Release.Name }}'
+        topologyKey: "topology.kubernetes.io/zone"
+
+persistentVolume:
+  enabled: false
+

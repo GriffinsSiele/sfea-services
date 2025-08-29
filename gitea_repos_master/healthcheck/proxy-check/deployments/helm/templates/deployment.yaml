@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: web
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          env:
+            - name: HEALTHCHECK_SERVICE_ENDPOINT
+              value: "https://i-sphere.ru/2.00/my-ip.php"
+            - name: HEALTHCHECK_INTERVAL
+              value: "1m"
+            - name: CLICKHOUSE_ENDPOINT
+              value: "http://clickhouse.i-sphere.local:8123"
+          envFrom:
+            - secretRef:
+                name: {{ include "chart.fullname" . }}-secret
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

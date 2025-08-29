@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  geoip:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    networks:
+      - isphere
+
+networks:
+  isphere:
+    external: true

@@ -1,0 +1,233 @@
+name: drone
+kind: pipeline
+type: kubernetes
+node_selector: { development: "yes" }
+
+
+global-variables:
+  - master: &master master
+  - dev: &dev dev
+  - on_pr_open_dev: &on_pr_open_dev
+      event: [ pull_request ]
+      branch: [ *dev ]
+  - on_push_master: &on_push_master
+      event: [ push ]
+      branch: [ *master ]
+  - on_push_dev: &on_push_dev
+      event: [ push ]
+      branch: [ *dev ]
+  - on_push_master_or_dev: &on_push_master_or_dev
+      event: [ push ]
+      branch: [ *master, *dev ]
+  - use_environment: &use_environment
+      MODE: prod
+      MONGO_COLLECTION: whatsapp
+      MONGO_URL: { from_secret: MONGO_URL }
+      MONGO_DB: { from_secret: MONGO_DB }
+      KEYDB_URL: { from_secret: KEYDB_URL }
+      KEYDB_QUEUE: { from_secret: KEYDB_QUEUE }
+      SENTRY_URL: { from_secret: SENTRY_URL }
+      COUNT_USE_FOR_RELOAD: { from_secret: COUNT_USE_FOR_RELOAD }
+      EXPIRE_MEMBER_TIME: { from_secret: EXPIRE_MEMBER_TIME }
+      GIT_TOKEN: { from_secret: GIT_TOKEN }
+      GIT_USER: { from_secret: GIT_USER }
+      GIT_HTTP_DOMAIN: { from_secret: GIT_HTTP_DOMAIN }
+      GIT_HTTP_INTERNAL_DOMAIN: { from_secret: GIT_HTTP_INTERNAL_DOMAIN }
+      GIT_HTTP_INTERNAL_URL: { from_secret: GIT_HTTP_INTERNAL_URL }
+      GIT_HTTP_URL: { from_secret: GIT_HTTP_URL }
+      GIT_HTTP_URL_WITH_CREDENTIALS: { from_secret: GIT_HTTP_URL_WITH_CREDENTIALS }
+  - linter_image: &linter_image gitea-http.gitea.svc.cluster.local/isphere-images/node:18
+  - unittest_image: &unittest_image gitea-http.gitea.svc.cluster.local/isphere-images/node:18
+  - alpine_image: &alpine_image gitea-http.gitea.svc.cluster.local/isphere-images/alpine-auto-pr:1.0-3.19
+  - hadolint_image: &hadolint_image gitea-http.gitea.svc.cluster.local/isphere-images/hadolint/hadolint:latest-debian
+  - kaniko_image: &kaniko_image gitea-http.gitea.svc.cluster.local/isphere-images/banzaicloud/drone-kaniko:latest
+  - alpine_k8s: &alpine_k8s gitea-http.gitea.svc.cluster.local/isphere-images/alpine/k8s:1.24.13
+
+steps:
+  - name: lint-prettier
+    image: *linter_image
+    when: *on_pr_open_dev
+    commands:
+      - git checkout -b $DRONE_SOURCE_BRANCH
+      - yarn install -D --frozen-lockfile
+      - yarn refactor
+      - |
+        if [ $(git status --porcelain | wc -l) != "0" ]; then 
+          git commit -am "refactor: lint autofixes"
+          git push --set-upstream origin $DRONE_SOURCE_BRANCH
+          exit 1
+        else
+          echo "Nothing to commit. Ok"
+        fi    
+
+  - name: hadolint
+    image: *hadolint_image
+    when: *on_pr_open_dev
+    commands:
+      - hadolint --version
+      - hadolint --ignore DL3018 --ignore DL4006 Dockerfile
+
+
+  - name: unit-tests
+    image: *unittest_image
+    when: *on_pr_open_dev
+    environment: *use_environment
+    depends_on: [ hadolint, lint-prettier ]
+    commands:
+      - |
+        if [ -d "tests/" ]
+        then 
+          echo "Tests dir exists"
+        else
+          echo "No tests found"
+          exit 0
+        fi
+      - yarn cache clean
+      - yarn install -D --frozen-lockfile
+      - yarn test
+
+  - name: auto-pr
+    image: *alpine_image
+    when: *on_push_dev
+    environment: *use_environment
+    commands:
+      - apk add --no-cache curl jq
+      - REPO_PR_URL_GET=`echo $GIT_HTTP_URL_WITH_CREDENTIALS/api/v1/repos/$DRONE_REPO/pulls?state=open`
+      - REPO_PR_URL_CREATE=`echo $GIT_HTTP_URL_WITH_CREDENTIALS/api/v1/repos/$DRONE_REPO/pulls`
+      - PR_DEV=`curl -s $REPO_PR_URL_GET | jq -r '.[].base.label'`
+      - |
+        if [ "$PR_DEV" != "master" ]; then
+          curl -X 'POST' `echo $REPO_PR_URL_CREATE` \
+          -H 'Content-Type: application/json' \
+          -d '{"base":"'`echo $DRONE_REPO_BRANCH`'","head":"dev","title":"dev to '`echo $DRONE_REPO_BRANCH`'"}'
+        else
+          echo "PR already exists."
+        fi
+
+  - name: kaniko-build
+    image: *kaniko_image
+    when: *on_push_master_or_dev
+    settings:
+      registry: { from_secret: GIT_HTTP_INTERNAL_DOMAIN }
+      username: { from_secret: GIT_USER }
+      password: { from_secret: GIT_TOKEN }
+      repo: ${DRONE_REPO}-${DRONE_COMMIT_BRANCH}
+      tags: ${DRONE_COMMIT_SHA:0:10}
+      build_args:
+        - GIT_HTTP_URL_WITH_CREDENTIALS
+    environment:
+      container: kube
+      <<: *use_environment
+
+  - name: deploy-dev
+    when: *on_push_dev
+    depends_on: [ kaniko-build ]
+    image: *alpine_k8s
+    environment:
+      MODE: { from_secret: MODE }
+      PROJECT_NAME: ${DRONE_REPO_NAME}
+      IMAGE_TAG: ${DRONE_COMMIT_SHA:0:10}
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+      <<: *use_environment
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - echo "$(envsubst < .helm/values_dev.yaml)" > .helm/values_dev.yaml
+      - helm repo add --username $GIT_USER --password $GIT_TOKEN i-sphere $GIT_HTTP_URL_WITH_CREDENTIALS/api/packages/drone-bot/helm
+      - helm repo update
+      - helm upgrade
+        --install
+        --namespace default
+        --values .helm/values_dev.yaml
+        $DRONE_REPO_NAME
+        i-sphere/sources
+
+  - name: deploy-prod
+    when: *on_push_master
+    depends_on: [ kaniko-build ]
+    image: *alpine_k8s
+    environment:
+      MODE: { from_secret: MODE }
+      PROJECT_NAME: ${DRONE_REPO_NAME}
+      IMAGE_TAG: ${DRONE_COMMIT_SHA:0:10}
+      k8s_CONFIG: { from_secret: prod_k8s_CONFIG }
+      <<: *use_environment
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - echo "$(envsubst < .helm/values_prod.yaml)" > .helm/values_prod.yaml
+      - helm repo add --username $GIT_USER --password $GIT_TOKEN i-sphere $GIT_HTTP_INTERNAL_URL/api/packages/drone-bot/helm
+      - helm repo update
+      - helm upgrade
+        --install
+        --namespace default
+        --values .helm/values_prod.yaml
+        $DRONE_REPO_NAME
+        i-sphere/sources
+
+trigger:
+  event: [ pull_request, push ]
+  branch: [ *master, *dev ]
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }
+
+---
+kind: secret
+name: prod_k8s_CONFIG
+get: { path: settings-kube, name: prod_k8s_CONFIG }
+
+---
+kind: secret
+name: MODE
+get: { path: settings-kube, name: MODE }
+
+---
+kind: secret
+name: MONGO_URL
+get: { path: settings-kube, name: MONGO_URL }
+
+---
+kind: secret
+name: MONGO_DB
+get: { path: settings-kube, name: MONGO_DB }
+
+---
+kind: secret
+name: KEYDB_URL
+get: { path: settings-kube, name: KEYDB_URL }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: GIT_HTTP_DOMAIN
+get: { path: settings-kube, name: GIT_HTTP_DOMAIN }
+
+---
+kind: secret
+name: GIT_HTTP_INTERNAL_DOMAIN
+get: { path: settings-kube, name: GIT_HTTP_INTERNAL_DOMAIN }
+
+---
+kind: secret
+name: GIT_HTTP_URL
+get: { path: settings-kube, name: GIT_HTTP_URL }
+
+---
+kind: secret
+name: GIT_HTTP_INTERNAL_URL
+get: { path: settings-kube, name: GIT_HTTP_INTERNAL_URL }
+
+---
+kind: secret
+name: GIT_HTTP_URL_WITH_CREDENTIALS
+get: { path: settings-kube, name: GIT_HTTP_URL_WITH_CREDENTIALS }

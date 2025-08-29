@@ -1,0 +1,5 @@
+when@prod:
+  sentry:
+    dsn: "%env(SENTRY_DSN)%"
+    register_error_handler: false
+    register_error_listener: false

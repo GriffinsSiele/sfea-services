@@ -1,0 +1,73 @@
+---
+- name: Create user in Kubernetes
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create ServiceAccount
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: "{{ new_user }}"
+            namespace: default
+        state: present
+        kubeconfig: "{{ path_to_kubeconfig }}"
+
+    - name: Get ServiceAccount Token Secret Name
+      k8s_facts:
+        kind: ServiceAccount
+        name: "{{ new_user }}"
+        namespace: default
+        kubeconfig: "{{ path_to_kubeconfig }}"
+      register: sa_facts
+
+    - name: Create Secret
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ new_user }}"
+            namespace: default
+            annotations:
+              kubernetes.io/service-account.name: "{{ sa_facts.resources[0].metadata.name | string }}"
+          type: kubernetes.io/service-account-token
+        state: present
+        kubeconfig: "{{ path_to_kubeconfig }}"
+
+    - name: Get ServiceAccount facts
+      k8s_facts:
+        kind: Secret
+        name: "{{ new_user }}"
+        namespace: default
+        kubeconfig: "{{ path_to_kubeconfig }}"
+      register: sa_cert
+    
+    - name: Create ClusterRoleBinding
+      k8s:
+        state: present
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: "{{ new_user }}"
+          subjects:
+            - kind: ServiceAccount
+              name: "{{ new_user }}"
+              namespace: default
+          roleRef:
+            kind: ClusterRole
+            name: cluster-admin
+            apiGroup: rbac.authorization.k8s.io
+        kubeconfig: "{{ path_to_kubeconfig }}"
+
+
+    - name: Generate new kubeconfig file
+      template:
+        src: admin_user_kubeconfig_for_token.j2
+        dest: ./{{ sa_facts.resources[0].metadata.name | string }}_kubeconfig
+      vars:
+        server_url: "{{ server_url }}" #
+        token: "{{ sa_cert.resources[0].data['token'] | b64decode }}"
+        ca_cert: "{{ sa_cert.resources[0].data['ca.crt'] }}"

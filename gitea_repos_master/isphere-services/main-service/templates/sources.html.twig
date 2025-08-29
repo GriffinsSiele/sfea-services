@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <h5 class="card-header">Источники</h5>
+                    <div class="card-body">
+                        <dl class="card-text">
+                            {% for source in sources %}
+                                <dt>{{ source.title }}</dt>
+                                <dd>{{ source.body }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

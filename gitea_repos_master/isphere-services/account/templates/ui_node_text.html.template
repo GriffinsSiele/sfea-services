@@ -1,0 +1,18 @@
+{{ define "ui_node_text" }}
+    <div
+            class="mb-3"
+            {{ if IsDebug }}
+                data-debug-text-id="{{ .Node.Attributes.UiNodeTextAttributes.GetId }}"
+            {{ end }}
+    >
+        <figure>
+            <blockquote class="blockquote">
+                <pre><code>{{ .Node.Attributes.UiNodeTextAttributes.Text.GetText }}</code></pre>
+            </blockquote>
+
+            <figcaption class="blockquote-footer">
+                {{ GetNodeLabel .Node }}
+            </figcaption>
+        </figure>
+    </div>
+{{ end }}

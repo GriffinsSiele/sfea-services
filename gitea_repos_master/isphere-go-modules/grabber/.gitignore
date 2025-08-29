@@ -1,0 +1,5 @@
+.env.local
+.idea/
+bin/console
+var/
+vendor/

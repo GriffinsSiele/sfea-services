@@ -1,0 +1,3 @@
+providers:
+  libloc:
+    endpoint: "$MODULE_LIBLOC_ENDPOINT"

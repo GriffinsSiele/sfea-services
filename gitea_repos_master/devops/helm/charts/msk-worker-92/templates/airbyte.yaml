@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: airbyte
+  namespace: {{.Release.Namespace}}
+  labels:
+    app.kubernetes.io/name: airbyte
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: airbyte
+  namespace: {{.Release.Namespace}}
+  labels:
+    app.kubernetes.io/name: airbyte
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+subsets:
+  - addresses:
+      - ip: 172.16.99.13
+    ports:
+      - name: http
+        protocol: TCP
+        port: 8000

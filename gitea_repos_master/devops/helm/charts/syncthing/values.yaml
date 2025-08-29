@@ -1,0 +1,22 @@
+# @see https://github.com/k8s-at-home/library-charts/blob/main/charts/stable/common/values.yaml
+
+controller:
+  type: daemonset
+
+podLabels:
+  app.kubernetes.io/component: controller
+
+persistence:
+  config:
+    enabled: true
+    type: pvc
+    storageClass: csi-s3
+    accessMode: ReadWriteMany
+    size: 128Mi
+
+  shared:
+    enabled: true
+    type: hostPath
+    storageClass: local-volume
+    hostPath: /opt/syncthing/shared
+    mountPath: /shared

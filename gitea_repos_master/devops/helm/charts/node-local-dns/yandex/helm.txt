@@ -1,0 +1,1 @@
+helm pull oci://cr.yandex/yc-marketplace/k8s.gcr.io/node-local-dns/chart --version 1.5

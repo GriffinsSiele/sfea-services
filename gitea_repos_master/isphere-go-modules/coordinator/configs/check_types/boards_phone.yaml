@@ -1,0 +1,65 @@
+check_types:
+  boards_phone:
+    enabled: true
+    source: { code: boards }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: d0o
+      keydb: { enabled: true, scope: boards_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: boards_phone }
+      graphql:
+        template:
+          # language=GoTemplate
+          query: |
+            query {
+                d0o {
+                    ads(
+                        phone: {{ Quote (print "+" (trimPrefix "+" .phone)) }}, 
+                        region: {{ Quote (Region .phone) }} 
+                    ) {
+                        name
+                        time
+                        location
+                        source
+                        url
+                        category
+                        title
+                        description
+                        price
+                    }
+                }
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .d0o.ads }}
+          - Name:                 {{ Quote .name }}
+            Time:                 {{ Quote .time }}
+            Location:             {{ Quote .location }}
+            Source:               {{ Quote .source }}
+            URL:                  {{ Quote .url }}
+            Category:             {{ Quote .category }}
+            Title:                {{ Quote .title }}
+            Description:          {{ Quote .description }}
+            Price:        !!float {{ Quote .price }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Name: { type: string }
+          Time: { type: string, format: date-time }
+          Location: { type: string }
+          Source: { type: string }
+          URL: { type: string, format: url }
+          Category: { type: string }
+          Title: { type: string }
+          Description: { type: string }
+          Price: { type: number }

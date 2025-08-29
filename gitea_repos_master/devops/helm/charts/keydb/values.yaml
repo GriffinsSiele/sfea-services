@@ -1,0 +1,47 @@
+password: "n1vTY76fuCT59MH"
+#imageTag: x86_64_v6.3.2
+#multiMaster: "yes"
+#activeReplicas: "yes"
+#protectedMode: "no"
+#appendonly: "no"
+
+configExtraArgs:
+  # - somesimple: "argument"
+    - multi-master-no-forward: ["yes"]
+  # - somesimple: "argument"
+  # - client-output-buffer-limit: ["normal", "0", "0", "0"]
+    - client-output-buffer-limit: ["replica", "268435456", "67108864", "60"]
+  # - client-output-buffer-limit: ["pubsub", "33554432", "8388608", "60"]
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - '{{ include "keydb.name" . }}'
+          - key: app.kubernetes.io/instance
+            operator: In
+            values:
+            - '{{ .Release.Name }}'
+        topologyKey: "topology.kubernetes.io/zone"
+
+persistentVolume:
+  enabled: false
+resources:
+  limits:
+    cpu: 150m
+    memory: 2Gi
+  requests:
+    cpu: 30m
+    memory: 200Mi
+
+#tolerations:
+#- effect: NoSchedule
+#  key: prod
+#  operator: Equal
+#  value: "yes"

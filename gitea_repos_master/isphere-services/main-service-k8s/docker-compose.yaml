@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  php-fpm:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - .env
+      - .env.local
+    volumes:
+      - ./opt:/opt
+      - ./public:/var/www/html/2.00
+
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - php-fpm
+    ports:
+      - '8000:80'
+    environment:
+      - PHP_FPM_SERVICE_NAME=php-fpm
+    volumes:
+      - ./nginx/snippets:/etc/nginx/snippets/:ro
+      - ./nginx/templates:/etc/nginx/templates/:ro
+      - ./public:/var/www/html/2.00

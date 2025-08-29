@@ -1,0 +1,6 @@
+apiVersion: v2
+name: redmine
+description: redmine
+type: application
+version: '1699857478'
+appVersion: '1699857478'

@@ -1,0 +1,8 @@
+FROM node:14-alpine
+
+WORKDIR /var/www/html/2.00
+
+COPY public/bulkAuto/package.json public/bulkAuto/package-lock.json bulkAuto/
+RUN cd bulkAuto && npm install
+
+COPY public/bulkAuto/jsForToBulk.js bulkAuto/jsForToBulk.js

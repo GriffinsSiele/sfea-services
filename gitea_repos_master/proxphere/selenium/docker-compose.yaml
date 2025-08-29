@@ -1,0 +1,25 @@
+x-node-env: &node-env
+  SE_EVENT_BUS_HOST: selenium-hub
+  SE_EVENT_BUS_PUBLISH_PORT: "4442"
+  SE_EVENT_BUS_SUBSCRIBE_PORT: "4443"
+
+services:
+  selenium-hub:
+    image: selenium/hub:latest
+    ports:
+      - '4442-4444:4442-4444/tcp'
+
+  selenium-chrome:
+    image: selenium/node-chrome:latest
+    environment:
+      <<: *node-env
+
+  selenium-edge:
+    image: selenium/node-edge:latest
+    environment:
+      <<: *node-env
+
+  selenium-firefox:
+    image: selenium/node-firefox:latest
+    environment:
+      <<: *node-env

@@ -1,0 +1,2 @@
+api_refresh_token:
+  path: /api/v1/tokens

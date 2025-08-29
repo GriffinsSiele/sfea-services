@@ -1,0 +1,10 @@
+definitions:
+  schema:
+    email:
+      type: object
+      properties:
+        phone:
+          type: string
+          format: email
+      required:
+        - email

@@ -1,0 +1,5 @@
+#!/bin/sh
+ip route del 172.16.0.0/16 dev $INTERFACE
+ip addr del 172.16.1.1/32 dev $INTERFACE
+ip link set $INTERFACE down
+ip link delete $INTERFACE

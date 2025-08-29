@@ -1,0 +1,4 @@
+FROM python:3.11
+RUN pip install --no-cache-dir pipenv==2022.1.8 &&  \
+    pipenv install --skip-lock myst-parser sphinx-autodoc-typehints sphinx-markdown-builder sphinx-rtd-theme weasyprint &&  \
+    apt-get install -y --no-install-recommends curl

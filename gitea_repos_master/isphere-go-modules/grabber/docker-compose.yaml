@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  grabber:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production
+    env_file:
+      - .env
+      - .env.local
+    networks:
+      - isphere
+    entrypoint: sleep
+    command: infinity
+    volumes:
+      - ./:/app
+
+networks:
+  isphere:
+    external: true

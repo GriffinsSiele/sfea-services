@@ -1,0 +1,73 @@
+check_types:
+  elpts:
+    enabled: true
+    source: { code: elpts }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - oneOf:
+            - $ref: "#/definitions/schema/vin"
+            - type: object
+              properties:
+                bodynum: { type: string }
+              required:
+                - bodynum
+            - type: object
+              properties:
+                pts: { type: string }
+              required:
+                - pts
+    upstream:
+      provider: elpts
+      keydb: { enabled: true, scope: elpts, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: elpts }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            {{- if (or (not (eq .vin nil)) (not (eq .bodynum nil))) }}
+            POST /search/vin HTTP/1.1
+            {{- else }}
+            POST /search/epts HTTP/1.1
+            {{- end }}
+            Content-Type: application/json
+            
+            {
+              {{- if (not (eq .vin nil)) }}
+                "VIN": {{ .vin | quote }}
+              {{- end }}
+              {{- if (not (eq .bodynum nil)) }}
+                "BodyNum": {{ .bodynum | quote }}
+              {{- end }}
+              {{- if (not (eq .pts nil))  }}
+                "EPTS": {{ .pts | quote }}
+              {{- end }}
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .records }}
+          - custom_clearance: {{ Quote .custom_clearance }}
+            customs_restrictions: {{ Quote .customs_restrictions }}
+            pts_type: {{ Quote .pts_type }}
+            recycling: {{ Quote .recycling }}
+            registration: {{ Quote .registration }}
+            restrictions: {{ Quote .restrictions }}
+            status: {{ Quote .status }}
+          {{- end }}
+        # @formatter:on
+      status_code: { non_standard: true, format: json, property_path: code, detail_property_path: message }
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          custom_clearance: { type: string }
+          customs_restrictions: { type: string }
+          pts_type: { type: string }
+          recycling: { type: string }
+          registration: { type: string }
+          restrictions: { type: string }
+          status: { type: string }

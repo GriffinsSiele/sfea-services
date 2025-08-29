@@ -1,0 +1,136 @@
+{{- define "app" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name | quote }}
+  namespace: debezium
+spec:
+  type: LoadBalancer
+  selector:
+    app: {{ .name | quote }}
+  ports:
+  {{- range .ports }}
+    - name: {{ .name | quote }}
+      protocol: {{ .protocol | quote }}
+      port: {{ or .servicePort .port }}
+      targetPort: {{ .name }}
+  {{- end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ (print .name "-env") | quote }}
+  namespace: debezium
+data:
+{{- range $k, $v := .env }}
+  {{ $k }}: {{ $v | quote }}
+{{- end }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name | quote }}
+  namespace: debezium
+spec:
+  selector:
+    matchLabels:
+      app: {{ .name | quote }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name | quote }}
+    spec:
+      serviceAccountName: debezium-sa-clusteradmin
+      {{- if .beforeCommands }}
+      initContainers:
+      {{- range $i, $beforeCommand := .beforeCommands }}
+        - name: {{ (print $.name "-init-" $i) | quote }}
+          image: {{ $.repository.image | quote }}
+          imagePullPolicy: {{ $.repository.imagePullPolicy | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ (print $.name "-env") | quote }}
+          {{- with $.volumeMounts }}
+          volumeMounts:
+            {{- range . }}
+            - name: {{ .name | quote }}
+              mountPath: {{ .mountPath | quote }}
+            {{- end }}
+          {{- end }}
+          command:
+            {{- toYaml $beforeCommand | nindent 12 }}
+      {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .name | quote }}
+          image: {{ .repository.image | quote }}
+          imagePullPolicy: {{ .repository.imagePullPolicy | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ (print .name "-env") | quote }}
+          ports:
+            {{- range .ports }}
+            - name: {{ .name | quote }}
+              containerPort: {{ .port }}
+            {{- end }}
+          {{- with .resource }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .volumeMounts }}
+          volumeMounts:
+            {{- range . }}
+            - name: {{ .name | quote }}
+              mountPath: {{ .mountPath | quote }}
+            {{- end }}
+          {{- end }}
+          {{- with .livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .volumeMounts }}
+      volumes:
+        {{- range . }}
+        - name: {{ .name | quote }}
+          persistentVolumeClaim:
+            claimName: {{ (print $.name "-" .name) | quote }}
+        {{- end }}
+      {{- end }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{- range .persistentVolumeClaims }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ (print $.name "-" .name) | quote }}
+  namespace: debezium
+spec:
+  storageClassName: {{ .storageClassName | quote }}
+  {{- with .accessModes }}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .storageSize | quote }}
+{{- end }}
+{{- end }}

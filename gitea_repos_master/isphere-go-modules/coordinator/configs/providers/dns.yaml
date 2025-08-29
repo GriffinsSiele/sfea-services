@@ -1,0 +1,3 @@
+providers:
+  dns:
+    endpoint: "$MODULE_DNS_ENDPOINT"

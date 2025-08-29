@@ -1,0 +1,64 @@
+kind: Deployment
+
+replicaCount: 3
+
+image:
+  repository: ${GIT_HTTP_INTERNAL_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  tag: ${IMAGE_TAG}
+
+command:
+  - /venv/bin/python
+args:
+  - start_phone.py
+
+resources:
+  limits:
+    cpu: 210m
+    memory: 150Mi
+  requests:
+    cpu: 190m
+    memory: 100Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - /venv/bin/healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+
+service:
+  enabled: false
+
+
+nodeSelector: {}
+
+
+env:
+- name: MONGO_COLLECTION
+  value: ${MONGO_COLLECTION}
+- name: KEYDB_QUEUE
+  value: ${KEYDB_QUEUE}
+- name: MAX_SEARCH_PER_DAY
+  value: ${MAX_SEARCH_PER_DAY}
+- name: SENTRY_URL
+  value: ${SENTRY_URL}
+
+envFrom:
+- secretRef:
+    name: settings-kube

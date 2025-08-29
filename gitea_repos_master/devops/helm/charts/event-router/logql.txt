@@ -1,0 +1,4 @@
+
+curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "-1002185798037&text", "text": "This is a test from curl"}' https://api.telegram.org/bot7460840596:AAFlDr0p7rppGKnDhPWxtt0WxxTGC-2xO-4/sendMessage
+
+{namespace="kube-system", app="eventrouter"} | json | event_type = "Warning" | line_format "{{.verb}} - {{.event_type}} - {{.event_involvedObject_name}} - {{.event_message}} - {{.event_lastTimestamp}} "

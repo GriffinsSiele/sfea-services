@@ -1,0 +1,41 @@
+apiVersion:  apps/v1
+kind: StatefulSet
+metadata:
+  name: i-sphere-server
+  namespace: rabbitmq
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: setup-container
+          volumeMounts:
+            - name: plugins-conf
+              mountPath: /tmp/rabbitmq-plugins/
+            - name: rabbitmq-erlang-cookie
+              mountPath: /var/lib/rabbitmq/
+            - name: erlang-cookie-secret
+              mountPath: /tmp/erlang-cookie-secret/
+            - name: rabbitmq-plugins
+              mountPath: /operator
+            - name: rabbitmq-confd
+              mountPath: /tmp/default_user.conf
+              subPath: default_user.conf
+      containers:
+        - name: rabbitmq
+          volumeMounts:
+            - name: rabbitmq-erlang-cookie
+              mountPath: /var/lib/rabbitmq/
+            - name: rabbitmq-plugins
+              mountPath: /operator
+            - name: rabbitmq-confd
+              mountPath: /etc/rabbitmq/conf.d/10-operatorDefaults.conf
+              subPath: operatorDefaults.conf
+            - name: rabbitmq-confd
+              mountPath: /etc/rabbitmq/conf.d/90-userDefinedConfiguration.conf
+              subPath: userDefinedConfiguration.conf
+            - name: pod-info
+              mountPath: /etc/pod-info/
+            - name: rabbitmq-confd
+              mountPath: /etc/rabbitmq/conf.d/11-default_user.conf
+              subPath: default_user.conf
+  volumeClaimTemplates: []

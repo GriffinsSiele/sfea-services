@@ -1,0 +1,24 @@
+{
+  "name": "isphere-proxy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts"
+  },
+  "dependencies": {
+    "cycletls": "^1.0.24",
+    "form-data": "^4.0.0",
+    "npmlog": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/npmlog": "^7.0.0",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

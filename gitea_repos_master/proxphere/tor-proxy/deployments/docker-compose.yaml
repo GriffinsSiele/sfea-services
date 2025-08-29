@@ -1,0 +1,12 @@
+services:
+  tor-proxy:
+    image: git.i-sphere.local/proxphere/tor-proxy
+    build:
+      dockerfile: deployments/Dockerfile
+      context: ..
+      target: production
+      x-bake:
+        platforms:
+          - linux/amd64
+    ports:
+      - '8080:8080/tcp'

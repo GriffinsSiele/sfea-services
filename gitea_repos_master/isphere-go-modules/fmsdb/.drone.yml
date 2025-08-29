@@ -1,0 +1,154 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+  - name: vendor
+    image: bitnami/golang:1.20
+    commands:
+      - go mod vendor
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: build
+    image: plugins/kaniko
+    depends_on:
+      - vendor
+    environment:
+      container: kube
+      PLUGIN_CACHE_REPO: "${DRONE_REPO}"
+      PLUGIN_CONTEXT: .
+      PLUGIN_DOCKERFILE: Dockerfile
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_PASSWORD: { from_secret: GIT_TOKEN }
+      PLUGIN_REGISTRY: gitea-http.gitea.svc.cluster.local
+      PLUGIN_REPO: "${DRONE_REPO}"
+      PLUGIN_TAGS: "${DRONE_COMMIT_BRANCH}"
+      PLUGIN_TARGET: production
+      PLUGIN_USERNAME: { from_secret: GIT_USER }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        --reuse-values
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      APP_ENV: { from_secret: APP_ENV }
+      # энвы тут, пока не решим с svc - не могу глобальную переменную прописать на новый s3
+      #AWS_ACCESS_KEY_ID: "PFBQVLBYPESZHILRLKTX"
+      AWS_ACCESS_KEY_ID: "532_admin"
+      #AWS_SECRET_ACCESS_KEY: "7mL3xOqLVFvJMJzStCZnE7vBmGCt32sJuAgXMlj5"
+      AWS_SECRET_ACCESS_KEY: "Haq8WQzFGdJc"
+      AWS_BUCKET: "c2e09116-loki"
+      #AWS_DEFAULT_REGION: "ru"
+      AWS_DEFAULT_REGION: "us-east-1"
+      #AWS_ENDPOINT: "s3.timeweb.cloud"
+      AWS_ENDPOINT: "1cloud.store"
+      AWS_DISABLE_SSL: { from_secret: AWS_DISABLE_SSL }
+      AWS_FORCE_PATH_STYLE: { from_secret: AWS_FORCE_PATH_STYLE }
+      AWS_SESSION_TOKEN: { from_secret: AWS_SESSION_TOKEN }
+      CI_REGISTRY_IMAGE: "gitea-http.gitea.svc.cluster.local/isphere-go-modules/fmsdb"
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      HTTP_HOST: { from_secret: HTTP_HOST }
+      HTTP_PORT: { from_secret: HTTP_PORT }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+      SENTRY_DSN: { from_secret: SENTRY_DSN }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: DOCKER
+get: { path: settings-kube, name: DOCKER }
+
+---
+kind: secret
+name: DOMAIN
+get: { path: settings-kube, name: DOMAIN }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }
+
+---
+kind: secret
+name: AWS_DEFAULT_REGION
+get: { path: settings-kube, name: AWS_DEFAULT_REGION }
+
+---
+kind: secret
+name: AWS_ACCESS_KEY_ID
+get: { path: settings-kube, name: AWS_ACCESS_KEY_ID }
+
+---
+kind: secret
+name: AWS_SECRET_ACCESS_KEY
+get: { path: settings-kube, name: AWS_SECRET_ACCESS_KEY }
+
+---
+kind: secret
+name: AWS_ENDPOINT
+get: { path: settings-kube, name: AWS_ENDPOINT }
+
+---
+kind: secret
+name: AWS_FORCE_PATH_STYLE
+get: { path: settings-kube, name: AWS_FORCE_PATH_STYLE }
+
+---
+kind: secret
+name: AWS_DISABLE_SSL
+get: { path: settings-kube, name: AWS_DISABLE_SSL }
+
+---
+kind: secret
+name: AWS_SECRET_ACCESS_KEY
+get: { path: settings-kube, name: AWS_SECRET_ACCESS_KEY }
+
+---
+kind: secret
+name: AWS_SESSION_TOKEN
+get: { path: settings-kube, name: AWS_SESSION_TOKEN }
+
+---
+kind: secret
+name: SENTRY_DSN
+get: { path: settings-kube, name: SENTRY_DSN_FMSDB }

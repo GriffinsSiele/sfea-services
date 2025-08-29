@@ -1,0 +1,10 @@
+proxy:
+  mobile:
+    filter: '{"country": "ru", "tags": {"name": ["mobile"]}}'
+    limit: 1
+    offset: 0
+
+  static:
+    filter: '{"country": "ru", "tags": {"name": ["static"]}}'
+    limit: 1
+    offset: 0

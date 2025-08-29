@@ -1,0 +1,99 @@
+check_types:
+  fns_disqualified:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            last_name: { type: string }
+            first_name: { type: string }
+            patronymic: { type: string }
+            date: { type: string, format: date }
+          required:
+            - last_name
+            - first_name
+            - date
+    upstream:
+      provider: hasura
+      keydb:
+        { enabled: true, scope: fns_disqualified, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_disqualified }
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            query {
+                fns_registerdisqualified(where: {
+                    {{- if not (eq .patronymic "") }}
+                    full_name: {_eq: {{ Quote (upper (StringsJoinInline " " .last_name .first_name .patronymic)) }} },
+                    {{- else }}
+                    full_name: {_like: {{ Quote (upper (print (StringsJoinInline " " .last_name .first_name) "%")) }} },
+                    {{- end }}
+                    birthday: {_eq: {{ Quote .date }} }
+                }) {
+                    full_name
+                    birthday
+                    birthplace
+                    organization_name
+                    organization_inn
+                    organization_position
+                    disqualification_period
+                    start_at
+                    end_at
+                    reason
+                    reason_issuer
+                    judge
+                    judge_position
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .fns_registerdisqualified }}
+          - Type:         disqualified
+            Result:       ЧИСЛИТСЯ в реестре дисквалифицированных лиц
+            ResultCode:   FOUND
+            fio:          {{ Quote .full_name }}
+            birthDate:    {{ Quote .birthday }}
+            birthPlace:   {{ Quote .birthplace }}
+            orgName:      {{ Quote .organization_name }}
+            orgInn:       {{ Quote .organization_inn }}
+            post:         {{ Quote .organization_position }}
+            term:         {{ Quote (FmtInterval .disqualification_period) }}
+            startDate:    {{ Quote .start_at }}
+            endDate:      {{ Quote .end_at }}
+            article:      {{ Quote .reason }}
+            authName:     {{ Quote .reason_issuer }}
+            judgePost:    {{ Quote .judge_position }}
+            judgeName:    {{ Quote .judge }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: { type: string, enum: ["disqualified"] }
+          Result:
+            type: string
+            enum: ["ЧИСЛИТСЯ в реестре дисквалифицированных лиц"]
+          ResultCode: { type: string, enum: ["FOUND"] }
+          fio: { type: string }
+          birthDate: { type: string, format: date }
+          birthPlace: { type: string }
+          orgName: { type: string }
+          orgInn: { type: string }
+          post: { type: string }
+          term: { type: string }
+          startDate: { type: string, format: date }
+          endDate: { type: string, format: date }
+          article: { type: string }
+          authName: { type: string }
+          judgePost: { type: string }
+          judgeName: { type: string }

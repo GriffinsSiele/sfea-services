@@ -1,0 +1,10 @@
+.env.local
+.idea/
+.php-cs-fixer.cache
+.phpunit.result.cache
+bulkAuto/node_modules/*
+bulkAuto/vendor/*
+logs/*
+vendor/*
+nohup.out
+

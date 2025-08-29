@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "==0.20.0"
+uvicorn = "==0.15.0"
+fastapi = "==0.68.1"
+keydb = "==0.0.1"
+pymongo = "==4.2.0"
+async-timeout = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

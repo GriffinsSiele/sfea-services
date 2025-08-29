@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "https://drone-bot:a5b69b895c6c61722c686760a61b380118f12783@git.i-sphere.ru/api/packages/isphere-classes/pypi/simple"
+verify_ssl = true
+name = "drone-bot:a5b69b895c6c61722c686760a61b380118f12783@giti-sphere"
+
+[packages]
+fastapi = "*"
+uvicorn = "*"
+keydb = "*"
+python-dotenv = "*"
+queue-logic = "*"
+python-multipart = "*"
+
+[dev-packages]
+yapf = "*"
+
+[requires]
+python_version = "3.9"

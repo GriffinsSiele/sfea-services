@@ -1,0 +1,26 @@
+query {
+    d0o {
+        names(phone: "+79199149444") {
+            surname
+            name
+            count
+        }
+
+        adjacent(phone: "+380974247264") {
+            phone
+        }
+
+        ads(phone: "+380974247264") {
+            title
+            price
+            time
+            phone
+            name
+            description
+            location
+            source
+            category
+            url
+        }
+    }
+}

@@ -1,0 +1,33 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "${GIT_HTTP_URL_WITH_CREDENTIALS}/api/packages/isphere-classes/pypi/simple"
+verify_ssl = false
+name = "gitea"
+
+[packages]
+aiohttp = "==3.8.6"
+alembic = "==1.12.1"
+asgiref = "==3.7.2"
+async-timeout = "==4.0.3"
+asyncpg = "==0.29.0"
+boto3 = "==1.28.62"
+fastapi = "==0.103.2"
+gunicorn = "==21.2.0"
+onnxruntime = "==1.16.0"
+pillow = "==10.0.1"
+psycopg2-binary = "==2.9.9"
+putils-logic = "==10.0.0"
+pydantic-settings = "==2.0.3"
+python-multipart = "==0.0.6"
+sentry-sdk = "==1.39.2"
+sqlalchemy = "==2.0.23"
+uvicorn = "==0.23.2"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

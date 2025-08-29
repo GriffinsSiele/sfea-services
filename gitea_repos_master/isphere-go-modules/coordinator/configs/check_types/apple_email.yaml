@@ -1,0 +1,52 @@
+check_types:
+  apple_email:
+    enabled: true
+    source: { code: apple_email }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/email"
+    upstream:
+      provider: apple
+      keydb: { enabled: true, scope: apple_email, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: apple_email }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST /search HTTP/1.1
+            Content-Type: application/json
+            
+            {
+                "email": {{ Quote .email }}
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .records }}
+          - result: {{ Quote .result }}
+            result_code: {{ Quote .result_code }}
+            locked: {{ Quote .locked }}
+            auth: {{ Quote .auth }}
+            paid: {{ Quote .paid }}
+            phone: {{ Quote .phone }}
+            email: {{ Quote .email }}
+            multi_email: {{ Quote .multi_email }}
+          {{- end }}
+        # @formatter:on
+      status_code: { non_standard: true, format: json, property_path: code, detail_property_path: message }
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          result: { type: string }
+          result_code: { type: string }
+          locked: { type: string }
+          auth: { type: string }
+          paid: { type: string }
+          phone: { type: string }
+          email: { type: string }
+          multi_email: { type: string }

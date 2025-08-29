@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <h5 class="card-header">Статистика запросов</h5>
+                    <div class="card-body">
+                        {{ form(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive">
+                    {{ table | raw }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

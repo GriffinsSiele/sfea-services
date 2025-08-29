@@ -1,0 +1,58 @@
+---
+
+- name: Deploy monit
+  hosts: '{{ target }}'
+  become: true
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+
+  - name: Install monit
+    apt: 
+      name:  monit
+      state: present
+      update_cache: yes
+  
+  - name: Create directory if it doesn't exist
+    file:
+      path:  "{{ monit_script_dir }}"
+      state: directory
+
+  - name: Generate "notify_telegram.sh"
+    template: 
+      src:  "{{ src_notify_telegram_script }}"
+      dest: "{{ dest_notify_telegram_script }}"
+      mode: 0755
+    notify:
+      - Reload service monit
+
+  - name: Generate "service.conf"
+    template: 
+      src:  "{{ src_service_conf }}"
+      dest: "{{ dest_service_conf }}"
+      mode: 0755
+    notify:
+      - Reload service monit
+
+  - name: Generate "monitrc"
+    template: 
+      src:  "{{ src_monitrc }}"
+      dest: "{{ dest_monitrc }}"
+      mode: 0700
+    notify:
+      - Reload service monit
+
+  - name: Start service monit
+    service:
+      name: monit.service
+      state: started
+      enabled: yes
+  
+  handlers:
+
+  - name: Reload service monit
+    service:
+      name: "{{ monit_service_name }}"
+      state: reloaded

@@ -1,0 +1,40 @@
+check_types:
+  xiaomi_phone:
+    enabled: true
+    source: { code: xiaomi_phone }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: '#/definitions/schema/phone'
+    upstream:
+      provider: xiaomi
+      keydb: { enabled: true, scope: xiaomi_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: xiaomi_phone }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST /search HTTP/1.1
+            Content-Type: application/json
+            
+            {
+                "phone": {{ Quote (PhoneNum .phone) }}
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .records }}
+          - result: {{ Quote .result }}
+            result_code: {{ Quote .result_code }}
+          {{- end }}
+        # @formatter:on
+      status_code: { non_standard: true, format: json, property_path: code, detail_property_path: message }
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          result: { type: string }
+          result_code: { type: string }

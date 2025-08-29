@@ -1,0 +1,11 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: addresspool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 172.16.0.65-172.16.0.128
+  nodeSelectors:
+  - matchLabels:
+      topology.kubernetes.io/zone: gaydary

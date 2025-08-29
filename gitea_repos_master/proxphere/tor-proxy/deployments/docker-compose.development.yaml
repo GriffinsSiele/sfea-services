@@ -1,0 +1,10 @@
+services:
+  tor-proxy:
+    build:
+      target: development
+    volumes:
+      - ../:/app
+    command:
+      - -entry-nodes=de,nl,se,ch,fi,no
+      - -exit-nodes=fr,nl,se,ch,fi,no
+      - -exclude-nodes=cn,ru,ir,sy,kp,cu,sa,eg,tr,id,ph,vn,th,my,sg,iq,pk,bd,qa,om,ae,kw,ye,ps,lb,jo,bh

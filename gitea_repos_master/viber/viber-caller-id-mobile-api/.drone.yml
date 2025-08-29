@@ -1,0 +1,187 @@
+name: drone
+kind: pipeline
+type: kubernetes
+pull: if-not-exists
+load: none
+
+
+global-variables:
+  python_image: &python_image python:3.10
+  ubuntu_image: &ubuntu_image ubuntu:22.04
+  environment: &ci_environment
+    MODE: unittest
+    GIT_TOKEN:
+      from_secret: GIT_TOKEN
+    GIT_USER:
+      from_secret: GIT_USER
+
+steps:
+- name: black-run
+  image: *python_image
+  volumes:
+    - name: black-cache
+      path: /drone/src/
+  commands:
+    - git checkout -b $DRONE_SOURCE_BRANCH
+    - pip install -qq black
+    - black .
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+
+- name: black-check
+  image: *python_image
+  depends_on:
+    - black-run
+  volumes:
+    - name: black-cache
+      path: /drone/src/
+  commands:
+    - git status
+    - |
+      if [ $(git status --porcelain | wc -l) -eq "0" ]; then 
+        echo "No changes detected. Ok"; 
+      else 
+        echo "Changes detected. Refactor your code and run again"
+        exit 1; 
+      fi
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+
+- name: black-push
+  image: *python_image
+  depends_on:
+    - black-run
+  volumes:
+    - name: black-cache
+      path: /drone/src/
+  commands:
+    - git status
+    - |
+      if [ $(git status --porcelain | wc -l) != "0" ]; then 
+        git commit -am "refactor: black autofixes"
+        git push --set-upstream origin $DRONE_SOURCE_BRANCH
+      else
+        echo "Nothing to commit. Ok"
+      fi
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+
+- name: hadolint
+  image: hadolint/hadolint:latest-debian
+  commands:
+    - hadolint --version
+    - hadolint Dockerfile
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+
+- name: auto-pr
+  image: *ubuntu_image
+  commands:
+    - apt-get update
+    - apt-get -qq -y install curl jq
+    - REPO_PR_URL_GET=`echo https://git.i-sphere.ru/api/v1/repos/$DRONE_REPO/pulls?state=open\&access_token=$GIT_TOKEN`
+    - REPO_PR_URL_CREATE=`echo https://git.i-sphere.ru/api/v1/repos/$DRONE_REPO/pulls?access_token=$GIT_TOKEN`
+    - PR_DEV=`curl -s $REPO_PR_URL_GET | jq -r '.[].base.label'`
+    - | 
+      if [ "$PR_DEV" != "master" ]; then
+        curl -X 'POST' `echo $REPO_PR_URL_CREATE` \
+        -H 'Content-Type: application/json' \
+        -d '{"assignees":["kovinevmv","ar"],"base":"'`echo $DRONE_REPO_BRANCH`'","head":"dev","title":"dev to '`echo $DRONE_REPO_BRANCH`'"}'
+      else
+        echo "PR already exists."
+      fi
+  environment:
+    <<: *ci_environment
+  when:
+    event:
+      - push
+    branch:
+      - dev
+
+- name: kaniko-build
+  image: banzaicloud/drone-kaniko
+  settings:
+    registry: git.i-sphere.ru
+    username:
+      from_secret: GIT_USER
+    password:
+      from_secret: GIT_TOKEN
+    repo: ${DRONE_REPO}
+    tags: latest
+    build_args:
+      - GIT_USER
+      - GIT_TOKEN
+  environment:
+    container: kube
+    <<: *ci_environment
+  when:
+    event:
+      - push
+    branch:
+      - master
+
+
+- name: unit-tests
+  image: *python_image
+  commands:
+    - |
+      if [ -d "tests/" ]
+      then 
+        echo "Tests dir exists"
+      else
+        echo "No tests found"
+        exit 0
+      fi
+    - pip install pipenv==2022.1.8
+    - pipenv install --dev
+    - pipenv run python -m unittest discover -s tests/
+  environment:
+    <<: *ci_environment
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+
+volumes:
+- name: black-cache
+  temp: {}
+
+trigger:
+  event:
+    - pull_request
+    - push
+  branch:
+    - master
+    - dev
+
+---
+kind: secret
+name: GIT_TOKEN
+get:
+  path: settings-kube
+  name: GIT_TOKEN
+
+---
+kind: secret
+name: GIT_USER
+get:
+  path: settings-kube
+  name: GIT_USER

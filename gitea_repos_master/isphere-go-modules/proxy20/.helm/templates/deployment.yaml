@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.tls_serve.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: web
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.tls_serve.image.repository }}:{{ .Values.tls_serve.image.tag }}"
+          imagePullPolicy: {{ .Values.tls_serve.image.pullPolicy }}
+          ports:
+            - name: socks5
+              containerPort: {{ .Values.tls_serve.service.port }}
+            - name: tls
+              containerPort: 8080
+            - name: http
+              containerPort: 8081
+            - name: tcp
+              containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.fullname" . }}-configmap
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chart.fullname" . }}-secret
+                  key: POSTGRES_HOST
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chart.fullname" . }}-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chart.fullname" . }}-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chart.fullname" . }}-secret
+                  key: POSTGRES_DATABASE
+            - name: HASURA_ADMIN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chart.fullname" . }}-secret
+                  key: HASURA_ADMIN_SECRET
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: settings-kube
+                  key: SENTRY_DSN_PROXY20
+          command:
+            - sh
+            - -exc
+            - |
+              bin/console -generate-certificate
+              bin/console
+          resources:
+            {{- toYaml .Values.tls_serve.resources | nindent 12 }}
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,33 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "d16bc20c5b6deade5bc035113f5515d5d2a4ffa4428bbaa3a6b63f911799e140"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.10"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            },
+            {
+                "name": "gitea",
+                "url": "http://${GIT_USER}:${GIT_TOKEN}@${GIT_HTTP_DOMAIN}/api/packages/isphere-classes/pypi/simple",
+                "verify_ssl": false
+            }
+        ]
+    },
+    "default": {
+        "putils-logic": {
+            "hashes": [
+                "sha256:2ce2fe26a27e0f348ff14a5a648ba894e4cc3aa576c13035f232ab59d44e3a96"
+            ],
+            "index": "pypi",
+            "version": "==10.0.0"
+        }
+    },
+    "develop": {}
+}

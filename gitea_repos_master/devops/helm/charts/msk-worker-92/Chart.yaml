@@ -1,0 +1,6 @@
+apiVersion: v2
+name: airbyte
+description: airbyte
+type: application
+version: '1702454774'
+appVersion: '1702454774'

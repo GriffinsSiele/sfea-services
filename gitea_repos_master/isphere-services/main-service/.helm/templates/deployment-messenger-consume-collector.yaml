@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-messenger-consume-collector
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.messenger_consume_collector.replicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: messenger-consume-collector
+          image: "{{ .Values.messenger_consume_collector.image.repository }}:{{ .Values.messenger_consume_collector.image.tag }}"
+          imagePullPolicy: {{ .Values.messenger_consume_collector.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap-messenger-consume-collector
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets-messenger-consume-collector
+          resources:
+            {{- toYaml .Values.messenger_consume_collector.resources | nindent 12 }}
+          command: [ "bin/console", "messenger:consume", "collector", "--time-limit=3600" ]
+          volumeMounts:
+            - mountPath: /var/www/html/var/log
+              name: {{ include "chart.fullname" . }}-pvc
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ include "chart.fullname" . }}-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "chart.fullname" . }}-pvc

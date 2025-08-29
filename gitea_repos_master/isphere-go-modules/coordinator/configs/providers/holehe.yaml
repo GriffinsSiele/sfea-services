@@ -1,0 +1,3 @@
+providers:
+  holehe:
+    endpoint: "$MODULE_HOLEHE_ENDPOINT"

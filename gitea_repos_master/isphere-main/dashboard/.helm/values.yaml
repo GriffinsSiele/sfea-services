@@ -1,0 +1,58 @@
+imageCredentials: { enabled: false, registry: "", username: "", password: "" }
+nameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+fullNameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+DOCKER: "${DOCKER}"
+service: { type: LoadBalancer, port: 80 }
+ingress:
+  enabled: false
+  tlsEnabled: false
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    certmanager.k8s.io/acme-challenge-type: http01
+    kubernetes.io/ingress.class: nginx
+  hosts: [ ]
+  tls: [ ]
+securityContext: { capabilities: { drop: [ FOWNER, KILL, MKNOD, SETGID, SETUID ] } }
+podAnnotations: { }
+podSecurityContext: { }
+nodeSelector: { }
+tolerations: [ ]
+serviceAccount:
+  create: true
+  annotations: { }
+  createRole: true
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: Exists
+autoScaling:
+  minReplicaCount: 1
+timezone: /usr/share/zoneinfo/Europe/Moscow
+php_fpm:
+  service: { ports: { tcp: 9000, status: 9001 } }
+  image:
+    {
+      repository: "${CI_REGISTRY_IMAGE}",
+      pullPolicy: Always,
+      tag: "${DRONE_BRANCH}",
+    }
+  resources:
+    limits: { cpu: 200m, memory: 512Mi }
+    requests: { cpu: 100m, memory: 128Mi }
+nginx:
+  service: { ports: { http: 80 } }
+  image:
+    {
+      repository: "${CI_REGISTRY_IMAGE}-nginx",
+      pullPolicy: Always,
+      tag: "${DRONE_BRANCH}",
+    }
+  resources:
+    limits: { cpu: 50m, memory: 64Mi }
+    requests: { cpu: 40m, memory: 16Mi }
+environment:
+  DRONE_BRANCH: "${DRONE_BRANCH}"

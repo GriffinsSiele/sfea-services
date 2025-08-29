@@ -1,0 +1,72 @@
+check_types:
+  minjust_inn:
+    enabled: true
+    source: { code: minjust }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: minjust_inn, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: minjust_inn }
+      graphql:
+        # @formatter:off
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              minjust_foreign_persons(where: {
+                  inn: {_eq: $inn }
+              }) {
+                  surname
+                  name
+                  patronymic
+                  birthday
+                  inn
+                  snils
+                  address
+                  reason
+                  created_at
+                  deleted_at
+              }
+          }
+        # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .minjust_foreign_persons }}
+          - surname:      {{ Quote .surname }}
+            name:         {{ Quote .name }}
+            patronymic:   {{ Quote .patronymic }}
+            birthday:     {{ Quote .birthday }}
+            inn:          {{ Quote .inn }}
+            snils:        {{ Quote .snils }}
+            address:      {{ Quote .address }}
+            reason:       {{ Quote .reason }}
+            created_at:   {{ Quote .created_at }}
+            deleted_at:   {{ Quote .deleted_at }}
+            {{ if eq .deleted_at nil }}
+            status: included
+            {{ else }}
+            status: excluded
+            {{ end }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          surname: { type: string }
+          name: { type: string }
+          patronymic: { type: string }
+          birthday: { type: string, format: date }
+          inn: { type: string }
+          snils: { type: string }
+          address: { type: string }
+          reason: { type: string }
+          created_at: { type: string, format: date }
+          deleted_at: { type: string }
+          status: { type: string, enum: [included, excluded] }

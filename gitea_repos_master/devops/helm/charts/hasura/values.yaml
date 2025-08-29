@@ -1,0 +1,31 @@
+image:
+  repository: hasura/graphql-engine
+  tag: v2.39.1-ce
+
+replicaCount: 3
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 512Mi
+  requests:
+    cpu: 20m
+    memory: 256Mi
+
+ingress:
+  enabled: false
+
+adminSecret: zSBwMTn66APmyWdE
+dbUrl: postgresql://grabber:89yATBJbsdzrPmLu@172.16.99.1:5432/grabber_prod
+
+tolerations:
+  - key: "prod"
+    operator: Equal
+    value: "yes"
+    effect: NoSchedule
+
+eventsHttpPoolSize: 30
+eventsFetchBatchSize: 30
+
+service:
+  type: LoadBalancer

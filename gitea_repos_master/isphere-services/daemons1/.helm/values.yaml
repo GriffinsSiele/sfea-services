@@ -1,0 +1,166 @@
+imageCredentials: { enabled: false, registry: "", username: "", password: "" }
+nameOverride: ""
+fullNameOverride: ""
+DOCKER: "${DOCKER}"
+service: { type: ClusterIP, port: 80 }
+ingress: { enabled: false, tlsEnabled: false }
+securityContext:
+  { capabilities: { drop: [FOWNER, KILL, MKNOD, SETGID, SETUID] } }
+podAnnotations: {}
+podSecurityContext: {}
+nodeSelector: {}
+serviceAccount:
+  { create: true, annotations: {}, createRole: true, affinity: {} }
+persistence: { enabled: false }
+tolerations:
+  - key: prod
+    operator: Equal
+    value: "yes"
+    effect: NoSchedule
+x-daemon-affinity: &base-daemon-affinity
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: Exists
+x-daemon: &base-daemon
+  enabled: true
+  replicaCount: 1
+  image: { repository: "${CI_REGISTRY_IMAGE}", pullPolicy: Always, tag: "${DRONE_BRANCH}" }
+  affinity:
+    <<: *base-daemon-affinity
+x-daemon-primary-resources: &daemon-primary-resources
+  resources:
+    limits: { cpu: 200m, memory: 64Mi }
+    requests: { cpu: 50m, memory: 16Mi }
+x-daemon-secondary-resources: &daemon-secondary-resources
+  resources:
+    limits: { cpu: 100m, memory: 64Mi }
+    requests: { cpu: 20m, memory: 16Mi }
+daemons:
+  # core daemons
+  - name: daemon1
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon.sh" ]
+  - name: daemon2
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon2.sh" ]
+  - name: daemon3
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon3.sh" ]
+  - name: daemon4
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon4.sh" ]
+  - name: daemon5
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon5.sh" ]
+  - name: daemon6
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon6.sh" ]
+  - name: daemon7
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon7.sh" ]
+  - name: daemon8
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon8.sh" ]
+  - name: daemon9
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon9.sh" ]
+  - name: daemon10
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemon10.sh" ]
+
+  # captcha daemons
+  - name: daemon-captcha-bad1
+    <<: *base-daemon
+    <<: *daemon-secondary-resources
+    command: [ "bash", "/var/www/html/daemon/daemoncaptchabad.sh" ]
+  - name: daemon-captcha-bad2
+    <<: *base-daemon
+    <<: *daemon-secondary-resources
+    command: [ "bash", "/var/www/html/daemon/daemoncaptchabad2.sh" ]
+  - name: daemon-captcha-bad3
+    <<: *base-daemon
+    <<: *daemon-secondary-resources
+    command: [ "bash", "/var/www/html/daemon/daemoncaptchabad3.sh" ]
+  - name: daemon-captcha-bad4
+    <<: *base-daemon
+    <<: *daemon-secondary-resources
+    command: [ "bash", "/var/www/html/daemon/daemoncaptchabad4.sh" ]
+  - name: daemon-captcha-bad5
+    <<: *base-daemon
+    <<: *daemon-secondary-resources
+    command: [ "bash", "/var/www/html/daemon/daemoncaptchabad5.sh" ]
+  - name: daemon-captcha-rep
+    <<: *base-daemon
+    <<: *daemon-secondary-resources
+    command: [ "bash", "/var/www/html/daemon/daemoncaptcharep.sh" ]
+
+  # getcontact daemon
+  - name: daemon-getcontact
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemongetcontact.sh" ]
+
+  # gosuslugi daemon
+  - name: daemon-gosuslugi
+    <<: *base-daemon
+    <<: *daemon-primary-resources
+    command: [ "bash", "/var/www/html/daemon/daemongosuslugi.sh" ]
+
+  # google daemon
+  - name: daemon-google
+    <<: *base-daemon
+    <<: *daemon-secondary-resources
+    command: [ "bash", "/var/www/html/daemon/daemongoogle.sh" ]
+    initContainers:
+      - name: copy-google-secrets
+        image: busybox
+        command:
+          [
+            "sh",
+            "-exc",
+            "cp /mnt/persistent-google-secrets/*.json /mnt/shared-google-secrets/.",
+          ]
+        volumeMounts:
+          - {
+              name: persistent-google-secrets,
+              subPath: client_secret.json,
+              mountPath: /mnt/persistent-google-secrets/client_secret.json,
+            }
+          - {
+              name: persistent-google-secrets,
+              subPath: quickstart.json,
+              mountPath: /mnt/persistent-google-secrets/quickstart.json,
+            }
+          - {
+              name: shared-google-secrets,
+              mountPath: /mnt/shared-google-secrets,
+            }
+    volumeMounts:
+      - { name: shared-google-secrets, mountPath: /var/www/html/daemon/google }
+    volumes:
+      - {
+          name: persistent-google-secrets,
+          secret: { secretName: daemons-master-google-secrets },
+        }
+      - { name: shared-google-secrets, emptyDir: {} }
+
+  # skype daemon
+#  - name: daemon-skype
+#    <<: *base-daemon
+#    <<: *daemon-secondary-resources
+#    command: [ "bash", "/var/www/html/daemon/daemonskype.sh" ]
+

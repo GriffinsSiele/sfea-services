@@ -1,0 +1,31 @@
+query {
+    shodan(ip: "78.140.221.69") {
+        __typename
+
+        ... on ip {
+            country_code
+            country
+            city
+            location {
+                coords
+                text
+            }
+            organization
+            provider
+            asn
+            hostnames
+            os
+            ports
+            tags
+        }
+
+        ... on service {
+            service
+            port
+            transport
+            product
+            version
+            tags
+        }
+    }
+}

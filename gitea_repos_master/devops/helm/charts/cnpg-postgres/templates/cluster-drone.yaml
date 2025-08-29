@@ -1,0 +1,12 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: drone
+  namespace: cnpg-system
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    storageClass: local-path
+    size: 1Gi
+    resizeInUseVolumes: True

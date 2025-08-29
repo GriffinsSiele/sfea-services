@@ -1,0 +1,38 @@
+check_types:
+  sleep:
+    enabled: true
+    source: { code: sleep }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            seconds: { type: number, min: 1 }
+          required:
+            - seconds
+    upstream:
+      provider: cmd
+      keydb: { enabled: true, scope: sleep, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: sleep }
+      command:
+        template:
+          # @formatter:off
+          # language=shell script
+          query: |
+            sleep {{ .seconds }}
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ if (not (eq .stdout "")) }}
+          - stdout: {{ .stdout }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: string
+        properties:
+          stdout: { type: string }

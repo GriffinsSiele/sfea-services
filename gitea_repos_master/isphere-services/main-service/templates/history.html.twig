@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <h5 class="card-header">История запросов</h5>
+                    <div class="card-body">
+                        {{ form(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if result | length > 0 %}
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Дата запроса</th>
+                                <th>Логин</th>
+                                <th>Тип</th>
+                                <th>IP</th>
+                                <th>Данные</th>
+                                <th>Просмотр</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in result %}
+                                <tr>
+                                    <td>
+                                        {{ item.id }}
+                                        {% if item.externalId %}
+                                            <small class="text-muted">
+                                                / {{ item.externalId }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.createdAt | date }}</td>
+                                    {% set req = get_request(item) %}
+                                    {% if req is not null %}
+                                        <td>{{ req.userId }}</td>
+                                        <td>{{ req.requestType | default('api') }}</td>
+                                        <td>{{ req.userIp }}</td>
+                                        <td>
+                                            {% for k, v in (req.forEveryReq | join_reqs) %}
+                                                {% if not loop.first %}<br/>{% endif %}
+                                                <b>{{ k }}</b>: {{ v }}<br/>
+                                            {% else %}
+                                                <span class="text-danger">
+                                                    <i class="fa fa-solid fa-triangle-exclamation"></i>
+                                                    Данные запроса недоступны
+                                                </span>
+                                            {% endfor %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('showresult', { id: item.id }) }}"
+                                               target="_blank">HTML</a>
+                                            <a href="{{ path('showresult', { id: item.id, mode: 'pdf' }) }}"
+                                               target="_blank">PDF</a>
+                                            <a href="{{ path('showresult', { id: item.id, mode: 'xml' }) }}"
+                                               target="_blank">XML</a>
+                                        </td>
+                                    {% else %}
+                                        <td colspan="5">
+                                        <span class="text-danger">
+                                            <i class="fa fa-solid fa-triangle-exclamation"></i>
+                                            Невозможно загрузить детали запроса
+                                        </span>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% include 'pagination.html.twig' with { route: 'history' } %}
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="alert alert-info shadow">
+                        Запросов не найдено
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script defer>
+      document.addEventListener('DOMContentLoaded', function () {
+        const links = document.querySelectorAll('.next-page')
+
+        links.forEach(function (link) {
+          link.addEventListener('click', function (e) {
+            e.preventDefault()
+
+            const form = document.forms['filter']
+            const num = document.querySelector('#filter_page')
+            num.value = link.dataset.page
+            form.submit()
+          })
+        })
+      })
+    </script>
+{% endblock %}

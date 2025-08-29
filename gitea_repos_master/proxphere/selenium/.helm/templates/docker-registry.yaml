@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "chart.name" . }}-registry
+type: kubernetes.io/dockerconfigjson
+data:
+  {{- if .Values.imageCredentials.enabled -}}
+  .dockerconfigjson: {{ template "imagePullSecret" . }}
+  {{- else }}
+  .dockerconfigjson: {{ .Values.DOCKER }}
+  {{- end }}

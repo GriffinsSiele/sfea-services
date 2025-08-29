@@ -1,0 +1,3 @@
+providers:
+  ripe:
+    endpoint: "$MODULE_RIPE_ENDPOINT"

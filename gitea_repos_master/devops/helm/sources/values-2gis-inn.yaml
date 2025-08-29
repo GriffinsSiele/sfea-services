@@ -1,0 +1,54 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 2
+
+image:
+  repository: git.i-sphere.ru/yandex/yandex-maps-web-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 100Mi
+  requests:
+    cpu: 10m
+    memory: 50Mi
+
+
+env:
+- name: MONGO_COLLECTION
+  value: 2gis
+- name: KEYDB_QUEUE_PHONE
+  value: 2gis_phone
+- name: KEYDB_QUEUE_INN
+  value: 2gis_inn
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

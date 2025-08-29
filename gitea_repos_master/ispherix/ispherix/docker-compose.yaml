@@ -1,0 +1,31 @@
+services:
+  tcp-firewall:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: tcp-firewall
+    env_file:
+      - path: .env
+      - path: .env.local
+        required: false
+    ports:
+      - "443:443/tcp"
+    volumes:
+      - ./var/GeoLite2:/app/var/GeoLite2
+
+  nginx:
+    build:
+      dockerfile: Dockerfile-nginx
+      context: .
+    env_file:
+      - path: .env
+      - path: .env.local
+        required: false
+    ports:
+      - "8443:8443/tcp"
+    volumes:
+      - ./assets/images:/app/assets/images
+      - ./configs/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./configs/nginx/watch.lua:/app/watch.lua
+      - ./configs/nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./var/tls:/app/var/tls

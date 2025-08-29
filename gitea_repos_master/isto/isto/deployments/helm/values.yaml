@@ -1,0 +1,53 @@
+replicaCount: 3
+image:
+  repository: "git.i-sphere.local/isto/isto"
+  pullPolicy: Always
+  tag: latest
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: true
+  automount: true
+  annotations: { }
+  name: ""
+podAnnotations: { }
+podLabels: { }
+podSecurityContext: { }
+securityContext: { }
+service:
+  type: LoadBalancer
+  port: 8000
+ingress:
+  enabled: false
+resources: { }
+limits:
+  cpu: 50m
+  memory: 64Mi
+requests:
+  cpu: 20m
+  memory: 32Mi
+x-probe: &probe
+  failureThreshold: 30
+  periodSeconds: 10
+  timeoutSeconds: 30
+  httpGet:
+    path: /health
+    port: 8000
+startupProbe:
+  <<: *probe
+livenessProbe:
+  <<: *probe
+readinessProbe:
+  <<: *probe
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+volumes: [ ]
+volumeMounts: [ ]
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }

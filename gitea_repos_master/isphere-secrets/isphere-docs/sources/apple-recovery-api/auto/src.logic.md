@@ -1,0 +1,37 @@
+# src.logic package
+
+## Subpackages
+
+* [src.logic.adapters package](src.logic.adapters.md)
+  * [Submodules](src.logic.adapters.md#submodules)
+  * [src.logic.adapters.response module](src.logic.adapters.md#src-logic-adapters-response-module)
+  * [Module contents](src.logic.adapters.md#module-contents)
+* [src.logic.apple package](src.logic.apple.md)
+  * [Submodules](src.logic.apple.md#submodules)
+  * [src.logic.apple.apple module](src.logic.apple.md#src-logic-apple-apple-module)
+  * [src.logic.apple.exception_handler module](src.logic.apple.md#src-logic-apple-exception-handler-module)
+  * [src.logic.apple.exceptions module](src.logic.apple.md#src-logic-apple-exceptions-module)
+  * [src.logic.apple.search_manager module](src.logic.apple.md#src-logic-apple-search-manager-module)
+  * [Module contents](src.logic.apple.md#module-contents)
+* [src.logic.captcha package](src.logic.captcha.md)
+  * [Submodules](src.logic.captcha.md#submodules)
+  * [src.logic.captcha.captcha module](src.logic.captcha.md#src-logic-captcha-captcha-module)
+  * [src.logic.captcha.captcha_exceptions module](src.logic.captcha.md#module-src.logic.captcha.captcha_exceptions)
+    * [`CaptchaConfiguredError`](src.logic.captcha.md#src.logic.captcha.captcha_exceptions.CaptchaConfiguredError)
+  * [src.logic.captcha.captcha_service module](src.logic.captcha.md#src-logic-captcha-captcha-service-module)
+  * [Module contents](src.logic.captcha.md#module-contents)
+* [src.logic.converters package](src.logic.converters.md)
+  * [Submodules](src.logic.converters.md#submodules)
+  * [src.logic.converters.base64_converter module](src.logic.converters.md#src-logic-converters-base64-converter-module)
+  * [src.logic.converters.base64_exceptions module](src.logic.converters.md#src-logic-converters-base64-exceptions-module)
+  * [Module contents](src.logic.converters.md#module-contents)
+* [src.logic.parsers package](src.logic.parsers.md)
+  * [Submodules](src.logic.parsers.md#submodules)
+  * [src.logic.parsers.apple_result_parser module](src.logic.parsers.md#src-logic-parsers-apple-result-parser-module)
+  * [Module contents](src.logic.parsers.md#module-src.logic.parsers)
+* [src.logic.proxy package](src.logic.proxy.md)
+  * [Submodules](src.logic.proxy.md#submodules)
+  * [src.logic.proxy.proxy module](src.logic.proxy.md#src-logic-proxy-proxy-module)
+  * [Module contents](src.logic.proxy.md#module-contents)
+
+## Module contents

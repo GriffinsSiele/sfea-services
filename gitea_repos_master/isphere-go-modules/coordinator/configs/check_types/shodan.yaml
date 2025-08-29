@@ -1,0 +1,117 @@
+check_types:
+  shodan:
+    enabled: true
+    source:
+      code: shodan
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/ip"
+    upstream:
+      provider: shodan
+      keydb: { enabled: true, scope: shodan, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: shodan }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($ip: String!) {
+              shodan(ip: $ip) {
+                  __typename
+                  
+                  ... on ip {
+                      country_code
+                      country
+                      city
+                      location {
+                          coords
+                          text
+                      }
+                      organization
+                      provider
+                      asn
+                      hostnames
+                      os
+                      ports
+                      tags
+                  }
+                  
+                  ... on service {
+                      service
+                      port
+                      transport
+                      product
+                      version
+                      tags
+                  }
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .shodan }}
+          - recordtype: {{ Quote .__typename }}
+
+            {{- if eq .__typename "ip" }}
+            country_code: {{ Quote .country_code }}
+            country:      {{ Quote .country }}
+            city:         {{ Quote .city }}
+            {{- if not (eq .location nil) }}
+            location:
+              coords:
+                {{- range .location.coords }}
+                - !!float {{ Quote . }}
+                {{- end }}
+              text: {{ Quote .location.text }}
+            {{- end }}
+            organization: {{ Quote .organization }}
+            provider:     {{ Quote .provider }}
+            asn:          {{ Quote .asn }}
+            hostnames:    {{ Quote (StringsJoin .hostnames ",") }}
+            os:           {{ Quote .os }}
+            ports:        {{ Quote (StringsJoin .ports ",") }}
+            tags:         {{ Quote (StringsJoin .tags ",") }}
+            {{- end }}
+
+            {{- if eq .__typename "service" }}
+            port:         !!string    {{ Quote .port }}
+            service:                  {{ Quote .service }}
+            transport:                {{ Quote .transport }}
+            product:                  {{ Quote .product }}
+            version:                  {{ Quote .version }}
+            tags:                     {{ Quote (StringsJoin .tags ",") }}
+            {{- end }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        oneOf:
+          - properties:
+              recordtype: { type: string, enum: ["ip"] }
+              country_code: { type: string }
+              country: { type: string }
+              city: { type: string }
+              location:
+                type: object
+                properties:
+                  coords:
+                    type: array
+                    items: { type: number, minItems: 2, maxItems: 2 }
+              organization: { type: string }
+              provider: { type: string }
+              asn: { type: string }
+              hostnames: { type: string }
+              os: { type: string }
+              ports: { type: string }
+              tags: { type: string }
+          - properties:
+              recordtype: { type: string, enum: ["service"] }
+              port: { type: string }
+              service: { type: string }
+              transport: { type: string }
+              product: { type: string }
+              version: { type: string }
+              tags: { type: string }

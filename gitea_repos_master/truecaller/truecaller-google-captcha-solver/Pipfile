@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "https://${GIT_USER}:${GIT_TOKEN}@${GIT_HTTP_DOMAIN}/api/packages/isphere-classes/pypi/simple"
+verify_ssl = false
+name = "gitea"
+
+[packages]
+openai-whisper = "*"
+appium-python-client = "==2.11.1"
+python-dotenv = "*"
+putils-logic = "==2.0.0"
+mongo-client = "==2.3.0"
+pydash = "==5.1.0"
+speechrecognition = "*"
+pyaudio = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

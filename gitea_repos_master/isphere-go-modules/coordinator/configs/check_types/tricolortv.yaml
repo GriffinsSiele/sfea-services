@@ -1,0 +1,43 @@
+check_types:
+  tricolortv:
+    enabled: true
+    source: { code: tricolortv }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - oneOf:
+            - $ref: "#/definitions/schema/email"
+            - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: tricolortv
+      keydb: { enabled: true, scope: tricolortv, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: tricolortv }
+      tcp:
+        #  {{ if not (eq .phone nil) -}}
+        template:
+          # language=HTTP
+          query: |
+            POST /search HTTP/1.1
+            
+            {{ if not (eq .phone nil) -}}
+            {{ EncodeJSON "phone" (PhoneNumber .phone) }}
+            {{ else -}}
+            {{ EncodeJSON "email" .email }}
+            {{ end -}}
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .records }}
+          - result: {{ .Result }}
+            result_code: {{ .ResultCode }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          result: { type: string }
+          result_code: { type: string }

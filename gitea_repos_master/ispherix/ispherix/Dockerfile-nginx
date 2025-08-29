@@ -1,0 +1,11 @@
+FROM openresty/openresty:alpine
+RUN apk add alpine-sdk \
+    lua-dev \
+    curl-dev \
+    openssl-dev \
+    luarocks \
+    tzdata
+RUN luarocks-5.1 install luasocket && \
+    luarocks-5.1 install Lua-cURL
+RUN ln -snf /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
+    echo 'Europe/Moscow' > /etc/timezone

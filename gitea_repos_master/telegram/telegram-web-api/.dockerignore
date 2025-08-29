@@ -1,0 +1,6 @@
+__pycache__
+.drone.yml
+README.md
+tests
+.env
+.env.example

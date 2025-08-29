@@ -1,0 +1,48 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 8
+
+image:
+  repository: git.i-sphere.ru/ok/ok-websocket-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+resources:
+limits:
+  cpu: 100m
+  memory: 100Mi
+requests:
+  cpu: 10m
+  memory: 30Mi
+
+
+env:
+- name: KEYDB_QUEUE
+  value: okbot
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

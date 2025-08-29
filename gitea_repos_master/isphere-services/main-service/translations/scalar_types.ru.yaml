@@ -1,0 +1,15 @@
+BIRTHDAY: Дата рождения
+INN: ИНН
+NAME: Имя
+NAME_PATRONYMIC_SURNAME: Имя Отчество Фамилия
+PATRONYMIC: Отчество
+PHONE: Номер телефона
+RUSSIAN_PASSPORT: Паспорт (10 цифр)
+RUSSIAN_PASSPORT_NUMBER: Серия паспорта
+RUSSIAN_PASSPORT_SERIES: Номер паспорта
+RUSSIAN_REGION: Код региона
+SURNAME: Фамилия
+SURNAME_NAME_PATRONYMIC: Фамилия Имя Отчество
+EMAIL: Email
+
+UNKNOWN: Не использовать

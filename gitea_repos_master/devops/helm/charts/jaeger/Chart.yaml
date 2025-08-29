@@ -1,0 +1,6 @@
+apiVersion: v2
+name: jaeger
+description: jaeger
+type: application
+version: '1706166604'
+appVersion: '1706166604'

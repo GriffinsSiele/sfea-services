@@ -1,0 +1,53 @@
+check_types:
+  fns_paytax:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fns_paytax, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_paytax }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              fns_paytax(where: {inn: {_eq: $inn}}) {
+                  inn
+                  paytax_taxes {
+                      tax {
+                          title
+                      }
+                      sum
+                  }
+                  state_date
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .fns_paytax }}
+          {{- $p := . }}
+          {{ range .paytax_taxes }}          
+          - Type:         paytax
+            inn:          {{ Quote $p.inn }}
+            date:         {{ Quote $p.state_date }}
+            name:         {{ Quote .tax.title }}
+            sum:  !!float {{ .sum }}          
+          {{ end }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: { type: string, enum: [paytax] }
+          inn: { type: string }
+          date: { type: string, format: date }
+          name: { type: string }
+          sum: { type: number }

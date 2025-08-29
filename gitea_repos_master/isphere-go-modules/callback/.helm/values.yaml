@@ -1,0 +1,98 @@
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: ""
+fullNameOverride: ""
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    certmanager.k8s.io/acme-challenge-type: http01
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: callback.git.i-sphere.ru
+      paths:
+        - /
+    - host: callback.i-sphere.ru
+      paths:
+        - /
+  tlsEnabled: true
+  tls:
+    - hosts:
+        - callback.git.i-sphere.ru
+      secretName: callback.git.i-sphere.ru
+    - hosts:
+        - callback.i-sphere.ru
+      secretName: callback.i-sphere.ru
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+nodeSelector: {}
+
+tolerations:
+  - key: prod
+    operator: Equal
+    value: "yes"
+    effect: NoSchedule
+
+serviceAccount:
+  create: true
+  annotations: {}
+  createRole: true
+  affinity: {}
+
+persistence:
+  enabled: false
+
+app:
+  replicaCount: 3
+
+  service:
+    port: 80
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 20m
+      memory: 32Mi
+    requests:
+      cpu: 10m
+      memory: 16Mi
+
+  env:
+    ADDR: "${ADDR}"
+    APP_DEBUG: "${APP_DEBUG}"
+    RABBITMQ_ADDR: "${RABBITMQ_ADDR}"
+    RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD}"
+    RABBITMQ_USERNAME: "${RABBITMQ_USERNAME}"
+    RABBITMQ_VIRTUAL_HOST: "${RABBITMQ_VIRTUAL_HOST}"
+    HASURA_ENDPOINT: "${HASURA_ENDPOINT}"
+    HASURA_TOKEN: "${HASURA_TOKEN}"
+    CAPTCHA_IMAGE_API_URL: "${CAPTCHA_IMAGE_API_URL}"
+    SENTRY_DSN: "${SENTRY_DSN}"
+    JAEGER_AGENT_HOST_PORT: "${JAEGER_AGENT_HOST_PORT}"

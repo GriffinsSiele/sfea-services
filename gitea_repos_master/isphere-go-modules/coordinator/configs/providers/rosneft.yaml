@@ -1,0 +1,3 @@
+providers:
+  rosneft:
+    endpoint: "$MODULE_ROSNEFT_ENDPOINT"

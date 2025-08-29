@@ -1,0 +1,12 @@
+---
+
+template_zabbix_agent_path: ./templates/zabbix_agent2.conf.j2
+
+pid_file_path: /var/run/zabbix/zabbix_agent2.pid
+
+log_file_path: /var/log/zabbix/zabbix_agent2.log
+log_file_size: 0 #0 - disable automatic log rotation.
+
+listen_port: 10050
+
+zabbix_server_ip: 172.16.97.8

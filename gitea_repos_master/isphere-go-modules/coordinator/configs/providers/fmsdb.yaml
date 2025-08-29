@@ -1,0 +1,3 @@
+providers:
+  fmsdb:
+    endpoint: "$MODULE_FMSDB_ENDPOINT"

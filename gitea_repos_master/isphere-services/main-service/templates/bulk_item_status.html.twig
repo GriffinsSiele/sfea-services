@@ -1,0 +1,40 @@
+{% if status == 0 %}
+    <span class="text-info">
+        <i class="fa fa-spin fa-spinner"></i>
+        Обрабатывается
+    </span>
+{% endif %}
+
+{% if status == 1 %}
+    <span class="text-success">
+        Обработан
+    </span>
+{% endif %}
+
+{% if status == 2 or status == 21 or status == 101 %}
+    <span class="text-muted">
+        <i class="fa fa-spin fa-spinner"></i>
+        В ожидании
+    </span>
+{% endif %}
+
+{% if status == 100 %}
+    <span class="text-muted">
+        <i class="fa fa-spin fa-spinner"></i>
+        Формируется план задач
+    </span>
+{% endif %}
+
+{% if status == 20 %}
+    <span class="text-warning-emphasis">
+        <i class="fa fa-solid fa-triangle-exclamation"></i>
+        Требует подтверждения
+    </span>
+{% endif %}
+
+{% if status == 3 %}
+    <span class="text-danger">
+        <i class="fa fa-solid fa-triangle-exclamation"></i>
+        Прерван
+    </span>
+{% endif %}

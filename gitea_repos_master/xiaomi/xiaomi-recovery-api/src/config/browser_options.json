@@ -1,0 +1,6 @@
+{
+    "headless": true,
+    "window_size": [1024, 768],
+    "options": ["--no-sandbox", "--disable-blink-features=AutomationControlled", "--lang=ru-RU", "--accept-lang=ru-RU"],
+    "fake_user_agent": true
+}

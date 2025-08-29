@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  geoip:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    networks:
+      - isphere
+    ports:
+      - '8080:80/tcp'
+
+networks:
+  isphere:
+    external: true

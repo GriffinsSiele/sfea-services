@@ -1,0 +1,47 @@
+check_types:
+  sber_phone:
+    enabled: true
+    source: { code: sber }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            phone: { type: string, format: phone }
+          required:
+            - phone
+    upstream:
+      provider: sber
+      keydb: { enabled: true, scope: sber_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: sber_phone }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST / HTTP/1.1
+            Content-Type: application/json 
+            
+            {
+                "phone": {{ Quote (trimPrefix "+" .phone) }}
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .data }}
+          {{- if not (eq .client nil) }}
+          - created_date: {{ Quote .client.createdDate }}
+            masked_phone: {{ Quote .client.maskedPhone }}
+            uuid: {{ Quote .client.uuid }}
+          {{- end }}
+          {{- end }}
+        # @formatter:off
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          created_date: { type: string }
+          masked_phone: { type: string }
+          uuid: { type: string }

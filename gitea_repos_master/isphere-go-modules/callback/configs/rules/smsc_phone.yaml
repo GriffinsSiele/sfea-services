@@ -1,0 +1,56 @@
+rules:
+  smsc_phone:
+    enabled: true
+    pattern: ^/smsc
+    schema:
+      type: object
+      properties:
+        cn: { type: string }
+        cnt: { type: string }
+        cost: { type: string }
+        country: { type: string }
+        err: { type: string }
+        flag: { type: string }
+        fmt: { type: string }
+        id: { type: string }
+        imsi: { type: string }
+        mcc: { type: string }
+        mccmnc: { type: string }
+        message: { type: string }
+        mnc: { type: string }
+        msc: { type: string }
+        net: { type: string }
+        operator: { type: string }
+        operator_orig: { type: string }
+        phone: { type: string, format: tel }
+        pnet: { type: string }
+        rcn: { type: string }
+        region: { type: string }
+        rnet: { type: string }
+        sender: { type: string }
+        status: { type: string }
+        time: { type: string }
+        ts: { type: string }
+        type: { type: string }
+      required:
+        - id
+        - phone
+    downstream:
+      rabbitmq: { enabled: true, scope: smsc_phone__callback }
+    mutator:
+      marshaller: json
+      key:
+        # @formatter:off
+        # language=GoTemplate
+        template: >
+          {{ Hasura "smsc" .id }}
+        # @formatter:on
+      # @formatter:off
+      # language=GoTemplate
+      template: |
+        id: 1
+        key: {{ Quote (Hasura "smsc" .id) }}
+        callback: {{ ToJSON . }}
+        starttime: {{ Unix Now }}
+        type: callback
+      # @formatter:on

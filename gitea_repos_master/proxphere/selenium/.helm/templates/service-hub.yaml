@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}-hub
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "chart.name" . }}-hub
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: web
+  ports:
+    - name: xpub
+      port: {{ .Values.hub.service.ports.xpub }}
+      targetPort: xpub
+    - name: xsub
+      port: {{ .Values.hub.service.ports.xsub }}
+      targetPort: xsub
+    - name: web
+      port: {{ .Values.hub.service.ports.web }}
+      targetPort: web
+  type: {{ .Values.hub.service.type }}

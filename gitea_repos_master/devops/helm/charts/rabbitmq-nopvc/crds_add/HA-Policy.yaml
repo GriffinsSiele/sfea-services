@@ -1,0 +1,15 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Policy
+metadata:
+  name: ha-policy
+spec:
+  applyTo: all
+  definition:
+    ha-mode: all
+    ha-sync-mode: automatic
+  name: transient
+  pattern: ''
+  priority: 0
+  rabbitmqClusterReference:
+    name: i-sphere
+  vhost: /

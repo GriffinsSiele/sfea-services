@@ -1,0 +1,135 @@
+global:
+  imagePullPolicy: IfNotPresent # empty pull policy means k8s default is used ("always" if tag == ":latest", "ifnotpresent" else)
+  setSecurityContext: true # Force non-privileged containers to run as non-root users
+# Dependency charts
+etcd:
+  enabled: true
+  persistentVolume:
+    enabled: true
+    storage: 1Gi
+  replicas: 3 # How many instances of etcd will be added to the initial cluster.
+  resources: {} # resource requirements for etcd containers
+  image:
+    repository: gcr.io/etcd-development/etcd
+    tag: v3.4.15
+stork:
+  enabled: false
+  storkImage: docker.io/openstorage/stork:2.8.2
+  schedulerImage: registry.k8s.io/kube-scheduler
+  schedulerTag: ""
+  replicas: 1
+  storkResources: {} # resources requirements for the stork plugin containers
+  schedulerResources: {} # resource requirements for the kube-scheduler containers
+  podsecuritycontext: {}
+csi:
+  enabled: true
+  pluginImage: "drbd.io/linstor-csi:v1.2.3"
+  csiAttacherImage: registry.k8s.io/sig-storage/csi-attacher:v4.3.0
+  csiLivenessProbeImage: registry.k8s.io/sig-storage/livenessprobe:v2.10.0
+  csiNodeDriverRegistrarImage: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.8.0
+  csiProvisionerImage: registry.k8s.io/sig-storage/csi-provisioner:v3.5.0
+  csiSnapshotterImage: registry.k8s.io/sig-storage/csi-snapshotter:v6.2.2
+  csiResizerImage: registry.k8s.io/sig-storage/csi-resizer:v1.8.0
+  csiAttacherWorkerThreads: 10
+  csiProvisionerWorkerThreads: 10
+  csiSnapshotterWorkerThreads: 10
+  csiResizerWorkerThreads: 10
+  controllerReplicas: 1
+  controllerStrategy: {}
+  nodeAffinity: {}
+  nodeTolerations: []
+  controllerAffinity: {}
+  controllerTolerations: []
+  enableTopology: true
+  resources: {}
+  customLabels: {}
+  customAnnotations: {}
+  kubeletPath: /var/lib/kubelet
+  controllerSidecars: []
+  controllerExtraVolumes: []
+  nodeSidecars: []
+  nodeExtraVolumes: []
+priorityClassName: ""
+drbdRepoCred: drbdiocred
+linstorSslMethod: "manual" # <- If set to 'helm' or 'cert-manager' the certificates will be generated automatically
+linstorHttpsMethod: "manual" # <- If set to 'helm' or 'cert-manager' the certificates will be generated automatically
+linstorHttpsControllerSecret: "" # <- name of secret containing linstor server certificates+key. See docs/security.md
+linstorHttpsClientSecret: "" # <- name of secret containing linstor client certificates+key. See docs/security.md
+controllerEndpoint: "" # <- override to the generated controller endpoint. use if controller is not deployed via operator
+psp:
+  privilegedRole: ""
+  unprivilegedRole: ""
+operator:
+  replicas: 1 # <- number of replicas for the operator deployment
+  image: "drbd.io/linstor-operator:v1.10.7"
+  affinity: {}
+  tolerations: []
+  resources: {}
+  customLabels: {}
+  customAnnotations: {}
+  podsecuritycontext: {}
+  args:
+    createBackups: true
+    createMonitoring: true
+  sidecars: []
+  extraVolumes: []
+  controller:
+    enabled: true
+    controllerImage: "drbd.io/linstor-controller:v1.24.2"
+    dbConnectionURL: ""
+    luksSecret: ""
+    dbCertSecret: ""
+    dbUseClientCert: false
+    sslSecret: ""
+    affinity: {}
+    httpBindAddress: ""
+    httpsBindAddress: ""
+    tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+    resources: {}
+    replicas: 1
+    additionalEnv: []
+    additionalProperties: {}
+    sidecars: []
+    extraVolumes: []
+    customLabels: {}
+    customAnnotations: {}
+  satelliteSet:
+    enabled: true
+    satelliteImage: "drbd.io/linstor-satellite:v1.24.2"
+    storagePools: {}
+    sslSecret: ""
+    automaticStorageType: None
+    affinity: {}
+    tolerations: []
+    resources: {}
+    monitoringImage: "drbd.io/drbd-reactor:v1.2.0"
+    monitoringBindAddress: ""
+    kernelModuleInjectionImage: "drbd.io/drbd9-rhel7:v9.1.16"
+    kernelModuleInjectionMode: ShippedModules
+    kernelModuleInjectionAdditionalSourceDirectory: ""
+    kernelModuleInjectionResources: {}
+    kernelModuleInjectionExtraVolumeMounts: []
+    additionalEnv:
+      - name: LB_SELINUX_AS
+        value: "modules_object_t"
+    dnsPolicy: ""
+    sidecars: []
+    extraVolumes: []
+    customLabels: {}
+    customAnnotations: {}
+linstor-ha-controller:
+  enabled: false
+  nameOverride: "ha-controller"
+  image:
+    repository: drbd.io/linstor-k8s-ha-controller
+    tag: "v1.1.4"
+  resources: {}
+  affinity: {}
+  tolerations: []
+

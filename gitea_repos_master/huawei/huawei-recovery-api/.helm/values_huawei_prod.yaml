@@ -1,0 +1,73 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 5
+
+image:
+  repository: ${GIT_HTTP_INTERNAL_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the latest.
+  tag: ${IMAGE_TAG}
+
+command:
+  - python
+args:
+  - start_huawei.py
+
+
+resources:
+  limits:
+    cpu: 450m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 250Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+service:
+  enabled: false
+
+
+nodeSelector: {}
+
+env:
+- name: RABBITMQ_QUEUE_HUAWEI
+  value: ${RABBITMQ_QUEUE_HUAWEI}
+- name: RABBITMQ_CONSUMERS
+  value: ${RABBITMQ_CONSUMERS}
+- name: KEYDB_QUEUE_HUAWEI
+  value: ${KEYDB_QUEUE_HUAWEI}
+- name: IMPLICITLY_WAIT
+  value: ${IMPLICITLY_WAIT}
+- name: EXPLICIT_WAIT_FOR_LINK
+  value: ${EXPLICIT_WAIT_FOR_LINK}
+- name: EXPLICIT_WAIT
+  value: ${EXPLICIT_WAIT}
+- name: BROWSER_VERSION
+  value: ${BROWSER_VERSION}
+- name: SENTRY_URL_HUAWEI
+  value: ${SENTRY_URL_HUAWEI}
+
+envFrom:
+- secretRef:
+    name: settings-kube

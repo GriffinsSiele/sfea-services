@@ -1,0 +1,6 @@
+apiVersion: v2
+name: debezium
+description: debezium
+type: application
+version: '1700144691'
+appVersion: '1700144691'

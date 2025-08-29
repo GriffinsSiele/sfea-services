@@ -1,0 +1,291 @@
+global:
+  ory:
+    oathkeeper:
+      maester:
+        mode: controller
+replicaCount: 1
+image:
+  repository: oryd/oathkeeper
+  tag: v0.40.3
+  pullPolicy: IfNotPresent
+  initContainer:
+    repository: busybox
+    tag: 1
+sidecar:
+  image:
+    repository: oryd/oathkeeper-maester
+    tag: v0.1.2
+  envs: { }
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: ""
+demo: false
+service:
+  proxy:
+    enabled: true
+    type: ClusterIP
+    loadBalancerIP: ""
+    port: 4455
+    name: http
+    annotations: { }
+    labels: { }
+  api:
+    enabled: true
+    type: ClusterIP
+    loadBalancerIP: ""
+    port: 4456
+    name: http
+    annotations: { }
+    labels: { }
+  metrics:
+    enabled: true
+    type: ClusterIP
+    loadBalancerIP: ""
+    port: 80
+    name: http
+    annotations: { }
+    labels: { }
+ingress:
+  proxy:
+    enabled: false
+    className: ""
+    annotations: { }
+    hosts:
+      - host: proxy.oathkeeper.localhost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    defaultBackend:
+      { }
+  api:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      certmanager.k8s.io/acme-challenge-type: http01
+    hosts:
+      - host: ory-oathkeeper-api-master.git.i-sphere.ru
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - secretName: ory-oathkeeper-api-master.git.i-sphere.ru
+        hosts:
+          - ory-oathkeeper-api-master.git.i-sphere.ru
+oathkeeper:
+  config:
+    access_rules:
+      repositories:
+        - file:///etc/rules/access-rules.json
+      matching_strategy: regexp
+    serve:
+      proxy:
+        port: 4455
+        cors:
+          enabled: false
+          debug: true
+      api:
+        port: 4456
+        cors:
+          enabled: false
+          debug: true
+          allowed_origins:
+            - https://*.git.i-sphere.ru
+      prometheus:
+        port: 9000
+    log:
+      leak_sensitive_values: true
+      level: debug
+    authenticators:
+      cookie_session:
+        enabled: true
+        config:
+          #check_session_url: http://kratos-public.ory/sessions/whoami
+          check_session_url: https://ory-kratos-public-master.git.i-sphere.ru/sessions/whoami
+          extra_from: '@this'
+          subject_from: identity.id
+          only:
+            - ory_kratos_session
+      noop:
+        enabled: true
+      oauth2_client_credentials:
+        enabled: true
+        config:
+          token_url: http://hydra-public.ory:4444/oauth2/token
+      oauth2_introspection:
+        enabled: true
+        config:
+          introspection_url: http://hydra-admin.ory:4445/admin/oauth2/introspect
+      jwt:
+        enabled: true
+        config:
+          allowed_algorithms: [ RS256 ]
+          scope_strategy: none
+          jwks_urls: 
+            - http://oathkeeper-api.ory:4456/.well-known/jwks.json
+          trusted_issuers: 
+            - http://oathkeeper-api.ory:4456
+    authorizers:
+      allow:
+        enabled: true
+    mutators:
+      id_token:
+        enabled: true
+        config:
+          claims: '{"session": {{ .Extra | toJson }}}'
+          issuer_url: http://oathkeeper-api.ory:4456
+          jwks_url: http://oathkeeper-api.ory:4456/.well-known/jwks.json
+      noop:
+        enabled: true
+      header:
+        enabled: true
+        config:
+          headers: {}
+
+  mutatorIdTokenJWKs: |-
+    {
+      "keys": [
+        {
+          "p": "3Byssul3CuSZYlq3UZQvaH_cNNmvPDxw1rqo0EjdvvHj2Uv1GOXvPPcsbBHaFXe5-485OrRkYSof1_y9PZYOlXsR13WzfBFQKoqLWbY-BIjWqyk21A5UgtLUiUJDKBNLhCtMj4fJN9erFDHNQ3KBxCyyX6RQr9exGsvjP2UJbNM",
+          "kty": "RSA",
+          "q": "vgy8Et2GTWrP__EFlBJZfC_XHRA5AlC1jEpozHtIQTVmtaH5ufWos-aQiI3vBvtEeJN_FVLuMa2hqjtHZCPrTb3Jo5O5DPPNk3CZ6gysAgNB6jb1iOIdlj6cqw8EH3eEYWy3fjeXjG9mjmm_svBrc8s0K0dM7bhrlUxgBTpXxJ8",
+          "d": "XydsDdMcLLsLOiPtZ-zc-6V6ngQsw4BDFpv3ZOkV2f163LhfNZJvRs5qPzkE5FsoG655E8iJ98Z_n-9WT0cjYPBc0116EhnJevARtcuaUMP4SpB6nBalWTpv3IR7pXbc_wI2B5vlOb6mdjrrZQPU0W_lKqGAzESOtL8ZyZMlmgdm0w4RoWv2NgWOuvwiNZAsV7Ac6IUQu6nHFbTo0cuwuhhXmAHg5kGGxU5h9HkGCe7bYxaywKJ425AeaoX2gyBaSNfYXqehbTQ4jzq2HnxyAj0QciS14f2mP_loCoAR8ewnU07UNRfXpUKNuDIDNlSIOWDf0ukaaJGI-y3wTIm6lQ",
+          "e": "AQAB",
+          "qi": "ismu0EOKvr2MUojubv-RNm7NySDDFJjaVFWWQi0NxeJku8GCEo8Wka7WzQakZh6Wl6kc2xEZ3WkGfmb9_C4MIgv-mgaJiOJWutxADlHAm1Gnpq7c17iKn-qpn6yyrVe_6c5qFf3mEZn8HSk7AbzAUOvELB0I5dAQruWae3F0egc",
+          "dp": "b2hoFOpMIYxRAlIuJTFeyYKl324q3s8swdKabUnkSqg-Dhb_CEohS_dDWbOzcVg3H1d_vPHfOLrMgVLgKdLQsOIoxqhBX1OYAuA65f5y53KnTNzAbpaOOeUiRBLw0NDrUQtlZeRxeT1EzyTh4viLK9L_uZ7-Y_JFJu35qHWoTpc",
+          "dq": "kHI3ZBNQ53h-fOYgukk0EEqAMgvJeLQFOIq5mmk9IqrG1Ng2aRuIzKs6QT-3Y9QIV6irV3a_qaxximQhv7_5MQ5Funklle2b2ysjIJvfBGybZbu95PsPR8lw5Ca2mIALcszhriHsooVtKmK_m-5VjR3uGdLIaonX4xK4jGCqors",
+          "n": "o2g7Oij5DltSx18cU8I8-tFY3y7H1Me0AOEOQrHgUXwxMsSqqpIDdM42jC4m-6xyigdzd7rPsoLzbN8m-Kalb1UCgBKM_MJRBmBYen-FZ-PHj9ilGk-NzQ631ZSa3LLoQmCycmKuaEhlFURi4GEy46Lo08BZmtaH0f6pdrgM6gtH7IT4nvyXWIbADuNZWWhurVQwrfGQRGk82qkM78EZ8c7ree0_I-w6WhfimvZcSGrKhZIVD2n7Oi7nWOWZt7bv5tNDwJTAKniWgBg2j6zN6mYGqbVLhelnDAGhEWzSH8kYtl7x3JJkKIxrZgZxC7acqZ45befvsb71sGa1weEjDQ"
+        }
+      ]
+    }
+  accessRules: |-
+    [
+      {
+        "id": "hasura",
+        "upstream": {
+          "preserve_host": true,
+          "url": "http://hasura.isphere-services:8080"
+        },
+        "match": {
+          "url": "https://hasura.git.i-sphere.ru/console",
+          "methods": [ "GET", "POST" ],
+        },
+        "authenticators": [
+          {
+            "handler": "cookie_session"
+          }
+        ],
+        "authorizer": {
+          "handler": "allow"
+        },
+        "mutators": [
+          {
+            "handler": "id_token"
+          },
+          {
+            "handler": "header",
+            "config": {
+              "headers": {
+                "X-Hasura-Role": "user",
+                "X-Hasura-User-Id": "{{ print .Subject }}",
+                "X-Hasura-User-Email": "{{ print .Extra.email }}"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  managedAccessRules: true
+secret:
+  enabled: true
+  nameOverride: ""
+  secretAnnotations:
+    helm.sh/hook-weight: "0"
+    helm.sh/hook: "pre-install, pre-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation"
+    helm.sh/resource-policy: "keep"
+  mountPath: /etc/secrets
+  filename: mutator.id_token.jwks.json
+  hashSumEnabled: true
+deployment:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { }
+  resources: { }
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    privileged: false
+  lifecycle: { }
+  livenessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  startupProbe:
+    failureThreshold: 60
+    successThreshold: 1
+    periodSeconds: 1
+    timeoutSeconds: 1
+  customLivenessProbe: { }
+  customReadinessProbe: { }
+  customStartupProbe: { }
+  serviceAccount:
+    create: true
+    annotations: { }
+    name: ""
+  automountServiceAccountToken: false
+  nodeSelector: { }
+  extraEnv: [ ]
+  extraArgs: [ ]
+  extraVolumes: [ ]
+  extraVolumeMounts: [ ]
+  extraContainers: ""
+  extraInitContainers: ""
+  tolerations: [ ]
+  topologySpreadConstraints: [ ]
+  dnsConfig: { }
+  labels: { }
+  annotations: { }
+  podMetadata:
+    labels: { }
+    annotations: { }
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: { }
+    targetMemory: { }
+affinity: { }
+maester:
+  enabled: true
+pdb:
+  enabled: false
+  spec:
+    minAvailable: 1
+serviceMonitor:
+  scheme: http
+  scrapeInterval: 60s
+  scrapeTimeout: 30s
+  metricRelabelings: [ ]
+  relabelings: [ ]
+  labels: { }
+  tlsConfig: { }
+  targetLabels: [ ]
+configmap:
+  hashSumEnabled: true
+test:
+  labels: { }
+  busybox:
+    repository: busybox
+    tag: 1

@@ -1,0 +1,144 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+  - name: vendor
+    image: bitnami/golang:1.20
+    environment:
+      GIT_TOKEN: { from_secret: GIT_TOKEN }
+      GIT_USER: { from_secret: GIT_USER }
+      GOPRIVATE: git.i-sphere.ru
+    commands:
+      - echo "machine git.i-sphere.ru" > ~/.netrc
+      - echo "login $GIT_USER" >> ~/.netrc
+      - echo "password $GIT_TOKEN" >> ~/.netrc
+      - go mod vendor
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: golangci-lint
+    image: golangci/golangci-lint:latest-alpine
+    depends_on:
+      - vendor
+    commands:
+      - golangci-lint run
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: gocritic
+    image: jakewarren/gocritic:latest
+    depends_on:
+      - vendor
+    commands:
+      - gocritic check ./...
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: test
+    image: bitnami/golang:1.20
+    depends_on:
+      - golangci-lint
+      - gocritic
+    commands:
+      - go test ./... -v
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: build
+    image: plugins/kaniko
+    depends_on:
+      - test
+    environment:
+      container: kube
+      PLUGIN_CACHE_REPO: "${DRONE_REPO}"
+      PLUGIN_CONTEXT: .
+      PLUGIN_DOCKERFILE: Dockerfile
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_PASSWORD: { from_secret: GIT_TOKEN }
+      PLUGIN_REGISTRY: git.i-sphere.ru
+      PLUGIN_REPO: "${DRONE_REPO}"
+      PLUGIN_TAGS: "${DRONE_COMMIT_BRANCH}"
+      PLUGIN_TARGET: prod
+      PLUGIN_USERNAME: { from_secret: GIT_USER }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      CI_REGISTRY_IMAGE: "git.i-sphere.ru/isphere-go-modules/phones"
+      D00_TOKEN: { from_secret: D00_TOKEN }
+      D0O_URL: { from_secret: D0O_URL }
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+      MESSENGER_TRANSPORT_DSN: { from_secret: MESSENGER_TRANSPORT_DSN }
+      KEYDB_ADDR: { from_secret: KEYDB_ADDR }
+      KEYDB_PASSWORD: { from_secret: KEYDB_PASSWORD }
+      KEYDB_DATABASE: { from_secret: KEYDB_DATABASE }
+      KEYDB_KEY: { from_secret: KEYDB_KEY }
+      KEYDB_DEFAULT_TTL: { from_secret: KEYDB_DEFAULT_TTL }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: DOCKER
+get: { path: settings-kube, name: DOCKER }
+
+---
+kind: secret
+name: DOMAIN
+get: { path: settings-kube, name: DOMAIN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }
+

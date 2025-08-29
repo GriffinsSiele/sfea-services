@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}" data-bs-theme="{{ app.request.cookies.get('data-bs-theme') }}">
+<head>
+    <meta charset="{{ _charset }}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>{% block title %}iSphere{% endblock %}</title>
+
+    {% block stylesheets %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+              crossorigin="anonymous"/>
+
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
+              rel="stylesheet"/>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet"/>
+
+        <style type="text/css">
+            html {
+                font-size: 14px;
+            }
+
+            body {
+                font-family: Ubuntu, sans-serif;
+                background-attachment: fixed;
+                background-color: var(--bs-body-bg);
+                background-image: radial-gradient(var(--bs-secondary-bg) 1px, transparent 0);
+                background-size: 15px 15px;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+            }
+
+            #root {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            #aside {
+                background-color: var(--bs-body-bg);
+                overflow: auto;
+                z-index: 5;
+                min-width: 230px;
+            }
+
+            #main {
+                position: relative;
+            }
+
+            nav {
+                line-height: 2;
+            }
+
+            nav a {
+                display: block;
+            }
+
+            nav span {
+                font-weight: bold;
+            }
+
+            nav span:before {
+                font-weight: normal;
+                content: '▶';
+                font-style: normal;
+                margin-right: .5ex;
+                opacity: .15;
+                margin-left: -1.1rem;
+            }
+
+            #top-menu .current {
+                position: relative;
+            }
+
+            #top-menu .current a {
+                font-weight: bold;
+            }
+
+            #header {
+                background: var(--bs-navbar-color);
+                -webkit-backdrop-filter: blur(var(--bs-border-radius-sm));
+                backdrop-filter: blur(var(--bs-border-radius-sm));
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 3;
+            }
+
+            #article {
+                height: 100%;
+                overflow: auto;
+                padding-top: 57px;
+            }
+
+            #top-menu a {
+                padding-left: .5rem;
+                padding-right: .5rem;
+            }
+
+            .divider-left {
+                border-left: 1px solid var(--bs-border-color);
+                padding-left: 1.5rem !important;
+                padding-top: .25rem;
+                margin-top: -.25rem;
+                padding-bottom: .25rem;
+                margin-bottom: -.25rem;
+            }
+
+            #mobile-navbar {
+                padding: 1rem 0;
+            }
+
+            #mobile-navbar li {
+                display: block;
+            }
+
+            #mobile-navbar .divider-left {
+                border-left: none;
+                padding: 0 !important;
+                margin: 0;
+            }
+
+            #mobile-navbar a {
+                padding: 0;
+            }
+
+            form .inline {
+                display: flex;
+                flex-wrap: wrap;
+                column-gap: 1.5rem;
+                padding-top: .5rem;
+                padding-bottom: .5rem;
+            }
+
+            .logo {
+                display: block;
+                width: 200px;
+                filter: invert(1) grayscale(1);
+                margin-top: -5px;
+            }
+
+            .logo_sm {
+                width: 100px;
+                margin: -1rem 0;
+            }
+
+            html[data-bs-theme="dark"] .logo {
+                filter: opacity(.75) grayscale(1);
+            }
+
+            .container + .container {
+                margin-top: 2rem;
+            }
+
+            .messages {
+                margin-top: 1rem;
+                position: fixed;
+                right: 1rem;
+                top: 49px;
+                z-index: 9;
+            }
+
+            .form-select.loading {
+                background-image: none;
+            }
+
+            .form-select + .form-select-spinner {
+                position: absolute;
+                right: .75rem; /* select border width */
+                top: 1px;
+                bottom: 0;
+                width: 16px;
+                display: none;
+                align-items: center;
+            }
+
+            .form-select.loading + .form-select-spinner {
+                display: flex;
+            }
+        </style>
+    {% endblock %}
+</head>
+<body>
+{% block root %}
+    <div id="root" class="container-fluid p-0 d-flex">
+        <aside id="aside" class="p-3 border-1 border-end shadow d-none d-lg-block">
+            <a href="{{ path('default') }}"
+               class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none">
+                <img src="https://static.tildacdn.com/tild6438-6237-4936-a562-316261356535/logo_for_header.png"
+                     alt="Инфосфера"
+                     class="logo"/>
+            </a>
+
+            <nav>
+                {{ knp_menu_render('main', {
+                    allow_safe_labels: true,
+                    currentAsLink: false,
+                }) }}
+            </nav>
+        </aside>
+
+        <main id="main" class="flex-grow-1">
+            <header id="header" class="border-1 border-bottom p-3 shadow">
+                <div class="d-flex justify-content-end d-none d-lg-flex">
+                    {{ knp_menu_render('top', {
+                        allow_safe_labels: true,
+                    }) }}
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between d-lg-none">
+                    <a href="{{ path('default') }}"
+                       class="d-flex align-items-center link-body-emphasis text-decoration-none">
+                        <img src="https://static.tildacdn.com/tild6438-6237-4936-a562-316261356535/logo_for_header.png"
+                             alt="Инфосфера"
+                             class="logo logo_sm"/>
+                    </a>
+
+                    <a href="#" id="mobile-navbar-btn" data-target="#mobile-navbar">
+                        <i class="fa fa-solid fa-bars link-body-emphasis text-decoration-none"></i>
+                    </a>
+                </div>
+
+                <div id="mobile-navbar" class="d-none">
+                    {{ knp_menu_render('main', {
+                        allow_safe_labels: true,
+                        currentAsLink: false,
+                    }) }}
+
+                    {{ knp_menu_render('top', {
+                        allow_safe_labels: true,
+                        currentAsLink: false,
+                    }) }}
+                </div>
+            </header>
+
+            {% block article %}
+                <article id="article">
+                    <div class="pt-3 pb-3">
+                        {% block body %}{% endblock %}
+                    </div>
+                </article>
+            {% endblock %}
+        </main>
+    </div>
+{% endblock %}
+
+<div class="messages">
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }} alert-dismissible shadow">
+                {{ message | raw }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.bundle.min.js"
+            integrity="sha512-sH8JPhKJUeA9PWk3eOcOl8U+lfZTgtBXD41q6cO/slwxGHCxKcW45K4oPCUhHG7NMB4mbKEddVmPuTXtpbCbFA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
+    <script src="https://kit.fontawesome.com/3141174b1b.js"
+            crossorigin="anonymous"
+            data-auto-replace-svg="nest"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <script src="https://unpkg.com/imask"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/qs@6.11.2/dist/qs.min.js"></script>
+
+    <script type="app/x-template" id="data-list-helper-template">
+        <div class="navbar-collapse">
+            <div class="btn-group btn-group-sm mt-1">
+                <button class="btn btn-outline-secondary btn-sm"
+                        type="button"
+                        data-action="select-all">
+                    Выбрать все
+                </button>
+                <button class="btn btn-outline-secondary btn-sm"
+                        type="button"
+                        data-action="unselect-all">
+                    Снять все
+                </button>
+            </div>
+        </div>
+    </script>
+
+    <script defer>
+      // list helpers
+      document.addEventListener('DOMContentLoaded', function () {
+        const template = document.querySelector('#data-list-helper-template')
+
+        document.querySelectorAll('[data-list-helper]').forEach(container => {
+          const content = document.createElement('template')
+
+          content.innerHTML = template.innerHTML
+          container.appendChild(content.content)
+
+          container.addEventListener('click', function (e) {
+            const action = e.target.dataset.action
+            if (!action) {
+              return
+            }
+
+            if (action === 'select-all') {
+              container.querySelectorAll('input[type=checkbox]').forEach(checkbox => {
+                checkbox.checked = true
+              })
+            }
+            else if (action === 'unselect-all') {
+              container.querySelectorAll('input[type=checkbox]').forEach(checkbox => {
+                checkbox.checked = false
+              })
+            }
+          })
+        })
+      })
+    </script>
+
+    <script defer>
+      // dark mode
+      document.addEventListener('DOMContentLoaded', function () {
+        let darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+        updateMode()
+
+        darkModeMediaQuery.addEventListener('change', updateMode)
+        window.addEventListener('storage', updateMode)
+
+        function updateMode () {
+          let isSystemDarkMode = darkModeMediaQuery.matches
+          let isDarkMode = window.localStorage.isDarkMode === 'true' ||
+            (!('isDarkMode' in window.localStorage) && isSystemDarkMode)
+
+          if (isDarkMode) {
+            document.documentElement.setAttribute('data-bs-theme', 'dark')
+          }
+          else {
+            document.documentElement.setAttribute('data-bs-theme', 'light')
+          }
+
+          if (isDarkMode === isSystemDarkMode) {
+            delete window.localStorage.isDarkMode
+          }
+
+          document.cookie = `data-bs-theme=${isDarkMode ? 'dark' : 'light'}; path=/`
+        }
+
+        const toggleThemeButton = document.querySelector('#toggle-theme')
+
+        toggleThemeButton.addEventListener('click', function (e) {
+          e.preventDefault()
+
+          let isSystemDarkMode = darkModeMediaQuery.matches
+          let isDarkMode = window.localStorage.isDarkMode === 'true' ||
+            (!('isDarkMode' in window.localStorage) && isSystemDarkMode)
+
+          if (!isDarkMode) {
+            window.localStorage.setItem('isDarkMode', true)
+          }
+          else {
+            delete window.localStorage.isDarkMode
+          }
+
+          updateMode()
+        })
+      })
+    </script>
+
+    <script defer>
+      // highlight sources
+      document.addEventListener('DOMContentLoaded', function () {
+        hljs.highlightAll()
+      })
+    </script>
+
+    <script defer>
+      // app response waiter
+      function sleep (timeout) {
+        return new Promise(ok => setTimeout(ok, timeout))
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-app-response]').forEach(async code => {
+          const id = code.dataset.appId
+
+          for (; ;) {
+            const res = await fetch(`/showresult?id=${id}&mode=xml`)
+            const content = await res.text()
+            const template = document.createElement('template')
+
+            template.innerHTML = content
+
+            const response = template.content.querySelector('Response')
+            const status = parseInt(response.getAttribute('status'), 10)
+
+            const mode = code.dataset.appMode
+            let result
+
+            if (mode !== 'xml') {
+              const res = await fetch(`/showresult?id=${id}&mode=${mode}`)
+
+              result = await res.text()
+            }
+            else {
+              result = content
+            }
+
+            if (mode === 'xml') {
+              const fragment = document.createDocumentFragment()
+              const tmpPre = document.createElement('pre')
+              const tmpCode = document.createElement('code')
+
+              tmpCode.classList.add('language-xml')
+              tmpCode.textContent = result
+              tmpPre.appendChild(tmpCode)
+              fragment.appendChild(tmpPre)
+
+              code.innerHTML = ''
+              code.appendChild(fragment)
+
+              hljs.highlightElement(tmpCode)
+            }
+            else {
+              code.innerHTML = result
+            }
+
+            if (1 === status) {
+              break
+            }
+
+            await sleep(3000)
+          }
+        })
+      })
+    </script>
+
+    <script defer>
+      // input masks
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-imask]').forEach(imask => {
+          let mask = imask.dataset.imaskMask
+          if (mask) {
+            if (/^\//.test(mask)) {
+              mask = new RegExp(mask.replace(/^\//, '').replace(/\/$/, ''))
+            }
+
+            IMask(imask, {
+              mask,
+            })
+          }
+
+          let min = imask.dataset.imaskRangeMin
+          let max = imask.dataset.imaskRangeMax
+          if (min !== undefined && max !== undefined) {
+            min = parseInt(min, 10)
+            max = parseInt(max, 10)
+            IMask(imask, {
+              mask: IMask.MaskedRange,
+              from: min,
+              to: max,
+            })
+          }
+
+          if (imask.dataset.imaskPhone) {
+            const regions = JSON.parse(imask.dataset.imaskPhoneRegions || '[RU]') || ['RU']
+            const masks = []
+
+            if (regions.includes('RU')
+              || regions.includes('KZ')) {
+              masks.push({
+                mask: '+{7} (000) 000-00-00',
+              })
+            }
+
+            if (regions.includes('UZ')) {
+              masks.push({
+                mask: '+{998} 00-000-0000',
+              })
+            }
+
+            if (regions.includes('BG')) {
+              masks.push({
+                mask: '+{359} (000) 000-000',
+              })
+            }
+
+            if (regions.includes('RO')) {
+              masks.push({
+                mask: '+{40} 00-000-0000',
+              })
+            }
+
+            if (regions.includes('PL')) {
+              masks.push({
+                mask: '+{48} (000) 000-000',
+              })
+            }
+
+            if (regions.includes('PT')) {
+              masks.push({
+                mask: '+{351} 00-000-0000',
+              })
+            }
+
+            IMask(imask, {
+              mask: masks,
+            })
+          }
+        })
+      })
+    </script>
+
+    <script defer>
+      // mobile features
+      document.addEventListener('DOMContentLoaded', function () {
+        const menuToggleBtn = document.querySelector('#mobile-navbar-btn')
+        const menu = document.querySelector(menuToggleBtn.dataset.target)
+
+        menuToggleBtn.addEventListener('click', function (e) {
+          e.preventDefault()
+          menu.classList.toggle('d-none')
+        })
+      })
+    </script>
+
+    <script defer>
+      // pagination
+      document.addEventListener('DOMContentLoaded', function () {
+        const select = document.querySelector('#total-pages')
+
+        if (!select) {
+          return
+        }
+
+        select.addEventListener('change', function (e) {
+          e.preventDefault()
+
+          const args = JSON.parse(select.dataset.args)
+          args.limit = parseInt(select.value, 10)
+
+          const host = document.location.href.split('?')[0]
+          document.location.href = `${host}?${Qs.stringify(args)}`
+        })
+      })
+    </script>
+
+    <script defer>
+      // messages
+
+      function notice (type, message) {
+        const fragment = document.createDocumentFragment()
+        const container = document.createElement('div')
+
+        container.classList.add('alert')
+        container.classList.add(`alert-${type}`)
+        container.classList.add('alert-dismissible')
+        container.classList.add('shadow')
+        container.textContent = message
+
+        const button = document.createElement('button')
+
+        button.setAttribute('type', 'button')
+        button.classList.add('btn-close')
+        button.dataset.bsDismiss = 'alert'
+        container.appendChild(button)
+        fragment.appendChild(container)
+
+        document.querySelector('.messages').appendChild(fragment)
+
+        setTimeout(function () {
+          container.hidden = true
+        }, 5000)
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.messages .alert').forEach(message => {
+          setTimeout(function () {
+            message.hidden = true
+          }, 5000)
+        })
+      })
+    </script>
+{% endblock %}
+</body>
+</html>
+

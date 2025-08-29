@@ -1,0 +1,6 @@
+apiVersion: v2
+name: local-volume storage
+description: Local volume storage
+type: application
+version: '1688031764'
+appVersion: '1688031764'

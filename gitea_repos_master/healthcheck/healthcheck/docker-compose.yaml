@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - path: .env
+        required: true
+      - path: .env.local
+        required: false
+    ports:
+      - '8000:8000/tcp'

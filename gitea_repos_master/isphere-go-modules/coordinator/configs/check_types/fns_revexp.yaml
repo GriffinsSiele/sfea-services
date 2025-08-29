@@ -1,0 +1,46 @@
+check_types:
+  fns_revexp:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fns_revexp, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_revexp }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              fns_revexp(where: {inn: {_eq: $inn}}) {
+                  inn
+                  income
+                  expense
+                  updated_at
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .fns_revexp }}
+          - Type:                     revexp
+            inn:                      {{ Quote .inn }}
+            date:                     {{ Quote .updated_at }}
+            sumIncome:    !!float     {{ .income }}
+            sumExpense:   !!float     {{ .expense }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: { type: string, enum: [revexp] }
+          inn: { type: string }
+          date: { type: string, format: date }
+          sumIncome: { type: number }
+          sumExpense: { type: number }

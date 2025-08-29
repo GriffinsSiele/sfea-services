@@ -1,0 +1,27 @@
+services:
+  Symfony\Component\Templating\Helper\SlotsHelper: ~
+
+  Symfony\Component\Templating\Loader\FilesystemLoader:
+    arguments:
+      - - '%twig.default_path%/%%name%%'
+    calls:
+      - [ setLogger, [ '@logger' ] ]
+
+  Symfony\Component\Templating\PhpEngine:
+    arguments:
+      - '@Symfony\Component\Templating\TemplateNameParser'
+      - '@Symfony\Component\Templating\Loader\FilesystemLoader'
+    calls:
+      - [ set, [ '@Symfony\Component\Templating\Helper\SlotsHelper' ] ]
+      - [ addGlobal, [ 'cbrConnection', '@doctrine.dbal.cbr_connection' ] ]
+      - [ addGlobal, [ 'commerceConnection', '@doctrine.dbal.commerce_connection' ] ]
+      - [ addGlobal, [ 'connection', '@doctrine.dbal.default_connection' ] ]
+      - [ addGlobal, [ 'fedsfmConnection', '@doctrine.dbal.fedsfm_connection' ] ]
+      - [ addGlobal, [ 'fnsConnection', '@doctrine.dbal.fns_connection' ] ]
+      - [ addGlobal, [ 'menu', '@knp_menu.helper' ] ]
+      - [ addGlobal, [ 'messageBus', '@Symfony\Component\Messenger\MessageBusInterface' ] ]
+      - [ addGlobal, [ 'rossvyazConnection', '@doctrine.dbal.rossvyaz_connection' ] ]
+      - [ addGlobal, [ 'statsConnection', '@doctrine.dbal.stats_connection' ] ]
+      - [ addGlobal, [ 'vkConnection', '@doctrine.dbal.vk_connection' ] ]
+
+  Symfony\Component\Templating\TemplateNameParser: ~

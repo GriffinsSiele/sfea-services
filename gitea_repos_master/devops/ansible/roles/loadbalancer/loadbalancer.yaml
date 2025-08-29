@@ -1,0 +1,18 @@
+---
+# ansible-playbook ./loadbalancer.yaml -i ./hosts.txt -e "hosts=lb"
+
+- hosts: "{{ hosts }}"
+  become: true
+  become_method: sudo
+  #become_flags: '-H'
+  gather_facts: false
+  #vars_files: 
+  #  - "../group_vars/lb.yaml" 
+  #  - "../group_vars/keepalived.yaml" 
+
+  roles:
+    - role: haproxy
+      tags: haproxy
+
+    - role: keepalived
+      tags: keepalived

@@ -1,0 +1,2 @@
+# auto-registry-bulk
+

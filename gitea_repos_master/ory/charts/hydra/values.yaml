@@ -1,0 +1,262 @@
+replicaCount: 1
+image:
+  repository: oryd/hydra
+  tag: v2.1.1
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+service:
+  public:
+    enabled: true
+    type: ClusterIP
+    loadBalancerIP: ""
+    port: 4444
+    name: http
+    annotations: {}
+    labels: {}
+  admin:
+    enabled: true
+    type: ClusterIP
+    loadBalancerIP: ""
+    port: 4445
+    name: http
+    annotations: {}
+    labels: {}
+    metricsPath: /admin/metrics/prometheus
+secret:
+  enabled: true
+  nameOverride: ""
+  secretAnnotations:
+    helm.sh/hook-weight: "0"
+    helm.sh/hook: "pre-install, pre-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation"
+    helm.sh/resource-policy: "keep"
+  hashSumEnabled: true
+ingress:
+  public:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      certmanager.k8s.io/acme-challenge-type: http01
+    hosts:
+      - host: ory-hydra-public-master.git.i-sphere.ru
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - secretName: ory-hydra-public-master.git.i-sphere.ru
+        hosts:
+          - ory-hydra-public-master.git.i-sphere.ru
+  admin:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - host: admin.hydra.localhost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+hydra:
+  config:
+    dsn: postgres://hydra:UYuj7m35l2INBc0OMpT01THGDwvzxHGGh37EycX2fHzIa7GoEZrX1neMFWEEMH9F@hydra-cluster.isphere-services:5432/hydra
+    log:
+      leak_sensitive_values: true
+      level: info
+    secrets:
+      cookie:
+        - 2X53e2zKveWrn8nECtg7bYPDgvRQMNth
+        - ta49M2BzvvjWevshyUVhSdRXyLJt4dpC
+        - HmVUTfcJ4pYxBQQdYQEqpU6BY3qr9V5B
+        - x7wgnsJAv5CrHE3hAfuegNJskc3TNZKF
+      system:
+        - BNvHaxUBEZa5n5cmeva5Dfg4FZjTuXmr
+        - bLbaZazewcSYQTeWmVwdMV9LwLT4v3Am
+        - YjuF5BjBaZmRuUATYj8VzbXfg6z84SV9
+        - Ua3jyFmuE4rufAADKLAP9Yd24vuMD2zk
+    urls:
+      self:
+        issuer: https://git.i-sphere.ru
+      login: https://isphere-services-account-master.git.i-sphere.ru/login
+      consent: https://isphere-services-account-master.git.i-sphere.ru/consent
+      error: https://isphere-services-account-master.git.i-sphere.ru/error
+      logout: https://isphere-services-account-master.git.i-sphere.ru/logout
+      post_logout_redirect: https://isphere-services-account-master.git.i-sphere.ru/logout
+    serve:
+      public:
+        port: 4444
+      admin:
+        port: 4445
+  automigration:
+    enabled: true
+    type: job
+    customCommand: []
+    customArgs: []
+    resources: {}
+  dev: false
+deployment:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {}
+  resources: {}
+  initContainerSecurityContext: {}
+  podSecurityContext: {}
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 100
+    allowPrivilegeEscalation: false
+    privileged: false
+  lifecycle: {}
+  labels: {}
+  annotations: {}
+  podMetadata:
+    labels: {}
+    annotations: {}
+  nodeSelector: {}
+  extraEnv: []
+  automigration:
+    extraEnv: []
+  tolerations: []
+  topologySpreadConstraints: []
+  dnsConfig: {}
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+  extraVolumes: []
+  extraVolumeMounts: []
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPU: {}
+    targetMemory: {}
+  livenessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  startupProbe:
+    failureThreshold: 60
+    successThreshold: 1
+    periodSeconds: 1
+    timeoutSeconds: 1
+  automountServiceAccountToken: true
+  extraInitContainers: ""
+  extraContainers: ""
+  customLivenessProbe: {}
+  customReadinessProbe: {}
+  customStartupProbe: {}
+job:
+  annotations:
+    helm.sh/hook-weight: "1"
+    helm.sh/hook: "pre-install, pre-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation"
+  labels: {}
+  extraContainers: ""
+  extraEnv: []
+  podMetadata:
+    labels: {}
+    annotations: {}
+  extraInitContainers: ""
+  nodeSelector: {}
+  tolerations: []
+  lifecycle: ""
+  automountServiceAccountToken: true
+  shareProcessNamespace: false
+  serviceAccount:
+    create: true
+    annotations:
+      helm.sh/hook-weight: "0"
+      helm.sh/hook: "pre-install, pre-upgrade"
+      helm.sh/hook-delete-policy: "before-hook-creation"
+    name: ""
+  spec:
+    backoffLimit: 10
+affinity: {}
+maester:
+  enabled: true
+hydra-maester:
+  adminService:
+    name: ""
+    port:
+watcher:
+  enabled: false
+  image: oryd/k8s-toolbox:0.0.5
+  mountFile: ""
+  podMetadata:
+    labels: {}
+    annotations: {}
+  watchLabelKey: "ory.sh/watcher"
+  podSecurityContext: {}
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 100
+    allowPrivilegeEscalation: false
+    privileged: false
+janitor:
+  enabled: false
+  cleanupGrants: false
+  cleanupRequests: false
+  cleanupTokens: false
+  batchSize: 100
+  limit: 10000
+cronjob:
+  janitor:
+    schedule: "0 */1 * * *"
+    customArgs: []
+    labels: {}
+    annotations: {}
+    podMetadata:
+      labels: {}
+      annotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 100
+      allowPrivilegeEscalation: false
+      privileged: false
+    podSecurityContext: {}
+    resources:
+      limits: {}
+      requests: {}
+pdb:
+  enabled: false
+  spec:
+    minAvailable: 1
+serviceMonitor:
+  enabled: true
+  scheme: http
+  scrapeInterval: 60s
+  scrapeTimeout: 30s
+  labels: {}
+  tlsConfig: {}
+configmap:
+  hashSumEnabled: true
+test:
+  labels: {}
+  busybox:
+    repository: busybox
+    tag: 1

@@ -1,0 +1,5 @@
+---
+
+new_user_name: 
+new_user_password: ''
+# mkpasswd --method=sha-512 - команда для создания хэша пароля

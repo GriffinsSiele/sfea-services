@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-update-sessions-0
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.update_sessions.replicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: update-sessions
+          image: "{{ .Values.update_sessions.image.repository }}:{{ .Values.update_sessions.image.tag }}"
+          imagePullPolicy: {{ .Values.update_sessions.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap-update-sessions
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets-update-sessions
+          resources:
+            {{- toYaml .Values.update_sessions.resources | nindent 12 }}
+          command:
+            - sh
+            - "-c"
+            - "while true; do bin/console app:update-sessions 0 --timeless || break; sleep 5; done;"
+          volumeMounts:
+            - mountPath: /var/www/html/var/log
+              name: {{ include "chart.fullname" . }}-pvc
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ include "chart.fullname" . }}-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "chart.fullname" . }}-pvc

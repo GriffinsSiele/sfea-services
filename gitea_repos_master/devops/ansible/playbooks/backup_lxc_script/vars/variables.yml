@@ -1,0 +1,7 @@
+script_dir: /root/backup_script
+
+src_backup_lxc_script: ./templates/backup_lxc.sh.j2
+dest_backup_lxc_script: /root/backup_script/backup_lxc.sh
+
+chat_id: ''
+api_token: ''

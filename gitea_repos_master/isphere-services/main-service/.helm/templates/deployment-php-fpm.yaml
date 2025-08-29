@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-php-fpm
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.php_fpm.replicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}-php-fpm
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}-php-fpm
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: web
+    spec:
+      initContainers:
+        - name: doctrine-migrations
+          image: "{{ .Values.php_fpm.image.repository }}:{{ .Values.php_fpm.image.tag }}"
+          imagePullPolicy: {{ .Values.php_fpm.image.pullPolicy }}
+          command: [ 'bin/console', 'doctrine:migrations:migrate', '--no-interaction' ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap-php-fpm
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets-php-fpm
+        - name: cache-warmup
+          image: "{{ .Values.php_fpm.image.repository }}:{{ .Values.php_fpm.image.tag }}"
+          imagePullPolicy: {{ .Values.php_fpm.image.pullPolicy }}
+          command: [ 'bin/console', 'cache:warmup' ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap-php-fpm
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets-php-fpm
+        - name: assets-install
+          image: "{{ .Values.php_fpm.image.repository }}:{{ .Values.php_fpm.image.tag }}"
+          imagePullPolicy: {{ .Values.php_fpm.image.pullPolicy }}
+          command: [ 'bin/console', 'assets:install', '--symlink' ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap-php-fpm
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets-php-fpm
+      containers:
+        - name: php-fpm
+          image: "{{ .Values.php_fpm.image.repository }}:{{ .Values.php_fpm.image.tag }}"
+          imagePullPolicy: {{ .Values.php_fpm.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.php_fpm.service.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap-php-fpm
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets-php-fpm
+          resources:
+            {{- toYaml .Values.php_fpm.resources | nindent 12 }}
+          livenessProbe:
+            exec:
+              command:
+                - set -ex
+                - sh -c
+                - |
+                  curl -H "Connection: close" http://{{ include "chart.name" . }}-php-fpm:80/api/v1/healthcheck
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          volumeMounts:
+            - mountPath: /var/www/html/var/log
+              name: {{ include "chart.fullname" . }}-pvc
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ include "chart.fullname" . }}-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "chart.fullname" . }}-pvc

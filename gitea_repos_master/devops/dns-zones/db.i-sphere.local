@@ -1,0 +1,275 @@
+$TTL    604800
+@       IN      SOA     ns-timeweb-master.i-sphere.local. admin.i-sphere.local. (
+                        89      ; Serial
+                        604800  ; Refresh
+                        86400   ; Retry
+                        2419200 ; Expire
+                        604800  ; Negative Cache TTL
+                        )
+
+; name servers - NS records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    IN      NS      ns-timeweb-master.i-sphere.local.
+    IN      NS      ns-gaydary-pve1.i-sphere.local.
+    IN      NS      ns-gaydary-pve2.i-sphere.local.
+    IN      NS      ns-rnd-pve1.i-sphere.local.
+    IN      NS      ns-rnd-pve2.i-sphere.local.
+    IN      NS      ns-msk-pve1.i-sphere.local.
+    IN      NS      ns-msk-pve2.i-sphere.local.
+    IN      NS      ns-msk-pve3.i-sphere.local.
+    IN      NS      ns-msk-pve4.i-sphere.local.
+    IN      NS      ns-msk-pve5.i-sphere.local.
+    IN      NS      ns-msk-pve6.i-sphere.local.
+    IN      NS      ns-stupino-pve1.i-sphere.local.
+    IN      NS      ns-stupino-pve2.i-sphere.local.
+    IN      NS      ns-stupino-pve3.i-sphere.local.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; name servers - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ns-timeweb-master.i-sphere.local.               IN      A       172.16.2.1
+ns-gaydary-pve1.i-sphere.local.                 IN      A       172.16.161.1
+ns-gaydary-pve2.i-sphere.local.                 IN      A       172.16.161.100
+ns-rnd-pve1.i-sphere.local.                     IN      A       172.16.61.1
+ns-rnd-pve2.i-sphere.local.                     IN      A       172.16.61.100
+ns-msk-pve1.i-sphere.local.                     IN      A       172.16.77.0
+ns-msk-pve2.i-sphere.local.                     IN      A       172.16.177.0
+ns-msk-pve3.i-sphere.local.                     IN      A       172.16.97.0
+ns-msk-pve4.i-sphere.local.                     IN      A       172.16.199.0
+ns-msk-pve5.i-sphere.local.                     IN      A       172.16.197.0
+ns-msk-pve6.i-sphere.local.                     IN      A       172.16.197.100
+ns-stupino-pve1.i-sphere.local.                 IN      A       172.16.50.0
+ns-stupino-pve2.i-sphere.local.                 IN      A       172.16.150.0
+ns-stupino-pve3.i-sphere.local.                 IN      A       172.16.50.100
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; PVE hosts - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+gaydary-pve1.i-sphere.local.                    IN      A       172.16.161.1
+gaydary-pve2.i-sphere.local.                    IN      A       172.16.161.100
+rnd-pve1.i-sphere.local.                        IN      A       172.16.61.1
+rnd-pve2.i-sphere.local.                        IN      A       172.16.61.100
+msk-pve1.i-sphere.local.                        IN      A       172.16.77.0
+msk-pve2.i-sphere.local.                        IN      A       172.16.177.0
+msk-pve3.i-sphere.local.                        IN      A       172.16.97.0
+msk-pve4.i-sphere.local.                        IN      A       172.16.199.0
+msk-pve5.i-sphere.local.                        IN      A       172.16.197.0
+msk-pve6.i-sphere.local.                        IN      A       172.16.197.100
+stupino-pve1.i-sphere.local.                    IN      A       172.16.50.0
+stupino-pve2.i-sphere.local.                    IN      A       172.16.150.0
+stupino-pve3.i-sphere.local.                    IN      A       172.16.50.100
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; GAYDARY-PVE1 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+gaydary-worker-01.i-sphere.local.               IN      A       172.16.161.11
+gaydary-worker-02.i-sphere.local.               IN      A       172.16.161.12
+gaydary-worker-03.i-sphere.local.               IN      A       172.16.161.13
+stage-gaydary-master.i-sphere.local.            IN      A       172.16.161.14
+zbx-proxy-gaydary.i-sphere.local.               IN      A       172.16.161.15
+dev-pgsql-gaydary.i-sphere.local.               IN      A       172.16.161.16
+dev-clickhouse-gaydary.i-sphere.local.          IN      A       172.16.161.17
+kube-test3gayd.i-sphere.local.                  IN      A       172.16.161.18
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; GAYDARY-PVE2 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+rabbitmq-gaydary.i-sphere.local.                IN      A       172.16.161.101
+prod-gaydary-master.i-sphere.local.             IN      A       172.16.161.102
+prod-gaydary-worker-01.i-sphere.local.          IN      A       172.16.161.103
+prod-gaydary-loadbalancer-01.i-sphere.local.	IN      A       172.16.161.104
+prod-gaydary-worker-02.i-sphere.local.          IN      A       172.16.161.105
+prod-gaydary-worker-03.i-sphere.local.          IN      A       172.16.161.106
+test-minio-03.i-sphere.local.                   IN      A       172.16.161.107
+prod-pgsql-gaydary.i-sphere.local.              IN      A       172.16.161.108
+mongodb-0.i-sphere.local.                       IN      A       172.16.197.1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; RND-PVE1 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+test-analytics.i-sphere.local.                  IN      A       172.16.99.12
+test-minio-01.i-sphere.local.                   IN      A       172.16.61.6
+rnd-worker-01.i-sphere.local.                   IN      A       172.16.61.11
+rnd-worker-02.i-sphere.local.                   IN      A       172.16.61.12
+rnd-worker-03.i-sphere.local.                   IN      A       172.16.61.13
+rnd-master.i-sphere.local.                      IN      A       172.16.61.14
+kube-test2rnd.i-sphere.local.                   IN      A       172.16.61.15
+zbx-proxy-rnd.i-sphere.local.                   IN      A       172.16.61.16
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; RND-PVE2 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+prod-rnd-master.i-sphere.local.                 IN      A       172.16.61.101
+prod-rnd-worker-01.i-sphere.local.              IN      A       172.16.61.102
+prod-rnd-worker-02.i-sphere.local.              IN      A       172.16.61.103
+prod-rnd-worker-03.i-sphere.local.              IN      A       172.16.61.104
+prod-rnd-loadbalancer-01.i-sphere.local.        IN      A       172.16.61.105
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; MSK-PVE1 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+msk-worker-01.i-sphere.local.                   IN      A       172.16.77.1
+msk-worker-02.i-sphere.local.                   IN      A       172.16.77.2
+dev-pgsql-vidnoe.i-sphere.local.                IN      A       172.16.77.11
+dev-clickhouse-vidnoe.i-sphere.local.           IN      A       172.16.77.7
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; MSK-PVE2 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+msk-master-10.i-sphere.local.                   IN      A       172.16.1.4
+msk-worker-11.i-sphere.local.                   IN      A       172.16.177.1
+msk-worker-12.i-sphere.local.                   IN      A       172.16.177.2
+prod-vidnoe-master.i-sphere.local.              IN      A       172.16.177.4
+prod-vidnoe-worker-01.i-sphere.local.           IN      A       172.16.177.5
+prod-vidnoe-loadbalancer-01.i-sphere.local.     IN      A       172.16.177.6
+prod-vidnoe-worker-02.i-sphere.local.           IN      A       172.16.177.7
+prod-vidnoe-worker-03.i-sphere.local.           IN      A       172.16.177.8
+prod-pgsql-vidnoe.i-sphere.local.               IN      A       172.16.177.9
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; MSK-PVE3 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+capmonster.i-sphere.local.                      IN      A       172.16.97.6
+zabbix.i-sphere.local.                          IN      A       172.16.97.8
+zabbix-vidnoe.i-sphere.local.                   IN      A       172.16.97.8
+docker.i-sphere.local.                          IN      A       172.16.97.10
+glitchtip.i-sphere.local.                       IN      A       172.16.97.10
+redmine.i-sphere.local.                         IN      A       172.16.97.10
+jaeger.i-sphere.local.                          IN      A       172.16.97.10
+hoppscotch.i-sphere.local.                      IN      A       172.16.97.10
+msk-worker-92.i-sphere.local.                   IN      A       172.16.97.13
+plantuml.i-sphere.local.                        IN      A       172.16.97.10
+selenium.i-sphere.local.                        IN      A       172.16.97.10
+selenium-ui.i-sphere.local.                     IN      A       172.16.97.10
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; MSK-PVE4 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+clickhouse.i-sphere.local.                      IN      A       172.16.199.2
+datalens.i-sphere.local.                        IN      A       172.16.199.2
+kafka.i-sphere.local.                           IN      A       172.16.199.2
+kafka-ui.i-sphere.local.                        IN      A       172.16.199.2
+mongodb-1.i-sphere.local.                       IN      A       172.16.199.8
+test-minio-02.i-sphere.local.                   IN      A       172.16.199.7
+mysql-s2.i-sphere.local.                        IN      A       172.16.199.9
+haproxy-test.i-sphere.local.                    IN      A       172.16.199.10
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; MSK-PVE5 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; MSK-PVE6 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; STUPINO-PVE1 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+dev-pgsql-stupino.i-sphere.local.               IN      A       172.16.50.2
+stupino-master.i-sphere.local.                  IN      A       172.16.50.3
+stupino-worker-01.i-sphere.local.               IN      A       172.16.50.4
+stupino-worker-02.i-sphere.local.               IN      A       172.16.50.5
+stupino-worker-03.i-sphere.local.               IN      A       172.16.50.6
+dev-clickhouse-stupino.i-sphere.local.          IN      A       172.16.50.7
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; STUPINO-PVE2 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+prod-stupino-master.i-sphere.local.             IN      A       172.16.150.1
+prod-stupino-worker-01.i-sphere.local.          IN      A       172.16.150.2
+prod-stupino-loadbalancer-01.i-sphere.local.    IN      A       172.16.150.3
+prod-stupino-worker-02.i-sphere.local.          IN      A       172.16.150.4
+prod-stupino-worker-03.i-sphere.local.          IN      A       172.16.150.5
+prod-pgsql-stupino.i-sphere.local.              IN      A       172.16.150.6
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; STUPINO-PVE3 VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+keydb-stupino.i-sphere.local.                   IN      A       172.16.50.101
+rabbitmq-stupino.i-sphere.local.                IN      A       172.16.50.102
+mongodb.i-sphere.local.                         IN      A       172.16.50.104
+mongodb-2.i-sphere.local.                       IN      A       172.16.50.108
+test-minio-04.i-sphere.local.                   IN      A       172.16.50.107
+mysql-s3.i-sphere.local.                        IN      A       172.16.50.109
+zabbix-stupino.i-sphere.local.                  IN      A       172.16.50.111
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; kube-master{1-10} - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+kube-master.i-sphere.local.                     IN      A       172.16.2.1
+kube-master1.i-sphere.local.                    IN      A       172.16.2.1
+kube-master2.i-sphere.local.                    IN      A       172.16.70.100
+kube-master3.i-sphere.local.                    IN      A       172.16.70.100
+kube-master4.i-sphere.local.                    IN      A       172.16.70.100
+kube-master5.i-sphere.local.                    IN      A       172.16.70.100
+kube-master6.i-sphere.local.                    IN      A       172.16.70.100
+kube-master7.i-sphere.local.                    IN      A       172.16.70.100
+kube-master8.i-sphere.local.                    IN      A       172.16.70.100
+kube-master9.i-sphere.local.                    IN      A       172.16.70.100
+kube-master10.i-sphere.local.                   IN      A       172.16.70.100
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; TIMEWEB VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+timeweb-master.i-sphere.local.                  IN      A       172.16.2.1
+prod-mysql-timeweb.i-sphere.local.              IN      A       172.16.2.10
+zabbix-timeweb.i-sphere.local.                  IN      A       172.16.2.20
+wg-frr-msk.i-sphere.local.                      IN      A       172.16.2.50
+stage-timeweb-master.i-sphere.local.            IN      A       172.16.2.100
+pl-worker-01.i-sphere.local.                    IN      A       172.16.100.50
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; 1CLOUD VM'S - A records
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+1cloud-database.i-sphere.local.                 IN      A       172.16.99.1
+main.i-sphere.local.                            IN      A       172.16.99.3
+mysql.i-sphere.local.                           IN      A       172.16.99.4
+1cloud.i-sphere.local.                          IN      A       172.16.1.1
+kz-worker-01.i-sphere.local.                    IN      A       172.16.100.100
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+adm-k8s.i-sphere.local.                         IN      A       172.16.2.224
+dev-pgsql-primary.i-sphere.local.               IN      A       172.16.2.224
+dev-pgsql-standbys.i-sphere.local.              IN      A       172.16.2.224
+prod-pgsql-primary.i-sphere.local.              IN      A       172.16.2.224
+prod-pgsql-standbys.i-sphere.local.             IN      A       172.16.2.224
+
+tor-proxy.i-sphere.local.                       IN      A       172.16.0.2
+prod-keydb.i-sphere.local.                      IN      A       172.16.0.3
+tor-proxy-ru.i-sphere.local.                    IN      A       172.16.0.4
+
+auth.i-sphere.local.                            IN      A       172.16.0.6
+prod-rabbitmq-simple.i-sphere.local.            IN      A       172.16.0.7
+
+main-service-foreign-handler.i-sphere.local.    IN      A       172.16.0.8
+main-service-api.i-sphere.local.                IN      A       172.16.0.9
+main-service.i-sphere.local.                    IN      A       172.16.0.10
+main-service-frontend.i-sphere.local.           IN      A       172.16.0.16
+
+captcha-image-api.i-sphere.local.               IN      A       172.16.0.65
+keydb.i-sphere.local.                           IN      A       172.16.0.66
+rabbitmq.i-sphere.local.                        IN      A       172.16.0.67
+
+minio.i-sphere.local.                           IN      A       172.16.2.224
+
+git.i-sphere.local.                             IN      A       172.16.0.128
+gitea-ssh.i-sphere.local.                       IN      A       172.16.0.128
+
+dashboard.i-sphere.local.                       IN      A       172.16.0.71
+wiki.i-sphere.local.                            IN      A       172.16.0.73
+proxphere.i-sphere.local.                       IN      A       172.16.0.74
+drone.i-sphere.local.                           IN      A       172.16.0.77
+grafana.i-sphere.local.                         IN      A       172.16.0.78
+hasura.i-sphere.local.                          IN      A       172.16.0.79
+portainer.i-sphere.local.                       IN      A       172.16.0.80
+proxphere-simple.i-sphere.local.                IN      A       172.16.0.81
+balance-monitoring-api.i-sphere.local.          IN      A       172.16.0.82
+loki-gateway.i-sphere.local.                    IN      A       172.16.0.83
+prometheus.i-sphere.local.                      IN      A       172.16.0.84
+get-proxies.i-sphere.local.                     IN      A       172.16.0.86
+statsd.i-sphere.local.                          IN      A       172.16.0.90
+
+main-service-staging.i-sphere.local.            IN      A       172.16.0.96
+spider-discovery.i-sphere.local.                IN      A       172.16.0.97

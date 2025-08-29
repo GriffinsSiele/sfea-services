@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: reload-keydb
+  namespace: keydb
+spec:
+  schedule: "30 4 * * 3,6"  # Запуск в полночь по понедельникам и четвергам
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: keydb-reloader-sa
+          containers:
+          - name: reload
+            image: bitnami/kubectl:latest
+            command:
+                - /bin/sh
+                - '-c'
+                - |
+                  kubectl delete pod keydb-0 -n keydb && sleep 35 && kubectl delete pod keydb-1 -n keydb && sleep 35 && kubectl delete pod keydb-2 -n keydb
+          restartPolicy: OnFailure

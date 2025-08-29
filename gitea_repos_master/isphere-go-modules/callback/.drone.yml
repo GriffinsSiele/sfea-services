@@ -1,0 +1,120 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+  - name: vendor
+    image: bitnami/golang:1.20
+    commands:
+      - go mod vendor
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: build
+    image: plugins/kaniko
+    depends_on:
+      - vendor
+    environment:
+      container: kube
+      PLUGIN_CACHE_REPO: "${DRONE_REPO}"
+      PLUGIN_CONTEXT: .
+      PLUGIN_DOCKERFILE: Dockerfile
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_PASSWORD: { from_secret: GIT_TOKEN }
+      PLUGIN_REGISTRY: git.i-sphere.local
+      PLUGIN_REPO: "${DRONE_REPO}"
+      PLUGIN_TAGS: "${DRONE_COMMIT_BRANCH}"
+      PLUGIN_USERNAME: { from_secret: GIT_USER }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      ADDR: { from_secret: ADDR }
+      APP_DEBUG: { from_secret: APP_DEBUG }
+      CI_REGISTRY_IMAGE: "git.i-sphere.local/isphere-go-modules/callback"
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+      #RABBITMQ_ADDR: "i-sphere.rabbitmq.svc.cluster.local:5672"
+      RABBITMQ_ADDR: "rabbitmq-simple.rabbitmq-simple.svc.cluster.local:5672"
+      #RABBITMQ_ADDR: "172.16.99.1:5672"
+      RABBITMQ_PASSWORD: { from_secret: RABBITMQ_PASSWORD }
+      #RABBITMQ_PASSWORD: "yPYGgx4Ee8uwYNuD"
+      RABBITMQ_USERNAME: { from_secret: RABBITMQ_USERNAME }
+      #RABBITMQ_USERNAME: "aPbH4vnmq23rQ7uD"
+      RABBITMQ_VIRTUAL_HOST: "/"
+      HASURA_ENDPOINT: "http://hasura.hasura.svc.cluster.local/v1/graphql"
+      HASURA_TOKEN: "zSBwMTn66APmyWdE"
+      CAPTCHA_IMAGE_API_URL: "http://captcha-image-api.default.svc.cluster.local"
+      SENTRY_DSN: { from_secret: SENTRY_DSN }
+      JAEGER_AGENT_HOST_PORT: "172.16.97.10:6831"
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: DOCKER
+get: { path: settings-kube, name: DOCKER }
+
+---
+kind: secret
+name: DOMAIN
+get: { path: settings-kube, name: DOMAIN }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }
+
+---
+kind: secret
+name: RABBITMQ_PASSWORD
+get: { path: settings-kube, name: RABBITMQ_PASSWORD }
+
+---
+kind: secret
+name: RABBITMQ_USERNAME
+get: { path: settings-kube, name: RABBITMQ_USERNAME }
+
+---
+kind: secret
+name: SENTRY_DSN
+get: { path: settings-kube, name: SENTRY_DSN_CALLBACK }

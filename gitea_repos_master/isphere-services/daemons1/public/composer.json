@@ -1,0 +1,16 @@
+{
+    "require": {
+        "google/apiclient": "^2.0",
+        "sentry/sdk": "^2.0",
+        "php-http/message-factory": "^1.1",
+        "monolog/monolog": "^2.9"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.4"
+    }
+}

@@ -1,0 +1,51 @@
+check_types:
+  phoneinfo:
+    enabled: true
+    source: { code: phoneinfo }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: phoneinfo
+      keydb: { enabled: true, scope: phoneinfo, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: phoneinfo }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST /api/v1/phones HTTP/1.1
+            Content-Type: application/json
+
+            {"phone": {{ Quote (print "+" (trimPrefix "+" .phone)) }} }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          - phone:        {{ Quote .phone }}
+            country:      {{ Quote .country }}
+            city:         {{ Quote .city }}
+            extension:    {{ Quote .extension }}
+            timezone:     {{ Quote .timezone }}
+            type:         {{ Quote .type }}
+            provider:     {{ Quote .provider }}
+            country_code: {{ Quote .country_code }}
+            city_code:    {{ Quote .city_code }}
+            number:       {{ Quote .number }}
+        # @formatter:off
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          phone: { type: string }
+          country: { type: string }
+          city: { type: string }
+          extension: { type: string }
+          timezone: { type: string }
+          type: { type: string }
+          provider: { type: string }
+          country_code: { type: string }
+          city_code: { type: string }
+          number: { type: string }

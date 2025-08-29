@@ -1,0 +1,51 @@
+kind: StatefulSet
+#StatefulSet
+
+replicaCount: 1
+
+image:
+  repository: git.i-sphere.ru/viber/viber-wirker
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- /bin/sh - -c
+- healthtest 600
+
+
+resources: {}
+
+
+
+env:
+- name: APP
+  value: viber
+- name: MONGO_HOST
+  value: 172.16.99.1
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

@@ -1,0 +1,149 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+  - name: code_sniffer
+    image: soulkoden/symfony
+    commands:
+      - git diff --name-only --diff-filter=AM origin/master $DRONE_COMMIT_SHA | (grep "\.php$" || true) | xargs -r php php-cs-fixer fix --dry-run --verbose --config=.php-cs-fixer.php
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: composer_validate
+    image: soulkoden/symfony
+    commands:
+      - composer validate
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+#  - name: hadolint
+#    image: hadolint/hadolint:latest-debian
+#    commands:
+#      - hadolint Dockerfile
+#    when:
+#      event:
+#        - push
+#      branch:
+#        - master
+
+  - name: security_check
+    image: soulkoden/symfony
+    commands:
+      - symfony security:check
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: build
+    image: plugins/kaniko
+    pull: always
+    depends_on:
+      - code_sniffer
+      - composer_validate
+#      - hadolint
+      - security_check
+    settings:
+      registry: git.i-sphere.ru
+      username: { from_secret: GIT_USER }
+      password: { from_secret: GIT_TOKEN }
+      repo: "${DRONE_REPO}"
+      tags: "${DRONE_COMMIT_BRANCH}"
+      cache: true
+      target: app
+      build_args:
+        - BUILD_TARGET=prod
+    environment:
+      COMPOSER_ALLOW_SUPERUSER: "1"
+      container: kube
+      PLUGIN_CACHE_REPO: git.i-sphere.ru/isphere-services/main-service
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_REGISTRY: git.i-sphere.ru
+      PLUGIN_SKIP_UNUSED_STAGES: true
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      ANTIGATE_HOST2: { from_secret: ANTIGATE_HOST2 }
+      ANTIGATE_HOST: { from_secret: ANTIGATE_HOST }
+      ANTIGATE_KEY2: { from_secret: ANTIGATE_KEY2 }
+      ANTIGATE_KEY: { from_secret: ANTIGATE_KEY }
+      APP_DEBUG: { from_secret: APP_DEBUG }
+      APP_ENV: { from_secret: APP_ENV }
+      APP_SECRET: { from_secret: APP_SECRET }
+      CAPTCHA_HOST2: { from_secret: CAPTCHA_HOST2 }
+      CAPTCHA_HOST: { from_secret: CAPTCHA_HOST }
+      CAPTCHA_KEY2: { from_secret: CAPTCHA_KEY2 }
+      CAPTCHA_KEY: { from_secret: CAPTCHA_KEY }
+      CAPTCHAV3_HOST2: { from_secret: CAPTCHAV3_HOST2 }
+      CAPTCHAV3_HOST: { from_secret: CAPTCHAV3_HOST }
+      CAPTCHAV3_KEY2: { from_secret: CAPTCHAV3_KEY2 }
+      CAPTCHAV3_KEY: { from_secret: CAPTCHAV3_KEY }
+      CI_REGISTRY_IMAGE: { from_secret: CI_REGISTRY_IMAGE }
+      DATABASE_CBR_URL: { from_secret: DATABASE_CBR_URL }
+      DATABASE_COMMERCE_URL: { from_secret: DATABASE_COMMERCE_URL }
+      DATABASE_DEFAULT_URL: { from_secret: DATABASE_DEFAULT_URL }
+      DATABASE_FEDSFM_URL: { from_secret: DATABASE_FEDSFM_URL }
+      DATABASE_FNS_URL: { from_secret: DATABASE_FNS_URL }
+      DATABASE_ROSSVYAZ_URL: { from_secret: DATABASE_ROSSVYAZ_URL }
+      DATABASE_STATS_URL: { from_secret: DATABASE_STATS_URL }
+      DATABASE_VK_URL: { from_secret: DATABASE_VK_URL }
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      HCAPTCHA_HOST2: { from_secret: HCAPTCHA_HOST2 }
+      HCAPTCHA_HOST: { from_secret: HCAPTCHA_HOST }
+      HCAPTCHA_KEY2: { from_secret: HCAPTCHA_KEY2 }
+      HCAPTCHA_KEY: { from_secret: HCAPTCHA_KEY }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+      MEMCACHED_DSN: { from_secret: MEMCACHED_DSN }
+      MESSENGER_COLLECTOR_TRANSPORT_DSN: { from_secret: MESSENGER_COLLECTOR_TRANSPORT_DSN }
+      MESSENGER_TRANSPORT_DSN: { from_secret: MESSENGER_TRANSPORT_DSN }
+      SENTRY_DSN: { from_secret: SENTRY_DSN }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+

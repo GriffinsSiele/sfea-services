@@ -1,0 +1,9 @@
+eight_points_guzzle:
+  clients:
+    fns:
+      options:
+        timeout: 60
+        http_errors: true
+        headers:
+          User-Agent: "Mozilla/5.0 (compatible; MSIE 11.0; Windows; Windows NT 10.2; x64; en-US Trident/7.0)"
+      plugin: null

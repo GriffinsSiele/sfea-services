@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: daemons
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      date: "{{ now | unixEpoch }}"
+      app.kubernetes.io/component: daemons
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 12 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: daemons
+    spec:
+      restartPolicy: {{ .Values.app.restartPolicy }}
+      containers:
+        - name: sources-alert
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: {{ .Values.app.timezone }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-configmap
+            - secretRef:
+                name: {{ include "chart.name" . }}-secrets
+          command:
+            - sh
+            - -exc
+            - |
+              while true; do
+                php sa.php
+                sleep 30
+              done
+          resources:
+            {{- toYaml .Values.app.resources | nindent 16 }}
+          volumeMounts:
+            - name: files
+              mountPath: /var/www/crontab/sourcesAlert/files
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 12 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 12 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 12 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 12 }}
+      {{- end }}
+      volumes:
+        - name: files
+          emptyDir: {}

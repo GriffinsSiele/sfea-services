@@ -1,0 +1,6 @@
+[style]
+based_on_style = facebook
+spaces_before_comment = 2
+dedent_closing_brackets = False
+coalesce_brackets = False
+column_limit = 120

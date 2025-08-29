@@ -1,0 +1,8 @@
+class ConfigApp:
+    DEFAULT_EMPTY_AVATAR_HASH = [
+        "BDEGV1SoxFQVqRl8uRaxX9H1I5Jx7kTNl-3Qaxhnj396M3gxupa5APZHBba1AQ66Z88",  # man
+        "DEGV1SoxFQVqRl8uRaxX9H1W00VcwuO_nyoIrKBEI4H_ngxupa5APZHBba1AQ66Z88",  # woman
+    ]
+    MAX_PROFILES_SEARCH = 5
+
+    COUNT_SOLVE_CAPTCHA = 3

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+TOKEN="{{ api_token }}"
+CHAT_ID="{{ chat_id }}"
+
+function send_telegram_message() {
+    curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" -d chat_id="$CHAT_ID" -d text="$1" > /dev/null
+}
+
+for vmid in $(/usr/sbin/pct list | grep running | awk '!/VMID/{print $1}'); do
+
+    vzdump "$vmid" --quiet --storage {{ backup_storage_name }} --remove 0 --mode snapshot --compress zstd
+
+    if [ $? -ne 0 ]; then
+
+        send_telegram_message "#BACKUP_{{ hostname }}
+❌ ОШИБКА
+Backup for LXC $vmid failed"
+    fi
+done

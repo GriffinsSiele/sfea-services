@@ -1,0 +1,70 @@
+check_types:
+  samsung_name:
+    enabled: true
+    source: { code: samsung_name }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - oneOf:
+            - type: object
+              properties:
+                phone: { type: string, format: tel }
+                last_name: { type: string }
+                first_name: { type: string }
+                date: { type: string, format: date }
+              required:
+                - phone
+                - last_name
+                - first_name
+                - date
+            - type: object
+              properties:
+                email: { type: string, format: email }
+                last_name: { type: string }
+                first_name: { type: string }
+                date: { type: string, format: date }
+              required:
+                - email
+                - last_name
+                - first_name
+                - date
+    upstream:
+      provider: samsung_auth
+      keydb: { enabled: true, scope: samsung_name, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: samsung_name }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST /search/name HTTP/1.1
+            Accept: application/json
+            Content-Type: application/json
+            
+            {
+                {{- if (not (eq .email nil)) }}
+                "email": {{ Quote .email }},
+                {{- else }}
+                "phone": {{ Quote (trimPrefix "+" .phone) }},
+                {{- end }}
+                "last_name": {{ Quote .last_name }},
+                "first_name": {{ Quote .first_name }},
+                "birthdate": {{ Quote (AsDateLayout .date "02.01.2006") }}
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .records }}
+          - result: {{ Quote .result }}
+            result_code: {{ Quote .result_code }}
+          {{- end }}
+        # @formatter:on
+      status_code: { non_standard: true, format: json, property_path: code, detail_property_path: message }
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          result: { type: string }
+          result_code: { type: string }

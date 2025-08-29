@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    ports:
+      - '1080:1080/tcp'
+    command: [ go, run, "." ]

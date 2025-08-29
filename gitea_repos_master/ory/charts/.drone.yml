@@ -1,0 +1,82 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+  - name: deploy-hydra
+    image: alpine/k8s:1.24.13
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" hydra/Chart.yaml
+      - echo "$(envsubst < hydra/Chart.yaml)" > hydra/Chart.yaml
+      - echo "$(envsubst < hydra/values.yaml)" > hydra/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace ory
+        --values hydra/values.yaml
+        hydra
+        hydra/
+    environment:
+      CI_REGISTRY_IMAGE: { from_secret: CI_REGISTRY_IMAGE }
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy-kratos
+    image: alpine/k8s:1.24.13
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" kratos/Chart.yaml
+      - echo "$(envsubst < kratos/Chart.yaml)" > kratos/Chart.yaml
+      - echo "$(envsubst < kratos/values.yaml)" > kratos/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace ory
+        --values kratos/values.yaml
+        kratos
+        kratos/
+    environment:
+      CI_REGISTRY_IMAGE: { from_secret: CI_REGISTRY_IMAGE }
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy-oathkeeper
+    image: alpine/k8s:1.24.13
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" oathkeeper/Chart.yaml
+      - echo "$(envsubst < oathkeeper/Chart.yaml)" > oathkeeper/Chart.yaml
+      - echo "$(envsubst < oathkeeper/values.yaml)" > oathkeeper/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace ory
+        --values oathkeeper/values.yaml
+        oathkeeper
+        oathkeeper/
+    environment:
+      CI_REGISTRY_IMAGE: { from_secret: CI_REGISTRY_IMAGE }
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+    when:
+      event:
+        - push
+      branch:
+        - master
+

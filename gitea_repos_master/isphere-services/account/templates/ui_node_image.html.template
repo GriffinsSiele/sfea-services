@@ -1,0 +1,16 @@
+{{ define "ui_node_image" }}
+    <div
+            class="mb-3"
+            {{ if IsDebug }}
+                data-debug-image-id="{{ .Node.Attributes.UiNodeImageAttributes.GetId }}"
+            {{ end }}
+    >
+        <figure class="figure">
+            {{ DangerouslyImage .Node "figure-img img-fluid rounded" }}
+
+            <figcaption class="figure-caption text-end">
+                {{ GetNodeLabel .Node }}
+            </figcaption>
+        </figure>
+    </div>
+{{ end }}

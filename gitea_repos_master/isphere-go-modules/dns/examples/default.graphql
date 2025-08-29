@@ -1,0 +1,6 @@
+query {
+    dns(ip: "188.43.7.73") {
+        name
+        hosts
+    }
+}

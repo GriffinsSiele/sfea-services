@@ -1,0 +1,47 @@
+check_types:
+  yoomoney_phone:
+    enabled: true
+    source: { code: yoomoney }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            phone: { type: string, format: phone }
+          required:
+            - phone
+    upstream:
+      provider: yoomoney
+      keydb: { enabled: true, scope: yoomoney_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: yoomoney_phone }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST / HTTP/1.1
+            Content-Type: application/json 
+            
+            {
+                "phone": {{ .phone | Quote }}
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .data }}
+          - account: {{ Quote .accountInfo.account }}
+            phone: {{ Quote .accountInfo.phone }}
+            resolveType: {{ Quote .accountInfo.resolveType }}
+            identification: {{ Quote .accountInfo.identification }}
+          {{- end }}
+        # @formatter:off
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          account: { type: string }
+          phone: { type: string }
+          resolveType: { type: string }
+          identification: { type: string }

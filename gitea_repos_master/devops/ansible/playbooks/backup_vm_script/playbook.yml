@@ -1,0 +1,21 @@
+---
+
+- name: Configure backup VM on PVE
+  hosts: '{{ target }}'
+  become: true
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+  
+  - name: Create directory if it doesn't exist
+    file:
+      path:  "{{ script_dir }}"
+      state: directory
+
+  - name: Generate "backup_vm.sh"
+    template: 
+      src:  "{{ src_backup_vm_script }}"
+      dest: "{{ dest_backup_vm_script }}"
+      mode: 0755

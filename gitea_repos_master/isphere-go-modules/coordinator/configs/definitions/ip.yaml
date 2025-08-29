@@ -1,0 +1,10 @@
+definitions:
+  schema:
+    ip:
+      type: object
+      properties:
+        ip:
+          type: string
+          format: ipv4
+      required:
+        - ip

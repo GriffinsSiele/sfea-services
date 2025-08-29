@@ -1,0 +1,93 @@
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: ""
+fullNameOverride: ""
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  tlsEnabled: false
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+nodeSelector: {}
+
+tolerations:
+  - key: prod
+    operator: Equal
+    value: "yes"
+    effect: NoSchedule
+
+serviceAccount:
+  create: true
+  annotations: {}
+  createRole: true
+  affinity: {}
+
+persistence:
+  enabled: true
+  existingClaim: false
+  accessMode: ReadWriteMany
+  size: 1Gi
+  storageClass: csi-s3
+
+app:
+  replicaCount: 3
+
+  service:
+    port: 80
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 20m
+      memory: 256Mi
+    requests:
+      cpu: 10m
+      memory: 128Mi
+
+  env:
+    APP_ENV: "${APP_ENV}"
+    AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+    AWS_BUCKET: "${AWS_BUCKET}"
+    AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+    AWS_DISABLE_SSL: "${AWS_DISABLE_SSL}"
+    AWS_ENDPOINT: "${AWS_ENDPOINT}"
+    AWS_FORCE_PATH_STYLE: "${AWS_FORCE_PATH_STYLE}"
+    AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+    AWS_SESSION_TOKEN: "${AWS_SESSION_TOKEN}"
+    BLUE_DIRECTORY: "var/blue"
+    CHECK_TOTAL_COUNT_AT_LEAST: "100000000"
+    DOWNLOADING_MAX_RETRIES: "3"
+    DOWNLOADING_TIMEOUT_BETWEEN_RETRIES: "5s"
+    FMSDB_FILENAME: "list_of_expired_passports.csv"
+    #FMSDB_SOURCE_URL: "https://проверки.гувм.мвд.рф/upload/expired-passports/list_of_expired_passports.csv.bz2"
+    FMSDB_SOURCE_URL: "https://maven.hflabs.ru:443/artifactory/ext-releases-public/ru/mvd/passports-expired/20230621/passports-expired-20230621.csv.bz2"
+    GREEN_DIRECTORY: "var/green"
+    HTTP_HOST: "${HTTP_HOST}"
+    HTTP_PORT: "${HTTP_PORT}"
+    SENTRY_DSN: "${SENTRY_DSN}"

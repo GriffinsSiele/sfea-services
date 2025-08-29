@@ -1,0 +1,43 @@
+check_types:
+  fns_sshr:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fns_sshr, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_sshr }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              fns_sshr(where: {inn: {_eq: $inn}}) {
+                  inn
+                  count
+                  updated_at
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .fns_sshr }}
+          - Type:     snr
+            inn:      {{ Quote .inn }}
+            quant:    {{ .count }} 
+            date:     {{ Quote .updated_at }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: { type: string, enum: [snr] }
+          inn: { type: string }
+          count: { type: number }
+          date: { type: string, format: date }

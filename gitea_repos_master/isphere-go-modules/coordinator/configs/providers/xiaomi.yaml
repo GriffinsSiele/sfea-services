@@ -1,0 +1,3 @@
+providers:
+  xiaomi:
+    endpoint: "$MODULE_XIAOMI_ENDPOINT"

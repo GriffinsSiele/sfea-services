@@ -1,0 +1,3 @@
+providers:
+  domru:
+    endpoint: "$MODULE_DOMRU_ENDPOINT"

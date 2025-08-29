@@ -1,0 +1,190 @@
+{
+    "recaptchaV2": {
+        "type": "RecaptchaV2TaskProxyless",
+        "providers": {
+            "antigate":{
+                "report":{
+                    "Success": "/reportCorrectRecaptcha",
+                    "Fail": "/reportIncorrectRecaptcha"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "recaptcha_data_s_value", "is_invisible", "user_agent", "cookies", "api_domain"
+                    ]
+                }
+            },
+            "capmonster": {
+                "report":{
+                    "Success": null,
+                    "Fail": "/reportIncorrectTokenCaptcha"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "recaptcha_data_s_value", "is_invisible", "user_agent", "cookies", "api_domain"
+                    ]
+                }
+            },
+            "rucaptcha": {            
+                "report":{
+                    "Success": "/reportCorrect",
+                    "Fail": "/reportIncorrect"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "recaptcha_data_s_value", "is_invisible", "user_agent", "cookies"
+                    ]
+                }
+            }
+        }
+    },
+    "recaptchaV3": {
+        "type": "RecaptchaV3TaskProxyless",
+        "providers": {
+            "antigate":{
+                "report":{
+                    "Success": "/reportCorrectRecaptcha",
+                    "Fail": "/reportIncorrectRecaptcha"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key", "min_score"
+                    ],
+                    "optional": [
+                        "page_action", "is_enterprise", "api_domain"
+                    ]
+                }
+            },
+            "capmonster": {
+                "report":{
+                    "Success": null,
+                    "Fail": "/reportIncorrectTokenCaptcha"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key", "min_score"
+                    ],
+                    "optional": [
+                        "page_action"
+                    ]
+                }
+            },
+            "rucaptcha": {            
+                "report":{
+                    "Success": "/reportCorrect",
+                    "Fail": "/reportIncorrect"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key", "min_score"
+                    ],
+                    "optional": [
+                        "page_action", "is_enterprise", "api_domain"
+                    ]
+                }
+            }
+        }
+    },
+    "hcaptcha": {
+        "type": "HCaptchaTaskProxyless",
+        "providers": {
+            "antigate":{
+                "report":{
+                    "Success": null,
+                    "Fail": "/reportIncorrectHcaptcha"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "is_invisible", "is_enterprise", "enterprise_payload"
+                    ]
+                }
+            },
+            "capmonster": {
+                "report":{
+                    "Success": null,
+                    "Fail": "/reportIncorrectTokenCaptcha"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "is_invisible", "data", "user_agent", "cookies", "fallback_to_actual_u_a"
+                    ]
+                }
+            },
+            "rucaptcha": {            
+                "report":{
+                    "Success": "/reportCorrect",
+                    "Fail": "/reportIncorrect"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "is_invisible", "enterprise_payload"
+                    ]
+                }
+            }
+        }
+    },
+    "turnstile": {
+        "type": "TurnstileTaskProxyless",
+        "providers": {
+            "antigate":{
+                "report":{
+                    "Success": null,
+                    "Fail": null
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "action", "turnstile_c_data"
+                    ]
+                }
+            },
+            "capmonster": {
+                "report":{
+                    "Success": null,
+                    "Fail": "/reportIncorrectTokenCaptcha"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "page_action", "cloudflare_task_type", "user_agent", "page_action", "data", "page_data"
+                    ]
+                }
+            },
+            "rucaptcha": {            
+                "report":{
+                    "Success": "/reportCorrect",
+                    "Fail": "/reportIncorrect"
+                },
+                "query_args": {
+                    "required": [
+                        "website_key"
+                    ],
+                    "optional": [
+                        "action", "data", "pagedata", "user_agent"
+                    ]
+                }
+            }
+        }
+    }
+}

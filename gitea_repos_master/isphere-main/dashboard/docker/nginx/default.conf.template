@@ -1,0 +1,24 @@
+server {
+    listen 80;
+
+    access_log  /dev/stdout;
+    error_log  /dev/stderr;
+
+    index index.php index.html;
+
+    root /var/www/html/dashbord/public;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass $PHP_FPM_SERVICE_NAME:9000;
+        #fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME /var/www/html/dashbord/public/$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}

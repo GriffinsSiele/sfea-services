@@ -1,0 +1,50 @@
+apiVersion: v1
+items:
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    name: backup
+    namespace: wireguard-system
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: backup-peer
+    address: 10.8.0.12
+    downloadSpeed: {}
+    publicKey: niK7jdmvtwdSFal0V5Rcoq8ZFrX/Cjk4GVi2zicJF18=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    name: sec
+    namespace: wireguard-system
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: sec-peer
+    address: 10.8.0.14
+    downloadSpeed: {}
+    publicKey: jHF4W7U1dbPHldb9itruPZiCYXS5p2HUhpA2zSIXIQc=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+- apiVersion: vpn.wireguard-operator.io/v1alpha1
+  kind: WireguardPeer
+  metadata:
+    name: mainserver
+    namespace: wireguard-system
+  spec:
+    PrivateKeyRef:
+      secretKeyRef:
+        key: privateKey
+        name: mainserver-peer
+    address: 10.8.0.5
+    downloadSpeed: {}
+    publicKey: gV1BSGG+bDLjbjyH6949FRzPp208Kc5B7nPskW9oDjE=
+    uploadSpeed: {}
+    wireguardRef: i-sphere
+kind: List
+metadata:
+  resourceVersion: ""

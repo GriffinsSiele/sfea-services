@@ -1,0 +1,4 @@
+__pycache__
+projects/*/tests
+projects/*/.env
+projects/*/.env.example

@@ -1,0 +1,53 @@
+check_types:
+  duolingo:
+    enabled: true
+    source: { code: duolingo }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/email"
+    upstream:
+      provider: duolingo
+      keydb: { enabled: true, scope: duolingo, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: duolingo }
+      tcp:
+        proxy:
+          enabled: true
+          url: "http://tor-proxy-ru.i-sphere.local:8080"
+        retry:
+          max_count: 3
+          expected_status_code: 200
+        template:
+          query: |
+            GET /2017-06-30/users?email={{ .email }} HTTP/1.1
+            accept: application/json, text/plain, */*
+            accept-language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+            user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36            
+    
+
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- if (not (eq .users nil)) }}
+          {{- range .users }}
+          - ResultCode: FOUND
+            HasGoogleId: {{ .hasGoogleId }}
+            HasFacebookId: {{ .hasFacebookId }}
+            Username: !!string {{ .username }}
+            FromLanguage: !!string {{ .fromLanguage }}
+            HasRecentActivity15: {{ .hasRecentActivity15 }}
+            Name: !!string {{ .name }}
+            Streak: {{ .streak }}
+            Picture: !!string {{ .picture }}
+            ID: {{ .id }}
+            HasPlus: {{ .hasPlus }}
+          {{- end }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties: {}

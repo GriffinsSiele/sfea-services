@@ -1,0 +1,137 @@
+[k8s_gaydary_master]
+1cloud ansible_host=172.16.1.1
+
+[k8s_gaydary_worker]
+gaydary-worker-01 ansible_host=172.16.161.1
+gaydary-worker-02 ansible_host=172.16.161.2
+gaydary-worker-03 ansible_host=172.16.161.3
+
+[k8s_gaydary]
+1cloud ansible_host=172.16.1.1
+gaydary-worker-01 ansible_host=172.16.161.1
+gaydary-worker-02 ansible_host=172.16.161.2
+gaydary-worker-03 ansible_host=172.16.161.3
+
+[k8s_msk_master]
+msk-master ansible_host=172.16.1.4
+
+[k8s_msk_worker]
+msk-worker-01 ansible_host=172.16.77.1
+msk-worker-02 ansible_host=172.16.77.2
+msk-worker-11 ansible_host=172.16.177.1
+msk-worker-12 ansible_host=172.16.177.2
+msk-worker-91 ansible_host=172.16.199.1
+msk-worker-92 ansible_host=172.16.97.13
+
+[k8s_msk]
+msk-master ansible_host=172.16.1.4
+msk-worker-01 ansible_host=172.16.77.1
+msk-worker-02 ansible_host=172.16.77.2
+msk-worker-11 ansible_host=172.16.177.1
+msk-worker-12 ansible_host=172.16.177.2
+msk-worker-91 ansible_host=172.16.199.1
+msk-worker-92 ansible_host=172.16.97.13
+
+[k8s_rnd_master]
+rnd-master ansible_host=172.16.1.2
+
+[k8s_rnd_worker]
+rnd-worker-01 ansible_host=172.16.61.4
+rnd-worker-02 ansible_host=172.16.61.2
+rnd-worker-03 ansible_host=172.16.61.3
+
+[k8s_rnd]
+rnd-master ansible_host=172.16.1.2
+rnd-worker-01 ansible_host=172.16.61.4
+rnd-worker-02 ansible_host=172.16.61.2
+rnd-worker-03 ansible_host=172.16.61.3
+
+[k8s:children]
+k8s_gaydary
+k8s_msk
+k8s_rnd
+
+[k8s_master:children]
+k8s_gaydary_master
+k8s_msk_master
+k8s_rnd_master
+
+[k8s_worker:children]
+k8s_gaydary_worker
+k8s_msk_worker
+k8s_rnd_worker
+
+[gaydary-pve1]
+host_gaydary-pve1 ansible_host=172.16.161.0
+gaydary-worker-01 ansible_host=172.16.161.1
+gaydary-worker-02 ansible_host=172.16.161.2
+gaydary-worker-03 ansible_host=172.16.161.3
+
+[rnd-pve1]
+host_rnd-pve1 ansible_host=172.16.61.0
+rnd-master ansible_host=172.16.1.2
+rnd-worker-01 ansible_host=172.16.61.4
+rnd-worker-02 ansible_host=172.16.61.2
+rnd-worker-03 ansible_host=172.16.61.3
+
+[msk-pve1]
+host_msk-pve1 ansible_host=172.16.77.0
+msk-worker-01 ansible_host=172.16.77.1
+msk-worker-02 ansible_host=172.16.77.2
+
+[msk-pve2]
+host_msk-pve2 ansible_host=172.16.177.0
+msk-master ansible_host=172.16.1.4
+msk-worker-11 ansible_host=172.16.177.1
+msk-worker-12 ansible_host=172.16.177.2
+
+[pve3]
+host_pve3 ansible_host=172.16.97.0
+msk-worker-92 ansible_host=172.16.97.13
+docker ansible_host=172.16.97.10
+zabbix ansible_host=172.16.97.8
+
+[pve4]
+host_pve4 ansible_host=172.16.199.0
+msk-worker-91 ansible_host=172.16.199.1
+
+[pve_host]
+host_gaydary-pve1 ansible_host=172.16.161.0 hostname=GAYDARY_PVE1 backup_storage_name=local backup_dir_path=/var/lib/vz/dump/
+host_gaydary-pve2 ansible_host=172.16.161.100
+host_rnd-pve1 ansible_host=172.16.61.0 hostname=RND_PVE1 backup_storage_name=local backup_dir_path=/var/lib/vz/dump/
+host_msk-pve1 ansible_host=172.16.77.0 hostname=MSK_PVE1 backup_storage_name=local backup_dir_path=/var/lib/vz/dump/
+host_msk-pve2 ansible_host=172.16.177.0 hostname=MSK_PVE2 backup_storage_name=local backup_dir_path=/var/lib/vz/dump/
+host_pve3 ansible_host=172.16.97.0 hostname=PVE3 backup_storage_name=dump backup_dir_path=/zfs/backups/dump/dump/
+host_pve4 ansible_host=172.16.199.0 hostname=PVE4 backup_storage_name=local backup_dir_path=/var/lib/vz/dump/
+
+[tinc]
+1cloud ansible_host=172.16.1.1
+1cloud-databases ansible_host=172.16.99.1
+VM-152FZ ansible_host=172.16.99.2
+host_gaydary-pve1 ansible_host=172.16.161.0
+host_gaydary-pve2 ansible_host=172.16.161.100
+host_i-sphere ansible_host=172.16.99.0 #новый боевой
+host_i-sphere_ru ansible_host=172.16.99.3 #старый боевой
+host_msk-pve1 ansible_host=172.16.77.0
+host_msk-pve2 ansible_host=172.16.177.0
+proxy6 ansible_host=172.16.97.9
+host_pve3 ansible_host=172.16.97.0
+host_pve4 ansible_host=172.16.199.0
+host_rnd-pve1 ansible_host=172.16.61.0
+
+# [server_tinc]
+# server ansible_host=IP hostname=SERVER1 vpn_ip=VPN_IP public_ip=EXTERNAL_ADDRESS
+
+# [client_tinc]
+# client ansible_host=IP hostname=CLIENT1 vpn_ip=VPN_IP
+
+[other]
+proxy6 ansible_host=172.16.97.9
+1cloud-databases ansible_host=172.16.99.1
+VM-152FZ ansible_host=172.16.99.2
+host_i-sphere ansible_host=172.16.99.0
+
+[all:vars]
+ansible_user=
+ansible_private_key_file=
+ansible_sudo_pass=

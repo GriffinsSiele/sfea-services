@@ -1,0 +1,63 @@
+{
+    "url": "https://www.reestr-zalogov.ru/search/index",
+    "tokens": [{
+        "sitekey": "6LdKJhMaAAAAAIfeHC6FZc-UVfzDQpiOjaJUWoxr",
+        "regex": "^.{250,}$",
+        "action": "extract_actual_notification"
+    }, {
+        "sitekey": "6LdKJhMaAAAAAIfeHC6FZc-UVfzDQpiOjaJUWoxr",
+        "regex": "^.{250,}$",
+        "action": "search_notary"
+    }],
+    "known_tags": [["class name", "wr-form"], ["class name", "container"]],
+    "scenarios": {
+        "1": [{
+            "action": "click",
+            "value": ["xpath", "//*[text()='По информации о предмете залога']"]
+        }, {
+            "action": "wait",
+            "value": 1
+        }, {
+            "action": "scroll"
+        }, {
+            "action": "click",
+            "value": ["id", "vehicleProperty.vin"]
+        }, {
+            "action": "type",
+            "value": [["id", "vehicleProperty.vin"], ["JTNBV56E70J006152", "NLAF07670AW020511", "XW7R43FV50S007485"]]
+        }, {
+            "action": "move",
+            "value": ["id", "find-btn"]
+        }],
+        "2": [{
+            "action": "click",
+            "value": ["xpath", "//*[text()='По информации о залогодателе']"]
+        }, {
+            "action": "wait",
+            "value": 1
+        }, {
+            "action": "scroll"
+        }, {
+            "action": "click",
+            "value": ["id", "privatePerson.lastName"]
+        }, {
+            "action": "type",
+            "value": [["id", "privatePerson.lastName"], ["Ивано", "Петро", "Сидоро"]]
+        }, {
+            "action": "wait",
+            "value": 1
+        }, {
+            "action": "type",
+            "value": [["id", "privatePerson.lastName"], ["в"]]
+        }, {
+            "action": "move",
+            "value": ["id", "privatePerson.firstName"]
+        }, {
+            "action": "click",
+            "value": ["id", "privatePerson.firstName"]
+        }, {
+            "action": "type",
+            "value": [["id", "privatePerson.firstName"], ["Владислав", "Алексей", "Николай"]]
+        }]
+    }
+}

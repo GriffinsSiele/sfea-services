@@ -1,0 +1,58 @@
+{{ template "header" }}
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <header>
+            <h1>Настройка профиля</h1>
+            <p class="lead">Настройте свой аккаунт iSphere</p>
+        </header>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-10 offset-md-2">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3 shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Настройки профиля</h5>
+                        {{ template "ui" Dict "UI" .UI "Groups" "profile" }}
+                    </div>
+                </div>
+
+                <div class="card mb-3 shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Изменить пароль</h5>
+                        {{ template "ui" Dict "UI" .UI "Groups" "password" }}
+                    </div>
+                </div>
+
+                <div class="card mb-3 shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Управление резервными кодами восстановления</h5>
+                        {{ template "ui" Dict "UI" .UI "Groups" "lookup_secret" }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-3 shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Одноразовый пароль</h5>
+                        {{ template "ui" Dict "UI" .UI "Groups" "totp" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <p>
+            <a class="text-danger" href="/logout">Выйти из аккаунта</a>
+        </p>
+    </div>
+</div>
+
+{{ template "footer" }}

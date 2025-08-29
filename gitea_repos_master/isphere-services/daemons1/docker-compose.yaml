@@ -1,0 +1,120 @@
+version: '3.7'
+
+x-daemon: &daemon
+  restart: always
+  build:
+    dockerfile: Dockerfile
+    context: .
+  dns:
+    - 10.43.0.10
+  command: sh /var/www/html/daemon/daemon.sh
+  env_file:
+    - .env
+  volumes:
+    - ./config/google:/var/www/html/daemon/google
+    - ./files:/opt
+    - ./logs:/var/www/html/daemon/logs
+    - ./public:/var/www/html/daemon
+    - ./tmp:/var/www/html/daemon/captcha
+    - root-dir:/root # for history
+
+services:
+  daemon1:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon.sh
+
+  daemon2:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon2.sh
+
+  daemon3:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon3.sh
+
+  daemon4:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon4.sh
+
+  daemon5:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon5.sh
+
+  daemon6:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon6.sh
+
+  daemon7:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon7.sh
+
+  daemon8:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon8.sh
+
+  daemon9:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon9.sh
+
+  daemon10:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemon10.sh
+
+  daemon_captcha_bad1:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemoncaptchabad.sh
+
+  daemon_captcha_bad2:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemoncaptchabad2.sh
+
+  daemon_captcha_bad3:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemoncaptchabad3.sh
+
+  daemon_captcha_bad4:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemoncaptchabad4.sh
+
+  daemon_captcha_bad5:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemoncaptchabad5.sh
+
+  daemon_captcha_rep:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemoncaptcharep.sh
+
+  daemon_getcontact:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemongetcontact.sh
+
+  daemon_gosuslugi:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemongosuslugi.sh
+
+  daemon_google:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemongoogle.sh
+
+  daemon_skype:
+    <<: *daemon
+    command: sh /var/www/html/daemon/daemonskype.sh
+
+  cleanup:
+    profiles:
+      - maintenance
+    image: alpine
+    command:
+      - find
+      - /var/www/html/daemon/logs
+      - -type
+      - f
+      - -mtime
+      - "+3"
+      - -delete
+    working_dir: /var/www/html/daemon
+    volumes:
+      - ./logs:/var/www/html/daemon/logs
+
+volumes:
+  root-dir: ~
+

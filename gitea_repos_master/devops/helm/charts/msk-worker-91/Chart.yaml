@@ -1,0 +1,6 @@
+apiVersion: v2
+name: clickhouse
+description: clickhouse
+type: application
+version: '1702454960'
+appVersion: '1702454960'

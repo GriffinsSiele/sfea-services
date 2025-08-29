@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "statsd.fullname" . }}-configmap
+  labels:
+    {{- include "statsd.labels" . | nindent 4 }}
+data:
+  # language=json
+  'config.js': |
+    {
+      "debug": true,
+      "backends": [
+        "./backends/console"
+      ]
+    }

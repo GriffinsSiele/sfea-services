@@ -1,0 +1,7 @@
+{{ define "ui_node_input_hidden" }}
+    <input
+            name="{{ .Node.Attributes.UiNodeInputAttributes.Name }}"
+            type="hidden"
+            value="{{ .Node.Attributes.UiNodeInputAttributes.Value }}"
+    />
+{{ end }}

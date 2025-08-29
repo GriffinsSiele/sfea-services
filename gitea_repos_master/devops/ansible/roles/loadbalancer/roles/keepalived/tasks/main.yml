@@ -1,0 +1,27 @@
+---
+- name: Install packages
+  package:
+    name:
+    - keepalived
+    state: present
+    use: apt
+    update_cache: yes
+
+- name: Template a file to "/etc/keepalived/keepalived.conf"
+  template:
+    src: ./templates/keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+  register: keepalive_conf
+
+- name: Set net.ipv4.ip_nonlocal_bind=1 ("/etc/sysctl.conf")
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: '1'
+    state: present
+
+- name: Restart Keepalived
+  systemd:
+    name: keepalived
+    state: restarted
+    enabled: yes
+  when: keepalive_conf.changed

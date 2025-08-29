@@ -1,0 +1,9 @@
+services:
+  keydb:
+    addr: "$KEYDB_ADDR"
+    password: "$KEYDB_PASSWORD"
+    database: $KEYDB_DATABASE
+    poolSize: $KEYDB_POOL_SIZE
+    dialTimeout: 10_000_000_000 # 10s
+    readTimeout: 10_000_000_000 # 10s
+    writeTimeout: 10_000_000_000 # 10s

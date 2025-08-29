@@ -1,0 +1,10 @@
+pydash==5.1.0
+python-dotenv==0.20.0
+PyYAML==6.0
+selenium==4.2.0
+selenium-wire==4.6.4
+Pillow~=9.1.1
+2captcha-python==1.1.2
+twocaptcha==0.0.1
+pymongo~=4.1.1
+tqdm~=4.64.0

@@ -1,0 +1,61 @@
+check_types:
+  fns_mru:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fns_mru, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_mru }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              fns_sshr(where: {inn: {_eq: $inn}}) {
+                  inn
+                  count
+                  updated_at
+              }
+
+              fns_massleaders(where: {inn: {_eq: "370103537907"}}) {
+                  inn
+                  surname
+                  name
+                  patronymic
+                  count
+              }
+
+              fns_massfounders(where: {inn: {_eq: "780404423001"}}) {
+                  inn
+                  surname
+                  name
+                  patronymic
+                  count
+              }
+          }
+
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .fns_sshr }}
+          - Type:     snr
+            inn:      {{ Quote .inn }}
+            quant:    {{ .count }} 
+            date:     {{ Quote .updated_at }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: { type: string, enum: [snr] }
+          inn: { type: string }
+          count: { type: number }
+          date: { type: string, format: date }

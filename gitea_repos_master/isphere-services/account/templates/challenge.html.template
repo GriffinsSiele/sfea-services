@@ -1,0 +1,62 @@
+{{ template "header" }}
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <header>
+            <h1>Добро пожаловать!</h1>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-floating" style="position: relative;">
+                        <select class="form-select" id="username" name="username">
+                            <option value="{{ .Username }}">{{ .Username }}</option>
+                        </select>
+                        <label for="username">Имя пользователя</label>
+
+                        <a href="/login"
+                           style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 2;"></a>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+</div>
+
+<div class="row mb-4 pt-4">
+    <div class="col-md-10 offset-md-2">
+        <main>
+            <form action="/challenge" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 form-floating">
+                            <input class="form-control {{ if .Error }}is-invalid{{ end }}" id="password" name="password"
+                                   placeholder="Введите пароль" required autofocus type="password"
+                                   autocomplete="current-password"/>
+                            <label for="password">Введите пароль</label>
+                            {{ if .Error }}
+                                <div class="invalid-feedback">{{ .Error }}</div>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pt-4">
+                    <div class="col">
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Далее</button>
+
+                            <a class="btn btn-link" href="{{ .Links.RegistrationURL }}">
+                                Забыли пароль?
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="username" value="{{ .Username }}"/>
+                <input type="hidden" name="_csrf" value="{{ .CSRFToken }}"/>
+            </form>
+        </main>
+    </div>
+</div>
+
+{{ template "footer" }}

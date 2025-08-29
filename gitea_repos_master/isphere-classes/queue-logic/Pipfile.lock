@@ -1,0 +1,41 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "e803e0792d40cdbf4b6e72e0735c1bf3bfbc068edb8d97946417dde6c4e2b490"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.10"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            },
+            {
+                "name": "gitea",
+                "url": "http://${GIT_USER}:${GIT_TOKEN}@${GIT_HTTP_DOMAIN}/api/packages/isphere-classes/pypi/simple",
+                "verify_ssl": false
+            }
+        ]
+    },
+    "default": {
+        "isphere-exceptions": {
+            "hashes": [
+                "sha256:8f03a0bcc7c8c17c8e437b12bf669795630681f8673b48fc1bf0d6f7114c847d"
+            ],
+            "index": "pypi",
+            "version": "==4.0.0"
+        },
+        "redis": {
+            "hashes": [
+                "sha256:06570d0b2d84d46c21defc550afbaada381af82f5b83e5b3777600e05d8e2ed0",
+                "sha256:5cea6c0d335c9a7332a460ed8729ceabb4d0c489c7285b0a86dbbf8a017bd120"
+            ],
+            "index": "pypi",
+            "version": "==5.0.0"
+        }
+    },
+    "develop": {}
+}

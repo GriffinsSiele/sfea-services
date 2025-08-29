@@ -1,0 +1,3 @@
+providers:
+  duolingo:
+    endpoint: "https://www.duolingo.com"

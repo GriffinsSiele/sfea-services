@@ -1,0 +1,95 @@
+parameters:
+  #  'doctrine.debug': '%kernel.debug%'
+  'doctrine.debug': false
+
+doctrine:
+  dbal:
+    default_connection: default
+    connections:
+      default:
+        server_version: 8
+        url: "%env(resolve:DATABASE_DEFAULT_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+        mapping_types:
+          enum: string
+        charset: utf8mb4
+        default_table_options:
+          charset: utf8mb4
+          collate: utf8mb4_unicode_ci
+      stats:
+        server_version: 8
+        url: "%env(resolve:DATABASE_STATS_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+      cbr:
+        server_version: 8
+        url: "%env(resolve:DATABASE_CBR_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+      commerce:
+        server_version: 8
+        url: "%env(resolve:DATABASE_COMMERCE_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+      fedsfm:
+        server_version: 8
+        url: "%env(resolve:DATABASE_FEDSFM_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+      fns:
+        server_version: 8
+        url: "%env(resolve:DATABASE_FNS_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+      rossvyaz:
+        server_version: 8
+        url: "%env(resolve:DATABASE_ROSSVYAZ_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+      vk:
+        server_version: 8
+        url: "%env(resolve:DATABASE_VK_URL)%"
+        logging: '%doctrine.debug%'
+        profiling: '%kernel.debug%'
+    types:
+      !php/const App\Doctrine\DBAL\Type\ScalarDefinitionListType::NAME: App\Doctrine\DBAL\Type\ScalarDefinitionListType
+      !php/const App\Doctrine\DBAL\Type\RowsType::NAME: App\Doctrine\DBAL\Type\RowsType
+
+  orm:
+    auto_generate_proxy_classes: true
+    default_entity_manager: default
+    entity_managers:
+      default:
+        connection: default
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        mappings:
+          App:
+            is_bundle: false
+            dir: "%kernel.project_dir%/src/Entity"
+            prefix: App\Entity
+            alias: App
+            type: attribute
+        dql:
+          string_functions:
+            hour: DoctrineExtensions\Query\Mysql\Hour
+            minute: DoctrineExtensions\Query\Mysql\Minute
+            ifnull: DoctrineExtensions\Query\Mysql\IfNull
+          numeric_functions:
+            locate: App\Doctrine\DQL\LocateFunction
+          datetime_functions:
+            date_sub: App\Doctrine\DQL\DateSubFunction
+            now: App\Doctrine\DQL\NowFunction
+        schema_ignore_classes:
+          - App\Entity\AccessRule
+          - App\Entity\AccessSource
+      stats:
+        connection: default
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        mappings:
+          App:
+            is_bundle: false
+            dir: "%kernel.project_dir%/src/Entity"
+            prefix: App\Entity
+            alias: App
+            type: attribute

@@ -1,0 +1,83 @@
+{
+    "verb": "UPDATED",
+    "event": {
+        "metadata": {
+            "name": "apple-recovery-api-cd494b645-82qxz.17e84f04ed426c2d",
+            "namespace": "default",
+            "uid": "88b9cc01-be0e-41d1-aa63-8a43cd24b834",
+            "resourceVersion": "296912123",
+            "creationTimestamp": "2024-08-03T19:35:40Z",
+            "managedFields": [
+                {
+                    "manager": "kubelet",
+                    "operation": "Update",
+                    "apiVersion": "v1",
+                    "time": "2024-08-04T10:14:39Z"
+                }
+            ]
+        },
+        "involvedObject": {
+            "kind": "Pod",
+            "namespace": "default",
+            "name": "apple-recovery-api-cd494b645-82qxz",
+            "uid": "7601880d-492a-45c0-8f87-7097e5551baf",
+            "apiVersion": "v1",
+            "resourceVersion": "296480657",
+            "fieldPath": "spec.containers{apple-recovery-api}"
+        },
+        "reason": "Unhealthy",
+        "message": "Liveness probe failed: ",
+        "source": {
+            "component": "kubelet",
+            "host": "stupino-worker-01"
+        },
+        "firstTimestamp": "2024-08-03T19:35:40Z",
+        "lastTimestamp": "2024-08-04T10:14:39Z",
+        "count": 203,
+        "type": "Warning",
+        "eventTime": null,
+        "reportingComponent": "kubelet",
+        "reportingInstance": "stupino-worker-01"
+    },
+    "old_event": {
+        "metadata": {
+            "name": "apple-recovery-api-cd494b645-82qxz.17e84f04ed426c2d",
+            "namespace": "default",
+            "uid": "88b9cc01-be0e-41d1-aa63-8a43cd24b834",
+            "resourceVersion": "296911897",
+            "creationTimestamp": "2024-08-03T19:35:40Z",
+            "managedFields": [
+                {
+                    "manager": "kubelet",
+                    "operation": "Update",
+                    "apiVersion": "v1",
+                    "time": "2024-08-04T10:14:10Z"
+                }
+            ]
+        },
+        "involvedObject": {
+            "kind": "Pod",
+            "namespace": "default",
+            "name": "apple-recovery-api-cd494b645-82qxz",
+            "uid": "7601880d-492a-45c0-8f87-7097e5551baf",
+            "apiVersion": "v1",
+            "resourceVersion": "296480657",
+            "fieldPath": "spec.containers{apple-recovery-api}"
+        },
+        "reason": "Unhealthy",
+        "message": "Liveness probe failed: ",
+        "source": {
+            "component": "kubelet",
+            "host": "stupino-worker-01"
+        },
+        "firstTimestamp": "2024-08-03T19:35:40Z",
+        "lastTimestamp": "2024-08-04T10:14:10Z",
+        "count": 202,
+        "type": "Warning",
+        "eventTime": null,
+        "reportingComponent": "kubelet",
+        "reportingInstance": "stupino-worker-01"
+    }
+}
+
+event_type=event.type | event_lastsee=event.lastTimestamp | event_sourceNode=event.source.host | event_sourceComponent=event.source.component

@@ -1,0 +1,3 @@
+providers:
+  phoneinfo:
+    endpoint: "$MODULE_PHONEINFO_ENDPOINT"

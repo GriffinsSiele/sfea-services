@@ -1,0 +1,3 @@
+providers:
+  sber_simple:
+    endpoint: "$MODULE_SBER_SIMPLE_ENDPOINT"

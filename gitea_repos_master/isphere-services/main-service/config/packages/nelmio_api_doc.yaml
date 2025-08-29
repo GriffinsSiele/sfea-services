@@ -1,0 +1,526 @@
+nelmio_api_doc:
+  models: { use_jms: false }
+
+  areas:
+    path_patterns:
+      - ^/$
+
+  documentation:
+    info:
+      title: iSphere
+      version: 2.0.0
+
+    components:
+      securitySchemes:
+        Bearer:
+          type: http
+          scheme: bearer
+          bearerFormat: JWT
+
+      schemas:
+        # abstract schemas
+        AbstractMessage:
+          type: object
+          properties:
+            UserIP:
+              deprecated: true
+              type: string
+              format: ipv4
+            UserID:
+              deprecated: true
+              type: string
+            Password:
+              deprecated: true
+              type: string
+            requestId:
+              type: integer
+            timeout:
+              type: integer
+              minimum: 0
+              default: 0
+            recursive:
+              type: integer
+              enum: [ 0,1 ]
+              default: 0
+            async:
+              type: integer
+              enum: [ 0,1 ]
+              default: 0
+          required:
+            - requestId
+
+        CarReq:
+          type: object
+          properties:
+            bodynum:
+              type: string
+            chassis:
+              type: string
+            ctc:
+              type: string
+            pts:
+              type: string
+            regnum:
+              type: string
+            reqdate:
+              type: string
+              format: date
+            vin:
+              type: string
+
+        EmailReq:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+
+        OtherReq:
+          type: object
+          properties:
+            osago:
+              type: string
+
+        PhoneReq:
+          type: object
+          properties:
+            phone:
+              type: string
+
+        PersonReq:
+          type: object
+          properties:
+            driver_number:
+              type: string
+            driver_date:
+              type: string
+              format: date
+
+        URLReq:
+          type: object
+          properties:
+            url:
+              type: string
+              format: url
+
+        # check schemas
+        CheckAuto:
+          type: object
+          discriminator:
+            propertyName: sources
+            mapping:
+              gibdd_aiusdtp: '#/components/schemas/GIBDDAIUSDTP'
+              gibdd_diagnostic: '#/components/schemas/GIBDDDiagnostic'
+              gibdd_driver: '#/components/schemas/GIBDDDriver'
+              gibdd_fines: '#/components/schemas/GIBDDFines'
+              gibdd_history: '#/components/schemas/GIBDDHistory'
+              gibdd_restricted: '#/components/schemas/GIBDDRestricted'
+              gibdd_wanted: '#/components/schemas/GIBDDWanted'
+          oneOf:
+            - $ref: '#/components/schemas/GIBDDAIUSDTP'
+            - $ref: '#/components/schemas/GIBDDDiagnostic'
+            - $ref: '#/components/schemas/GIBDDDriver'
+            - $ref: '#/components/schemas/GIBDDFines'
+            - $ref: '#/components/schemas/GIBDDHistory'
+            - $ref: '#/components/schemas/GIBDDRestricted'
+            - $ref: '#/components/schemas/GIBDDWanted'
+
+        CheckEmail:
+          type: object
+          discriminator:
+            propertyName: sources
+            mapping:
+              aeroflot: '#/components/schemas/AeroflotEmail'
+              vk: '#/components/schemas/VKEmail'
+          oneOf:
+            - $ref: '#/components/schemas/AeroflotEmail'
+            - $ref: '#/components/schemas/VKEmail'
+
+        CheckPhone:
+          type: object
+          discriminator:
+            propertyName: sources
+            mapping:
+              aeroflot: '#/components/schemas/AeroflotPhone'
+              announcement: '#/components/schemas/AnnouncementPhone'
+              vk: '#/components/schemas/VKPhone'
+          oneOf:
+            - $ref: '#/components/schemas/AeroflotPhone'
+            - $ref: '#/components/schemas/AnnouncementPhone'
+            - $ref: '#/components/schemas/VKPhone'
+
+        CheckURL:
+          type: object
+          discriminator:
+            propertyName: sources
+            mapping:
+              vk: '#/components/schemas/VKURL'
+          oneOf:
+            - $ref: '#/components/schemas/VKURL'
+
+        # plugin schemas / email
+        AeroflotEmail:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                EmailReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/EmailReq'
+                      - required:
+                          - email
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckEmailController::NAME ]
+                sources:
+                  title: Aeroflot - проверка email на наличие пользователя
+                  type: string
+                  enum: [ 'aeroflot' ]
+              required:
+                - EmailReq
+                - requestType
+                - sources
+
+        VKEmail:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                EmailReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/EmailReq'
+                      - required:
+                          - email
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckEmailController::NAME ]
+                sources:
+                  title: VК - поиск профилей по email
+                  type: string
+                  enum: [ 'vk' ]
+              required:
+                - EmailReq
+                - requestType
+                - sources
+
+        # plugin schemas / auto
+        GIBDDAIUSDTP:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                CarReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CarReq'
+                      - required:
+                          - bodynum
+                          - vin
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckAutoController::NAME ]
+                sources:
+                  title: ГИБДД - проверка на участие в дорожно-транспортных происшествиях
+                  type: string
+                  enum: [ 'gibdd_aiusdtp' ]
+              required:
+                - CarReq
+                - requestType
+                - sources
+
+        GIBDDDiagnostic:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                CarReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CarReq'
+                      - required:
+                          - bodynum
+                          - vin
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckAutoController::NAME ]
+                sources:
+                  title: ГИБДД - Проверка наличия диагностической карты технического осмотра
+                  type: string
+                  enum: [ 'gibdd_diagnostic' ]
+              required:
+                - CarReq
+                - requestType
+                - sources
+
+        GIBDDDriver:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                PersonReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/PersonReq'
+                      - required:
+                          - driver_date
+                          - driver_number
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckAutoController::NAME ]
+                sources:
+                  title: ГИБДД - проверка водительского удостоверения
+                  type: string
+                  enum: [ 'gibdd_driver' ]
+              required:
+                - PersonReq
+                - requestType
+                - sources
+
+        GIBDDFines:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                CarReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CarReq'
+                      - required:
+                          - bodynum
+                          - ctc
+                          - regnum
+                          - vin
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckAutoController::NAME ]
+                sources:
+                  title: ГИБДД - неоплаченные штрафы
+                  type: string
+                  enum: [ 'gibdd_fines' ]
+              required:
+                - CarReq
+                - requestType
+                - sources
+
+        GIBDDHistory:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                CarReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CarReq'
+                      - required:
+                          - bodynum
+                          - vin
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckAutoController::NAME ]
+                sources:
+                  title: ГИБДД - проверка автомобиля
+                  type: string
+                  enum: [ 'gibdd_history' ]
+              required:
+                - CarReq
+                - requestType
+                - sources
+
+        GIBDDRestricted:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                CarReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CarReq'
+                      - required:
+                          - bodynum
+                          - vin
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckAutoController::NAME ]
+                sources:
+                  title: ГИБДД - проверка на ограничение регистрационных действий
+                  type: string
+                  enum: [ 'gibdd_restricted' ]
+              required:
+                - CarReq
+                - requestType
+                - sources
+
+        GIBDDWanted:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                CarReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CarReq'
+                      - required:
+                          - bodynum
+                          - vin
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckAutoController::NAME ]
+                sources:
+                  title: ГИБДД - проверка на нахождение в розыске
+                  type: string
+                  enum: [ 'gibdd_wanted' ]
+              required:
+                - CarReq
+                - requestType
+                - sources
+
+        # plugin schemas / phone
+        AeroflotPhone:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                PhoneReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/PhoneReq'
+                      - required:
+                          - phone
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckPhoneController::NAME ]
+                sources:
+                  title: Aeroflot - проверка телефона на наличие пользователя
+                  type: string
+                  enum: [ 'aeroflot' ]
+              required:
+                - PhoneReq
+                - requestType
+                - sources
+
+        AnnouncementPhone:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                PhoneReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/PhoneReq'
+                      - required:
+                          - phone
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckPhoneController::NAME ]
+                sources:
+                  title: Архив объявлений - поиск по телефону
+                  type: string
+                  enum: [ 'announcement' ]
+              required:
+                - PhoneReq
+                - requestType
+                - sources
+
+        VKPhone:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                PhoneReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/PhoneReq'
+                      - required:
+                          - phone
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckPhoneController::NAME ]
+                sources:
+                  title: VК - поиск профилей по номеру телефона
+                  type: string
+                  enum: [ 'vk' ]
+              required:
+                - PhoneReq
+                - requestType
+                - sources
+
+        # plugin schemas / url
+        VKURL:
+          allOf:
+            - $ref: '#/components/schemas/AbstractMessage'
+            - type: object
+              properties:
+                URLReq:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/URLReq'
+                      - required:
+                          - url
+                requestType:
+                  type: string
+                  enum: [ !php/const App\Controller\CheckUrlController::NAME ]
+                sources:
+                  title: VК - профиль пользователя
+                  type: string
+                  enum: [ 'vk' ]
+              required:
+                - URLReq
+                - requestType
+                - sources
+
+        # root objects
+        Request:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/CheckAuto'
+            - $ref: '#/components/schemas/CheckEmail'
+            - $ref: '#/components/schemas/CheckPhone'
+            - $ref: '#/components/schemas/CheckURL'
+    security:
+      - Bearer: [ ]
+
+    paths:
+      '/':
+        post:
+          operationId: default
+          tags:
+            - Default
+          requestBody:
+            required: true
+            content:
+              'application/xml':
+                schema:
+                  type: object
+                  properties:
+                    Request:
+                      $ref: '#/components/schemas/Request'
+          responses:
+            '200':
+              description: OK
+              content:
+                'application/xml':
+                  schema:
+                    type: Object
+                    properties:
+                      Response:
+                        type: object
+                        properties:
+                          Request:
+                            $ref: '#/components/schemas/Request'
+                        required:
+                          - Request

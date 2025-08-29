@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "${GIT_HTTP_URL_WITH_CREDENTIALS}/api/packages/isphere-classes/pypi/simple"
+verify_ssl = false
+name = "gitea"
+
+[packages]
+requests-logic = "==23.7.2"
+worker-classes = "==16.0.18"
+fastapi = {extras = ["all"], version = "==0.110.1"}
+pydantic-settings = "==2.2.1"
+holehe = {git = "https://github.com/megadose/holehe"}
+ignorant = "==1.2"
+phonenumbers = "==8.13.45"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

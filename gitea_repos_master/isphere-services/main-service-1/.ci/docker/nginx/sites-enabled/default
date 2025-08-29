@@ -1,0 +1,171 @@
+map $http_x_request_id $auto_request_id {
+  ""      $request_id;
+  default $http_x_request_id;
+}
+
+map $http_x_real_ip $proxied_remote_addr {
+    ""      $realip_remote_addr;
+    default $http_x_real_ip;
+}
+
+log_format default '$realip_remote_addr - $remote_user [$time_local] '
+                   '"$request" $status $body_bytes_sent '
+                   '"$http_referer" "$http_user_agent" '
+                   '"$auto_request_id" "$http_x_real_ip" "$http_x_forwared_for"';
+
+upstream node_exporter_upstream {
+  server  127.0.0.1:9100 max_fails=0;
+}
+
+upstream php_fpm_upstream {
+  server  127.0.0.1:9000 max_fails=0;
+}
+
+upstream php_fpm_status_upstream {
+  server  127.0.0.1:9001 max_fails=0;
+}
+
+upstream vbgatenew_upstream {
+  server  72.16.99.3:8091 max_fails=0;
+}
+
+server {
+  server_name  _;
+  listen  80;
+
+  access_log  /dev/stdout default;
+  error_log  /dev/stderr;
+
+  server_tokens  off;
+
+  root  /var/www/html;
+  index  index.php;
+
+  add_header  X-Trusted-Proxy $hostname/nginx; # debug
+
+  #####################
+  ##### php 
+  #####################
+
+  location ~ ^/(fpm-status|fpm-ping)$ {
+    fastcgi_pass php_fpm_upstream;
+    fastcgi_param SCRIPT_FILENAME $request_filename;
+    fastcgi_index index.php;
+    include fastcgi.conf;
+    fastcgi_param QUERY_STRING $query_string;
+    fastcgi_pass_header X-Powered-By;
+    fastcgi_pass_request_body off;
+    fastcgi_pass_request_headers off;
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+  }
+
+  # php
+  location ~ ^\/2\.00\/?$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/admin(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/check\w*(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/cheytelefon(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/echo(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/files(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/getfile(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/graphql(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/handler(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/history(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/index(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/load(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/my-ip(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/ping(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/reports(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/showresult(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/sources(_new)?\.php$ { try_files /dev/null @php; }
+
+  # php bulks
+  location ~ ^\/2\.00\/break(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/bulk(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/bulkAuto\/step(One|Two|Three|Final)(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/bulkPage(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/bulkrequest(_new)?\.php$ { try_files /dev/null @php; }
+  location ~ ^\/2\.00\/bulkresult(_new)?\.php$ { try_files /dev/null @php; }
+ 
+  # php internal
+  location ~ ^\/2\.00\/gpsw(_new)?\.php$ { try_files /dev/null @php_internal; }
+  location ~ ^\/2\.00\/get_proxies(_new)?\.php$ { try_files /dev/null @php_internal; }
+  location ~ ^\/2\.00\/stats(_new)?\.php$ { try_files /dev/null @php_internal; }
+
+  # static
+  location ~ ^\/2\.00\/bulkAuto\/bulk(_new)?\.js$ { try_files $uri =404; }
+  location ~ ^\/2\.00\/logs\/(files|mailru)\/.+$ { try_files $uri =404; }
+  location ~ ^\/2\.00\/main(_new)?\.(css|js)$ { try_files $uri =404; }
+  location ~ ^\/2\.00\/view(_new)?\.css$ { try_files $uri =404; }
+  location ~ ^\/2\.00\/wait(_new)?\.gif$ { try_files $uri =404; }
+
+  # internal
+  location @php_internal {
+    allow 10.42.0.0/16;
+    allow 10.43.0.0/16;
+    allow 172.16.0.0/16;
+    deny all;
+    try_files /dev/null @php;
+    internal;
+  }
+
+  location @php {
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass php_fpm_upstream;
+    fastcgi_read_timeout 600;
+    internal;
+  }
+
+  #####################
+  ##### php status
+  #####################
+
+  location ~ ^/\.well-known\/(status) { 
+    allow 10.42.0.0/16;
+    allow 10.43.0.0/16;
+    allow 172.16.0.0/16;
+    deny all;
+    include fastcgi.conf;
+    set $metrics_path "/$1";
+    fastcgi_param SCRIPT_NAME $metrics_path;
+    fastcgi_param SCRIPT_FILENAME $metrics_path;
+    fastcgi_pass php_fpm_upstream;
+  }
+
+  #####################
+  ##### node exporter 
+  #####################
+
+  # internal
+  location = /metrics {
+    auth_basic "auth required";
+    auth_basic_user_file /etc/apache2/.htpasswd;
+    proxy_pass http://node_exporter_upstream;
+  }
+
+  #####################
+  ##### vbgatenew
+  #####################
+
+  location /vbgatenew/ {
+    allow 127.0.0.1;
+    allow 194.226.11.203;
+    allow 62.76.65.31;
+    allow 78.140.221.69;
+    deny all;
+    proxy_pass http://vbgatenew_upstream;
+  }
+   
+  #####################
+  ##### rest
+  #####################
+
+  location ~ ^\. {
+    return 404;
+  }
+
+  location / {
+    return 302 https://xn--80ajiufnfwc.xn--p1acf$request_uri;
+  }
+}

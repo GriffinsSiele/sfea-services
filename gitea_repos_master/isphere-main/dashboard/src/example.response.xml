@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Response id="92011455" status="1" datetime="2022-03-02T20:32:58" result="https://i-sphere.ru/2.00/showresult.php?id=92011455&amp;mode=xml" view="https://i-sphere.ru/2.00/showresult.php?id=92011455">
+<Request>
+        <UserIP>213.87.155.252</UserIP>
+        <UserID>av</UserID>
+        <requestDateTime>2022-03-02T20:32:54</requestDateTime>
+        <requestType>checkphone</requestType>
+        <sources>gosuslugi_phone</sources>
+        <timeout>90</timeout>
+        <recursive>0</recursive>
+        <async>1</async>
+        <PhoneReq>
+            <phone>9039687447</phone>
+        </PhoneReq>
+</Request>
+            <Source code="gosuslugi" checktype="gosuslugi_phone" start="phone[0]" param="phone[0]" path="phone[0]" level="0" index="0" request_id="gosuslugi_phone__0" process_time="4.01">
+                <Name>GosuslugiPhone</Name>
+                <Title>Поиск учетной записи в сервисе Госуслуги</Title>
+                <CheckTitle>Госуслуги - проверка телефона на наличие пользователя</CheckTitle>
+                <Request>gosuslugi_phone 79039687447</Request>
+                <ResultsCount>1</ResultsCount>
+                <Record>
+                    <Field>
+                        <FieldType>string</FieldType>
+                        <FieldName>Phone</FieldName>
+                        <FieldTitle>Телефон</FieldTitle>
+                        <FieldDescription>Телефон</FieldDescription>
+                        <FieldValue>79039687447</FieldValue>
+                    </Field>
+                    <Field>
+                        <FieldType>string</FieldType>
+                        <FieldName>Result</FieldName>
+                        <FieldTitle>Результат</FieldTitle>
+                        <FieldDescription>Результат</FieldDescription>
+                        <FieldValue>Найден</FieldValue>
+                    </Field>
+                    <Field>
+                        <FieldType>string</FieldType>
+                        <FieldName>ResultCode</FieldName>
+                        <FieldTitle>Код результата</FieldTitle>
+                        <FieldDescription>Код результата</FieldDescription>
+                        <FieldValue>FOUND</FieldValue>
+                    </Field>
+                 </Record>
+            </Source>
+</Response>

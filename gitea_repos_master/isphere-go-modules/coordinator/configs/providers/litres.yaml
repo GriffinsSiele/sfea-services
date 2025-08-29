@@ -1,0 +1,3 @@
+providers:
+  litres:
+    endpoint: "https://api.litres.ru"

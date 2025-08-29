@@ -1,0 +1,17 @@
+version: '3.7'
+
+# superset db upgrade
+# superset init
+services:
+  superset:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    ports:
+      - '8088:8088'
+    environment: {}
+    volumes:
+      - superset:/opt/db
+
+volumes:
+  superset: ~

@@ -1,0 +1,53 @@
+check_types:
+  geoip:
+    enabled: true
+    source: { code: geoip }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/ip"
+    upstream:
+      provider: geoip
+      keydb: { enabled: true, scope: geoip, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: geoip }
+      tcp:
+        # language=HTTP
+        query: |
+          GET /?ip={{ ip }} HTTP/1.1
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .data }}
+          {{- if eq .status "found" }}
+          - ip:           {{ Quote .ip }}
+            country_code: {{ Quote .country_code }}
+            region:       {{ Quote .region }}
+            city:         {{ Quote .city }}
+            {{- if not (eq .location nil) }}
+            location:
+              coords:
+                {{- range .location.coords }}
+                  - !!float {{ Quote . }}
+                {{- end }}
+              text: {{ Quote .location.text }}
+            {{- end }}          
+          {{- end }}
+          {{- end }}
+        # @formatter:off
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          ip: { type: string }
+          country_code: { type: string }
+          region: { type: string }
+          city: { type: string }
+          location:
+            type: object
+            properties:
+              coords:
+                type: array
+                items: { type: number, minItems: 2, maxItems: 2 }

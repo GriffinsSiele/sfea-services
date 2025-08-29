@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="UserIP" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>IP пользователя</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="UserID" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Логин пользователя</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Password" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Пароль пользователя</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="requestId" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Пользовательский идентификатор запроса</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="requestType" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Тип запроса</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="sources" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Список кодов источников через запятую</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="rules" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Список кодов правил через запятую</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="recursive" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Признак рекурсивного запроса (поиск по всем найденным контактам)</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:enumeration value="0"/>
+							<xs:enumeration value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="async" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Признак асинхронного запроса (без ожидания завершения)</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:enumeration value="0"/>
+							<xs:enumeration value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="timeout" type="xs:int" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Максимальное время обработки запроса</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="PersonReq" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Физическое лицо</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="first" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Имя</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="middle" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Отчество</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="paternal" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Фамилия</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="birthDt" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Дата рождения</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="passport_series" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Серия паспорта</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="passport_number" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Номер паспорта</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="issueDate" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Дата выдачи паспорта</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="issueAuthority" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Кем выдан паспорт</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="inn" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>ИНН</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="snils" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>СНИЛС</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="driver_number" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Серия и номер в/у</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="driver_date" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Дата выдачи в/у</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="region_id" type="xs:int" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Код региона</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PhoneReq" minOccurs="0" maxOccurs="5">
+					<xs:annotation>
+						<xs:documentation>Телефон</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="phone" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Номер телефона</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="EmailReq" minOccurs="0" maxOccurs="5">
+					<xs:annotation>
+						<xs:documentation>Email</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="email" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Электронная почта</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="IPReq" minOccurs="0" maxOccurs="5">
+					<xs:annotation>
+						<xs:documentation>IP</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ip" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>IP-адрес</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SkypeReq" minOccurs="0" maxOccurs="5">
+					<xs:annotation>
+						<xs:documentation>Skype</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="skype" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Логин skype</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="TelegramReq" minOccurs="0" maxOccurs="5">
+					<xs:annotation>
+						<xs:documentation>Telegram</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="skype" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Имя telegram</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="NickReq" minOccurs="0" maxOccurs="5">
+					<xs:annotation>
+						<xs:documentation>Псевдоним</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="nick" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Псевдоним</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="URLReq" minOccurs="0" maxOccurs="5">
+					<xs:annotation>
+						<xs:documentation>URL</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="url" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Ссылка на страницу</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="CarReq" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Автомобиль</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="vin" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>VIN</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="bodynum" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Номер кузова</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="chassis" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Номер шасси</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="regnum" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Гос.номер</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ctc" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Серия и номер СТС</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="pts" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Серия и номер ПТС</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OrgReq" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Организация</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="inn" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>ИНН</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ogrn" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>ОГРН</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="name" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Название</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="address" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Адрес</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="region_id" type="xs:int" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Код региона</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="bik" type="xs:int" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>БИК банка</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

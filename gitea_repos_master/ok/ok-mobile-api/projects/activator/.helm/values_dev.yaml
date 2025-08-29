@@ -1,0 +1,57 @@
+kind: Deployment
+
+replicaCount: 1
+
+image:
+  repository: ${GIT_HTTP_DOMAIN}/${CI_REPO}-activator-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  tag: ${IMAGE_TAG}
+
+
+resources:
+  limits:
+    cpu: 70m
+    memory: 100Mi
+  requests:
+    cpu: 20m
+    memory: 50Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 1200
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+
+service:
+  enabled: false
+
+nodeSelector: {}
+
+env:
+- name: MONGO_COLLECTION
+  value: ${MONGO_COLLECTION}
+- name: RABBITMQ_QUEUE_SESSION
+  value: ${RABBITMQ_QUEUE_SESSION}
+- name: SENTRY_URL_ACTIVATOR
+  value: ${SENTRY_URL_ACTIVATOR}
+
+
+envFrom:
+- secretRef:
+    name: settings-kube

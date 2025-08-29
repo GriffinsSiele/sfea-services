@@ -1,0 +1,22 @@
+services:
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    env_file:
+      - path: .env
+        required: true
+    command: server
+    dns:
+      - '10.43.0.10'
+      - '8.8.8.8'
+    ports:
+      - '8000:8000/tcp'
+    volumes:
+      - ./:/app
+      - go-path:/root/go
+      - ~/.kube/config:/root/.kube/config:ro
+
+volumes:
+  go-path: { }

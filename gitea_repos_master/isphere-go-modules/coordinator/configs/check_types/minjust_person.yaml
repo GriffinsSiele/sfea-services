@@ -1,0 +1,87 @@
+check_types:
+  minjust_person:
+    enabled: true
+    source: { code: minjust }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            last_name: { type: string }
+            first_name: { type: string }
+            patronymic: { type: string }
+            date: { type: string, format: date }
+          required:
+            - last_name
+            - first_name
+            - date
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: minjust_person, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: minjust_person }
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            query {
+                minjust_foreign_persons(where: {
+                    surname: {_eq: {{ Quote (upper .last_name) }} },
+                    name: {_eq: {{ Quote (upper .first_name) }} },
+                    {{- if not (eq .patronymic "") }}
+                    patronymic: {_eq: {{ Quote (upper .patronymic) }} },
+                    {{- end }}
+                    birthday: {_eq: {{ Quote .date }}  }
+                }) {
+                    surname
+                    name
+                    patronymic
+                    birthday
+                    inn
+                    snils
+                    address
+                    reason
+                    created_at
+                    deleted_at
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .minjust_foreign_persons }}
+          - surname:      {{ Quote .surname }}
+            name:         {{ Quote .name }}
+            patronymic:   {{ Quote .patronymic }}
+            birthday:     {{ Quote .birthday }}
+            inn:          {{ Quote .inn }}
+            snils:        {{ Quote .snils }}
+            address:      {{ Quote .address }}
+            reason:       {{ Quote .reason }}
+            created_at:   {{ Quote .created_at }}
+            deleted_at:   {{ Quote .deleted_at }}
+            {{ if eq .deleted_at nil }}
+            status: included
+            {{ else }}
+            status: excluded
+            {{ end }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          surname: { type: string }
+          name: { type: string }
+          patronymic: { type: string }
+          birthday: { type: string, format: date }
+          inn: { type: string }
+          snils: { type: string }
+          address: { type: string }
+          reason: { type: string }
+          created_at: { type: string, format: date }
+          deleted_at: { type: string }
+          status: { type: string, enum: [included, excluded] }

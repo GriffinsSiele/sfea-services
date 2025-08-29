@@ -1,0 +1,3 @@
+providers:
+  censys:
+    endpoint: "$MODULE_CENSYS_ENDPOINT"

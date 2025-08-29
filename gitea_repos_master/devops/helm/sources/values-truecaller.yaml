@@ -1,0 +1,55 @@
+kind: StatefulSet
+#StatefulSet
+
+replicaCount: 3
+
+image:
+  repository: git.i-sphere.ru/truecaller/truecaller-mobile-api:worker
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+resources:
+  limits:
+    cpu: 150m
+    memory: 100Mi
+  requests:
+    cpu: 15m
+    memory: 20Mi
+
+
+env:
+- name: MONGO_COLLECTION
+  value: truecaller
+- name: KEYDB_QUEUE
+  value: truecaller
+- name: SENTRY_URL
+  value: https://d8f4b08859a245849ecf1ef243a80282@glitchtip.git.i-sphere.ru/5
+
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

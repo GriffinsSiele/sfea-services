@@ -1,0 +1,79 @@
+name: linter
+kind: pipeline
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+- name: yapf-run
+  image: python:latest
+  volumes:
+    - name: yapf-cache
+      path: /drone/src/
+  commands:
+    - git checkout -b $DRONE_SOURCE_BRANCH
+    - pip install -qq yapf
+    - yapf -r -i src/ *.py
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+
+- name: yapf-check
+  image: python:latest
+  depends_on:
+    - yapf-run
+  volumes:
+    - name: yapf-cache
+      path: /drone/src/
+  commands:
+    - git status
+    - |
+      if [ $(git status --porcelain | wc -l) -eq "0" ]; then 
+        echo "No changes detected. Ok"; 
+      else 
+        echo "Changes detected. Refactor your code and run again"
+        exit 1; 
+      fi
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+
+- name: yapf-push
+  image: python:latest
+  depends_on:
+    - yapf-run
+  volumes:
+    - name: yapf-cache
+      path: /drone/src/
+  commands:
+    - git status
+    - |
+      if [ $(git status --porcelain | wc -l) != "0" ]; then 
+        git commit -am "refactor: yapf autofixes"
+        git push --set-upstream origin $DRONE_SOURCE_BRANCH
+      else
+        echo "Nothing to commit. Ok"
+      fi
+  when:
+    event:
+      - pull_request
+    branch:
+      - master
+      - dev
+volumes:
+- name: yapf-cache
+  temp: {}
+
+trigger:
+  event:
+    - pull_request
+    - push
+  branch:
+    - master
+    - dev

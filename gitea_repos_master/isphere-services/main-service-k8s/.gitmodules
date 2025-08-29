@@ -1,0 +1,3 @@
+[submodule "public"]
+	path = public
+	url = ssh://git@git.i-sphere.ru:30122/isphere-services/main-service-1.git

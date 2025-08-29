@@ -1,0 +1,23 @@
+framework:
+  messenger:
+    default_bus: async.bus
+
+    buses:
+      async.bus: ~
+
+    transports:
+      async:
+        dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+#        dsn: 'sync://'
+
+      collector:
+        dsn: '%env(MESSENGER_COLLECTOR_TRANSPORT_DSN)%'
+        options:
+          exchange:
+            name: collector
+          queues:
+            collector: ~
+        serializer: App\Messenger\Serializer\CollectorSerializer
+
+    routing:
+      '*': async

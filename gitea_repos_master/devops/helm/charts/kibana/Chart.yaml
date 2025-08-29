@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kibana
+description: kibana
+type: application
+version: '1696402366'
+appVersion: '1696402366'

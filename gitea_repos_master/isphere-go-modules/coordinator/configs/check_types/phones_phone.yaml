@@ -1,0 +1,37 @@
+check_types:
+  phones_phone:
+    enabled: true
+    source: { code: phones }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: d0o
+      keydb: { enabled: true, scope: phones_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: phones_phone }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($phone: Tel!) {
+              d0o {
+                  adjacent(phone: $phone) {
+                      phone
+                  }
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .d0o.adjacent }}
+          - Phone: {{ Quote .phone }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Phone: { type: string, format: tel }

@@ -1,0 +1,74 @@
+kind: Deployment
+
+replicaCount: 5
+
+image:
+  repository: ${GIT_HTTP_INTERNAL_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  tag: ${IMAGE_TAG}
+
+command:
+  - python
+args:
+  - start.py
+
+
+resources:
+  limits:
+    cpu: 450m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 250Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+
+service:
+  enabled: false
+
+
+nodeSelector: {}
+
+env:
+- name: RABBITMQ_QUEUE
+  value: ${RABBITMQ_QUEUE}
+- name: RABBITMQ_CONSUMERS
+  value: ${RABBITMQ_CONSUMERS}
+- name: KEYDB_QUEUE
+  value: ${KEYDB_QUEUE}
+- name: IMPLICITLY_WAIT
+  value: ${IMPLICITLY_WAIT}
+- name: EXPLICIT_WAIT_FOR_LINK
+  value: ${EXPLICIT_WAIT_FOR_LINK}
+- name: EXPLICIT_WAIT
+  value: ${EXPLICIT_WAIT}
+- name: CAPTCHA_PROVIDER
+  value: ${CAPTCHA_PROVIDER}
+- name: CHROME_VERSION
+  value: ${CHROME_VERSION}
+- name: SENTRY_URL
+  value: ${SENTRY_URL}
+
+envFrom:
+- secretRef:
+    name: settings-kube

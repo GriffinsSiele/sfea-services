@@ -1,0 +1,20 @@
+{{ template "header" }}
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <header>
+            <h1>Создать аккаунт iSphere</h1>
+            <p class="lead">Введите свои регистрационные данные</p>
+        </header>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-10 offset-md-2">
+        <main>
+            {{ template "ui" Dict "UI" .UI "Groups" "" }}
+        </main>
+    </div>
+</div>
+
+{{ template "footer" }}

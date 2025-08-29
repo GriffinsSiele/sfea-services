@@ -1,0 +1,9 @@
+definitions:
+  schema:
+    inn:
+      type: object
+      properties:
+        inn:
+          type: string
+      required:
+        - inn

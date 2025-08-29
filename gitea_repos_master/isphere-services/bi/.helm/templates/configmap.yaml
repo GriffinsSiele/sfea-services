@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.name" . }}-configmap
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+{{- range $k, $v := .Values.superset.env }}
+  {{ $k }}: {{ $v | quote }}
+{{- end }}

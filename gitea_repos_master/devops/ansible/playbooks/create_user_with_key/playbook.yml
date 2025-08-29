@@ -1,0 +1,28 @@
+---
+
+- name: Create user
+  hosts: '{{ target }}'
+  become: true
+  become_user: root
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+  
+  - name: Create user
+    user:
+      name: "{{ new_user_name }}"
+      password: "{{ new_user_password }}"
+      groups:
+        - sudo
+      state: present
+      shell: /bin/bash
+      system: no
+      createhome: yes
+
+  - name: Copy SSH key
+    authorized_key:
+      user: "{{ new_user_name }}"
+      state: present
+      key: "{{ lookup('file', '/path/to/pubkey') }}"

@@ -1,0 +1,27 @@
+{{ template "header" }}
+
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <header>
+            <h1>OAuth2 Example Flow</h1>
+        </header>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-10 offset-md-2">
+        <form action="{{ .HydraPublicEndpoint }}/oauth2/auth" method="get">
+            <button class="btn btn-primary btn-lg" type="submit">
+                Login using iSphere
+            </button>
+
+            <input type="hidden" name="client_id" value="{{ .ClientID }}"/>
+            <input type="hidden" name="response_type" value="code"/>
+            <input type="hidden" name="scope" value="openid"/>
+            <input type="hidden" name="state" value="a some state long string"/>
+        </form>
+    </div>
+</div>
+
+{{ template "footer" }}

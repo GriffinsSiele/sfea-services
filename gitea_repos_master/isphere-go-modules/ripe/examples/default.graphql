@@ -1,0 +1,59 @@
+{
+    ripe(ip: "78.140.221.69") {
+        __typename
+
+        ... on inetnum {
+            admin_c
+            country
+            created
+            descr
+            inetnum
+            last_modified
+            netname
+            remarks
+            source
+            status
+            tech_c
+        }
+
+        ... on organisation {
+            abuse_c
+            address
+            admin_c
+            country
+            created
+            fax_no
+            last_modified
+            mnt_by
+            mnt_ref
+            organisation
+            org_name
+            org_type
+            phone
+            source
+            tech_c
+        }
+
+        ... on role {
+            admin_c
+            created
+            last_modified
+            mnt_by
+            nic_hdl
+            remarks
+            role
+            source
+            tech_c
+        }
+
+        ... on route {
+            created
+            descr
+            last_modified
+            mnt_by
+            origin
+            route
+            source
+        }
+    }
+}

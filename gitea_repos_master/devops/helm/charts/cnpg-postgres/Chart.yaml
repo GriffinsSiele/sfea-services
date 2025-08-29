@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cnpg-databases
+description: dnpg databases
+type: application
+version: '1692865576'
+appVersion: '1692865576'

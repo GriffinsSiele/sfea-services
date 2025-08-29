@@ -1,0 +1,57 @@
+kind: StatefulSet
+#StatefulSet
+
+replicaCount: 4
+
+image:
+  repository: git.i-sphere.ru/telegram/telegram-web-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- "/bin/sl- /venv/bin/pythoneep"
+
+
+
+
+resources: {}
+
+
+
+env:
+- name: MONGO_COLLECTION
+  value: telegram
+- name: MAX_SEARCH_PER_DAY
+  value: "25"
+- name: KEYDB_QUEUE
+  value: telegram
+- name: SENTRY_URL
+  value: https://ecbe997546e34be3836e003f507f0a0c@glitchtip.git.i-sphere.ru/7
+
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

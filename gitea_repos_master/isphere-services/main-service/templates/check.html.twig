@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <h5 class="card-header">{{ title | escape }}</h5>
+                    <div class="card-body">
+                        <div class="card-text">
+                            {{ form(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if appRequest and appResponse %}
+                <div class="col-lg-6">
+                    {% if check.format == 'xml' %}
+                        <div class="card shadow mb-4">
+                            <h5 class="card-header">Данные запроса</h5>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <pre><code class="language-xml">
+                                        {{- appRequest | hide_credentials | serialize('xml', {
+                                            skip_null_values: true,
+                                            xml_root_node_name: 'Request',
+                                            xml_encoding: 'utf-8',
+                                            xml_format_output: true,
+                                        }) -}}
+                                    </code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="card shadow">
+                        <h5 class="card-header">Результат запроса</h5>
+                        <div class="card-body">
+                            <div class="card-text"
+                                 data-app-response
+                                 data-app-id="{{ appResponse.id }}"
+                                 data-app-mode="{{ check.format }}"
+                            >
+                                <i class="fa fa-spin fa-spinner"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-lg-6">
+                    <div class="card shadow">
+                        <h5 class="card-header">Результат запроса</h5>
+                        <div class="card-body">
+                            <p class="card-text text-center">
+                                <i class="fa fa-5x fa-regular fa-lightbulb fa-bounce text-muted"></i>
+                            </p>
+                            <p class="card-text text-center">
+                                Результат запроса будет отображен после заполнения и отправки формы
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

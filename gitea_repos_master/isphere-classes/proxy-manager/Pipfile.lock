@@ -1,0 +1,25 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "0fd19f49e18cf762268d71feeb487b7084cf7849ae8e366242798e5e433b97af"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "*"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            },
+            {
+                "name": "gitea",
+                "url": "${GIT_HTTP_URL_WITH_CREDENTIALS}/api/packages/isphere-classes/pypi/simple",
+                "verify_ssl": false
+            }
+        ]
+    },
+    "default": {},
+    "develop": {}
+}

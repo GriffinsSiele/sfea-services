@@ -1,0 +1,48 @@
+{{ template "header" }}
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <header>
+            <h1>Вход</h1>
+            <p class="lead">Используйте свой аккаунт iSphere</p>
+        </header>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-10 offset-md-2">
+        <main>
+            <form action="/login" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 form-floating">
+                            <input class="form-control {{ if .Error }}is-invalid{{ end }}" id="username" name="username"
+                                   placeholder="Имя пользователя или email" required autofocus value="{{ .Username }}"
+                                   autocomplete="username"/>
+                            <label for="username">Имя пользователя или email</label>
+                            {{ if .Error }}
+                                <div class="invalid-feedback">{{ .Error }}</div>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pt-4">
+                    <div class="col">
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Далее</button>
+
+                            <a class="btn btn-link" href="{{ .Links.RegistrationURL }}">
+                                Создать аккаунт
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="_csrf" value="{{ .CSRFToken }}"/>
+            </form>
+        </main>
+    </div>
+</div>
+
+{{ template "footer" }}

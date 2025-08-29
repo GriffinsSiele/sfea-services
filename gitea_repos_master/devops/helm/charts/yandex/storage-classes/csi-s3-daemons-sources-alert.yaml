@@ -1,0 +1,21 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-s3-daemons-sources-alert
+provisioner: ru.yandex.s3.csi
+parameters:
+  bucket: c2e09116-loki
+  csi.storage.k8s.io/controller-publish-secret-name: timeweb-s3-secret
+  csi.storage.k8s.io/controller-publish-secret-namespace: csi-s3
+  csi.storage.k8s.io/node-publish-secret-name: timeweb-s3-secret
+  csi.storage.k8s.io/node-publish-secret-namespace: csi-s3
+  csi.storage.k8s.io/node-stage-secret-name: timeweb-s3-secret
+  csi.storage.k8s.io/node-stage-secret-namespace: csi-s3
+  csi.storage.k8s.io/provisioner-secret-name: timeweb-s3-secret
+  csi.storage.k8s.io/provisioner-secret-namespace: csi-s3
+  mounter: rclone
+  prefix: daemons-sources-alert
+  usePrefix: 'true'
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+

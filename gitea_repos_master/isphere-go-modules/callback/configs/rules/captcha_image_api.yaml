@@ -1,0 +1,12 @@
+rules:
+  captcha_image_api:
+    enabled: true
+    pattern: ^/captcha-image-api
+    downstream:
+      proxy:
+        enabled: true
+        host: "$CAPTCHA_IMAGE_API_URL"
+        rewritePath: /api/providers/callback
+        expectedStatusCode: 200
+    mutator:
+      marshaller: none

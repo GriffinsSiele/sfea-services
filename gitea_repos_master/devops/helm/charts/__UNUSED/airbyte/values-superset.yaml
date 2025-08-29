@@ -1,0 +1,54 @@
+tolerations:
+  - key: "qansylli"
+    operator: Equal
+    value: "true"
+    effect: NoExecute
+
+nodeSelector:
+  "kubernetes.io/hostname": msk-worker-91
+
+init:
+  tolerations:
+    - key: "qansylli"
+      operator: Equal
+      value: "true"
+      effect: NoExecute
+
+  nodeSelector:
+    "kubernetes.io/hostname": msk-worker-91
+
+supersetNode:
+  connections:
+    redis_host: 172.16.99.1
+    redis_port: "6379"
+    db_host: 172.16.99.1
+    db_port: "5432"
+    db_user: superset
+    db_pass: "uEHGdr3qphPt5z7mL9akUe"
+    db_name: superset
+
+redis:
+  enabled: false
+
+postgresql:
+  enabled: false
+
+service:
+  port: 80
+
+configOverrides:
+  fix_cookies: |
+    CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = False
+    TALISMAN_ENABLED = False
+
+  feature_flags: |
+    FEATURE_FLAGS = { 'ENABLE_TEMPLATE_PROCESSING': True }
+
+bootstrapScript: |
+  #!/bin/bash
+  pip install clickhouse-connect>=0.6.8 && \
+  if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > ~/bootstrap; fi
+    #SESSION_COOKIE_HTTPONLY = False
+    #SESSION_COOKIE_SAMESITE = "None"
+    #SESSION_COOKIE_SECURE = False

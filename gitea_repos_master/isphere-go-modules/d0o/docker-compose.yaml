@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  d0o:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    networks:
+      - isphere
+    env_file:
+      - .env
+      - .env.local
+
+networks:
+  isphere:
+    external: true

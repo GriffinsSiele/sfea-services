@@ -1,0 +1,143 @@
+.info-block {
+    margin-bottom: 25px;
+}
+
+.info-block p {
+    margin-bottom: 10px;
+}
+
+td, th {
+    text-align:center;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr.table-header-row {
+    background-color: #f1f1f1;
+}
+
+td.table-td-header {
+    background-color: #f1f1f1;
+}
+
+td.table-td-header-left {
+    background-color: #f1f1f1;
+    width: 30% !important;
+}
+
+.upper {
+    text-transform: uppercase;
+}
+
+.not-allowed-driver {
+    color: #d53732;
+    margin-bottom: 5px;
+}
+
+.allowed-driver {
+    color: green;
+    margin-bottom: 5px;
+}
+
+td.wdth280 {
+    min-width: 280px;
+}
+
+td.wdth330 {
+    min-width: 330px;
+}
+
+td.tbl-wrapper {
+    height: inherit;
+    width: 100%;
+}
+
+div.tbl-container {
+    height: 100%;
+    width: 100%;
+}
+
+div.tbl-container table {
+    height: 100%;
+    width: 100%;
+}
+
+.tbl-container td {
+    border: none !important;
+    width: 50%;
+}
+
+.tbl-container td:first-child {
+    border-right: 1px solid black !important;
+}
+
+.tbl-container tr {
+    border-bottom: 1px solid black;
+}
+
+.tbl-container tr:last-child {
+    border-bottom: none;
+}
+
+.policies-tbl td {
+    border: 1px solid black;
+}
+.bso-tbl td {
+    border: 1px solid black;
+}
+.data-row, #requestDataBlock {
+    background: white;
+}
+
+.service-messages-wrapper {
+    color: red;
+}
+
+.driver-tbl-header {
+    color: #838383;
+    font-size: 18px;
+}
+.driver-tbl-td {
+    vertical-align: text-top;
+    text-align: left;
+    word-wrap:break-word !important;
+    max-width: 300px;
+    min-width: 250px;
+}
+.mt10 {
+    margin-top: 10px;
+}
+.mr10 {
+    margin-right: 10px;
+}
+
+table.fixed { table-layout:fixed; }
+table.fixed td { overflow: hidden; }
+
+sup {
+    font-size: .83em;
+    vertical-align: super;
+}
+
+.policy-result-block {
+    max-width: 1310px;
+    width: 100%;
+    margin: 0px 0px 20px 0px;
+    box-sizing: border-box;
+}
+
+.policy-error-block {
+    max-width: 1310px;
+    width: 100%;
+    margin: 0px 0px 0px 0px;
+    box-sizing: border-box;
+}
+
+@media only screen and (max-width: 639px) {
+    .btn.blue-btn {
+        width: auto;
+        margin-right: 10px;
+    }
+}

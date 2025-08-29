@@ -1,0 +1,3 @@
+providers:
+  sypexgeo:
+    endpoint: "$MODULE_SYPEXGEO_ENDPOINT"

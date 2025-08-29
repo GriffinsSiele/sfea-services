@@ -1,0 +1,42 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  annotations:
+  name: i-sphere
+spec:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - i-sphere
+          topologyKey: topology.kubernetes.io/zone
+  delayStartSeconds: 30
+  image: rabbitmq:3.10.2-management
+  override: {}
+  persistence:
+    storage: 10Gi
+    storageClassName: local-path
+  rabbitmq:
+    additionalConfig: |
+      cluster_partition_handling = autoheal
+      vm_memory_high_watermark_paging_ratio = 0.99
+      disk_free_limit.relative = 1.0
+      collect_statistics_interval = 10000
+  replicas: 3
+  resources:
+    limits:
+      cpu: 150m
+      memory: 2Gi
+    requests:
+      cpu: 30m
+      memory: 200Mi
+  secretBackend:
+    externalSecret: {}
+  service:
+    type: ClusterIP
+  terminationGracePeriodSeconds: 300
+  tls: {}

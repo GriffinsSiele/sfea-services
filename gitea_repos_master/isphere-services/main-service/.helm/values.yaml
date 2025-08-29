@@ -1,0 +1,192 @@
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+fullNameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  tlsEnabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    certmanager.k8s.io/acme-challenge-type: http01
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-body-size: 30m
+  hosts:
+    - host: "${DRONE_REPO_NAMESPACE}-${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}.${DOMAIN}"
+      paths:
+        - /
+  tls:
+    - secretName: "${DRONE_REPO_NAMESPACE}-${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}.${DOMAIN}"
+      hosts:
+        - "${DRONE_REPO_NAMESPACE}-${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}.${DOMAIN}"
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: { }
+
+podSecurityContext: { }
+
+nodeSelector: { }
+
+tolerations: [ ]
+
+serviceAccount:
+  create: true
+  annotations: { }
+  createRole: true
+  affinity: { }
+
+persistence:
+  enabled: true
+  existingClaim: false
+  accessMode: ReadWriteMany
+  size: 10Gi
+  storageClass: ceph-filesystem
+
+global:
+  env:
+    ANTIGATE_HOST2: "${ANTIGATE_HOST2}"
+    ANTIGATE_HOST: "${ANTIGATE_HOST}"
+    ANTIGATE_KEY2: "${ANTIGATE_KEY2}"
+    ANTIGATE_KEY: "${ANTIGATE_KEY}"
+    APP_DEBUG: "${APP_DEBUG}"
+    APP_ENV: "${APP_ENV}"
+    APP_SECRET: "${APP_SECRET}"
+    CAPTCHA_HOST2: "${CAPTCHA_HOST2}"
+    CAPTCHA_HOST: "${CAPTCHA_HOST}"
+    CAPTCHA_KEY2: "${CAPTCHA_KEY2}"
+    CAPTCHA_KEY: "${CAPTCHA_KEY}"
+    CAPTCHAV3_HOST2: "${CAPTCHAV3_HOST2}"
+    CAPTCHAV3_HOST: "${CAPTCHAV3_HOST}"
+    CAPTCHAV3_KEY2: "${CAPTCHAV3_KEY2}"
+    CAPTCHAV3_KEY: "${CAPTCHAV3_KEY}"
+    DATABASE_CBR_URL: "${DATABASE_CBR_URL}"
+    DATABASE_COMMERCE_URL: "${DATABASE_COMMERCE_URL}"
+    DATABASE_DEFAULT_URL: "${DATABASE_DEFAULT_URL}"
+    DATABASE_FEDSFM_URL: "${DATABASE_FEDSFM_URL}"
+    DATABASE_FNS_URL: "${DATABASE_FNS_URL}"
+    DATABASE_ROSSVYAZ_URL: "${DATABASE_ROSSVYAZ_URL}"
+    DATABASE_STATS_URL: "${DATABASE_STATS_URL}"
+    DATABASE_VK_URL: "${DATABASE_VK_URL}"
+    HCAPTCHA_HOST2: "${HCAPTCHA_HOST2}"
+    HCAPTCHA_HOST: "${HCAPTCHA_HOST}"
+    HCAPTCHA_KEY2: "${HCAPTCHA_KEY2}"
+    HCAPTCHA_KEY: "${HCAPTCHA_KEY}"
+    MEMCACHED_DSN: "${MEMCACHED_DSN}"
+    MESSENGER_COLLECTOR_TRANSPORT_DSN: "${MESSENGER_COLLECTOR_TRANSPORT_DSN}"
+    MESSENGER_TRANSPORT_DSN: "${MESSENGER_TRANSPORT_DSN}"
+    SENTRY_DSN: "${SENTRY_DSN}"
+
+memcached:
+  replicaCount: 1
+
+  service:
+    port: 11211
+
+  image:
+    repository: memcached
+    pullPolicy: Always
+    tag: alpine
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+php_fpm:
+  replicaCount: 1
+
+  service:
+    port: 80
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 3Gi
+    requests:
+      cpu: 500m
+      memory: 2Gi
+
+  env: { }
+
+messenger_consume_async:
+  replicaCount: 2
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+
+  env: { }
+
+messenger_consume_collector:
+  replicaCount: 1
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+  env: { }
+
+update_sessions:
+  replicaCount: 1
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+  env: { }

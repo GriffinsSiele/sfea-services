@@ -1,0 +1,51 @@
+{{ define "ui_node_input_default" }}
+    <div
+            class="mb-3 form-floating"
+            {{ if IsDebug }}
+                data-debug-input-id="{{ .Node.Attributes.UiNodeInputAttributes.Name }}"
+                data-debug-input-group="{{ .Node.Group }}"
+            {{ end }}
+    >
+        <input
+                class="form-control {{ if .Node.Messages }}is-invalid{{ end }}"
+                id="{{ GetNodeID .Node }}"
+                name="{{ .Node.Attributes.UiNodeInputAttributes.Name }}"
+                placeholder="{{ GetNodeLabel .Node }}"
+                {{ if .Node.Attributes.UiNodeInputAttributes.Type }}
+                    type="{{ .Node.Attributes.UiNodeInputAttributes.Type }}"
+                {{ else }}
+                    type="text"
+                {{ end }}
+                {{ if .Node.Attributes.UiNodeInputAttributes.Pattern }}
+                    pattern="{{ .Node.Attributes.UiNodeInputAttributes.Pattern }}"
+                {{ end }}
+                {{ if .Node.Attributes.UiNodeInputAttributes.Value }}
+                    value="{{ .Node.Attributes.UiNodeInputAttributes.Value }}"
+                {{ end }}
+                {{ if .Node.Attributes.UiNodeInputAttributes.Disabled }}disabled{{ end }}
+                {{ if .Node.Attributes.UiNodeInputAttributes.Required }}required{{ end }}
+                style="max-width: 30vw;"
+        />
+
+        <label
+                class="form-label"
+                for="{{ GetNodeID .Node }}"
+        >
+            {{ GetNodeLabel .Node }}
+            {{ if .Node.Attributes.UiNodeInputAttributes.Required }}*{{ end }}
+        </label>
+
+        {{ if .Node.Messages }}
+            {{ range .Node.Messages }}
+                <div
+                        class="invalid-feedback"
+                        {{ if IsDebug }}
+                            data-debug-message-id="{{ .Id }}"
+                        {{ end }}
+                >
+                    {{ .Text }}
+                </div>
+            {{ end }}
+        {{ end }}
+    </div>
+{{ end }}

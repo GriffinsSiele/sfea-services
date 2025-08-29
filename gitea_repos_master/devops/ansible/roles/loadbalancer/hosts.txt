@@ -1,0 +1,19 @@
+[lb]
+prod-stupino-loadbalancer-01   ansible_host=prod-stupino-loadbalancer-01.i-sphere.local    ansible_user=root  ansible_ssh_pass= priority=100 lb_name=lb-01 ha_state=MASTER  ha_state_2=BACKUP  lb_src_ip=172.16.150.3    lb_peer_ip=172.16.177.6 lb_peer_ip_2=172.16.161.104  lb_peer_ip_3=172.16.161.103   lb_vip_k8s=172.16.2.224
+prod-vidnoe-loadbalancer-01    ansible_host=prod-vidnoe-loadbalancer-01.i-sphere.local    ansible_user=root  ansible_ssh_pass= priority=99  lb_name=lb-02 ha_state=BACKUP  ha_state_2=BACKUP  lb_src_ip=172.16.177.6    lb_peer_ip=172.16.150.3 lb_peer_ip_2=172.16.161.104  lb_peer_ip_3=172.16.161.103   lb_vip_k8s=172.16.2.224
+prod-gaydary-loadbalancer-01   ansible_host=prod-gaydary-loadbalancer-01.i-sphere.local  ansible_user=root  ansible_ssh_pass= priority=98  lb_name=lb-03 ha_state=BACKUP  ha_state_2=BACKUP  lb_src_ip=172.16.161.104  lb_peer_ip=172.16.150.3 lb_peer_ip_2=172.16.177.6    lb_peer_ip_3=172.16.161.103   lb_vip_k8s=172.16.2.224
+prod-rnd-loadbalancer-01       ansible_host=prod-rnd-loadbalancer-01.i-sphere.local  ansible_user=root  ansible_ssh_pass= priority=97  lb_name=lb-04 ha_state=BACKUP  ha_state_2=BACKUP  lb_src_ip=172.16.161.103  lb_peer_ip=172.16.177.6 lb_peer_ip_2=172.16.161.104  lb_peer_ip_3=172.16.150.3     lb_vip_k8s=172.16.2.224
+
+[k8s_master]
+prod-gaydary-master   ansible_host=prod-gaydary-master
+prod-vidnoe-master    ansible_host=prod-vidnoe-master
+prod-stupino-master   ansible_host=prod-stupino-master
+prod-timeweb-master   ansible_host=timeweb-master
+prod-rnd-master       ansible_host=prod-rnd-master
+
+[minio_nodes]
+minio-node-01   ansible_host=test-minio-01.i-sphere.local
+minio-node-02   ansible_host=test-minio-02.i-sphere.local
+minio-node-03   ansible_host=test-minio-03.i-sphere.local
+minio-node-04   ansible_host=test-minio-04.i-sphere.local
+

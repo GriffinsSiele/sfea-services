@@ -1,0 +1,10 @@
+FROM python:3.11-slim-buster
+WORKDIR /app
+ARG CHROME_VERSION="126.0.6478.114-1"
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN apt-get update && apt-get install --no-install-recommends -y wget=1.20.1-1.1 gnupg=2.2.12-1+deb10u2 && \
+    wget -q https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb && \
+    apt-get install --no-install-recommends -y ./google-chrome-stable_${CHROME_VERSION}_amd64.deb && \
+    rm ./google-chrome-stable_${CHROME_VERSION}_amd64.deb && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*

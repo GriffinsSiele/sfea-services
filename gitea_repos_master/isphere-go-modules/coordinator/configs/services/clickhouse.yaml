@@ -1,0 +1,5 @@
+services:
+  clickhouse:
+    addr: "clickhouse.i-sphere.local:9000"
+    timezone: "Europe/Moscow"
+    poolSize: 10

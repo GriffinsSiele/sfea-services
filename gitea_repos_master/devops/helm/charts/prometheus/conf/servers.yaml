@@ -1,0 +1,316 @@
+- name: GAYDARY
+  children:
+    - name: GAYDARY-PVE1
+      ip: 172.16.161.0
+      children:
+        - name: gaydary-worker-01
+          ip: 172.16.161.1
+          type: VM
+        - name: gaydary-worker-02
+          ip: 172.16.161.2
+          type: VM
+        - name: gaydary-worker-03
+          ip: 172.16.161.3
+          type: VM
+        - name: kube-test3gayd
+          ip: 172.16.161.4
+          type: VM
+        - name: haos10.4
+          ip: 192.168.161.10
+          type: VM
+        - name: zbx-proxy-gaydary
+          ip: 172.16.161.5
+          type: LXC
+    - name: GAYDARY-PVE2
+      ip: 172.16.161.100
+      children:
+        - name: mongodb-0
+          ip: 172.16.197.1
+          type: VM
+        - name: rabbitmq
+          ip: 172.16.161.101
+          type: LXC
+          enabled: false
+        - name: test-minio-03
+          ip: 172.16.161.107
+          type: VM
+        - name: prod-gaydary-master
+          ip: 172.16.161.102
+          type: VM
+        - name: prod-gaydary-worker-01
+          ip: 172.16.161.103
+          type: VM
+        - name: prod-gaydary-loadbalancer
+          ip: 172.16.161.104
+          type: VM
+        - name: prod-gaydary-worker-02
+          ip: 172.16.161.105
+          type: VM
+        - name: prod-gaydary-worker-03
+          ip: 172.16.161.106
+          type: VM
+- name: RND
+  children:
+    - name: RND-PVE1
+      ip: 172.16.61.0
+      children:
+        - name: rnd-master
+          ip: 172.16.1.2
+          type: VM
+        - name: rnd-worker-01
+          ip: 172.16.61.4
+          type: VM
+        - name: rnd-worker-02
+          ip: 172.16.61.2
+          type: VM
+        - name: rnd-worker-03
+          ip: 172.16.61.3
+          type: VM
+        - name: kube-test2rnd
+          ip: 172.16.61.5
+          type: VM
+        - name: rnd-mongo
+          ip: 172.16.61.1
+          type: LXC
+          enabled: false
+        - name: test-minio-01
+          ip: 172.16.61.6
+          type: VM
+        - name: zbx-proxy-rnd
+          ip: 172.16.161.5
+          type: LXC
+        - name: analytics
+          ip: 172.16.99.12
+          type: VM
+    - name: RND-PVE2
+      enabled: false
+      children:
+        - name: prod-rnd-master
+          ip: 172.16.61.101
+          enabled: false
+        - name: prod-rnd-loadbalancer-01
+          ip: 172.16.61.103
+          enabled: false
+- name: VIDNOE
+  children:
+    - name: MSK-PVE1
+      ip: 172.16.77.0
+      children:
+        - name: test-glpi
+          ip: 172.16.77.3
+          type: LXC
+        - name: test-mysql-1
+          ip: 172.16.77.10
+          type: LXC
+        - name: test-postgres-1
+          ip: 172.16.77.11
+          type: LXC
+        - name: msk-worker-01
+          ip: 172.16.77.1
+          type: VM
+        - name: msk-worker-02
+          ip: 172.16.77.2
+          type: VM
+        - name: dev-debgui-max
+          type: VM
+        - name: test-kube-msk1
+          type: VM
+    - name: MSK-PVE2
+      ip: 172.16.177.0
+      children:
+        - name: msk-master-10
+          ip: 172.16.1.4
+          type: VM
+        - name: msk-worker-11
+          ip: 172.16.177.1
+          type: VM
+        - name: msk-worker-12
+          ip: 172.16.177.2
+          type: VM
+        - name: prod-vidnoe-master
+          ip: 172.16.177.4
+          type: VM
+        - name: prod-vidnoe-worker-01
+          ip: 172.16.177.5
+          type: VM
+        - name: prod-vidnoe-worker-02
+          ip: 172.16.177.7
+          type: VM
+        - name: prod-vidnoe-worker-03
+          ip: 172.16.177.8
+          type: VM
+        - name: prod-vidnoe-loadbalancer-01
+          ip: 172.16.177.6
+          type: VM
+    - name: MSK-PVE3
+      ip: 172.16.97.0
+      children:
+        - name: phpipam
+          ip: 172.16.97.20
+          type: LXC
+        - name: dev-mysql-1
+          ip: 172.16.97.7
+          type: LXC
+        - name: dev-mysql-1
+          ip: 172.16.97.3
+          type: LXC
+        - name: dev-semigolov
+          ip: 172.16.97.1
+          type: LXC
+        - name: dev-reg-proccess
+          ip: 172.16.12.8
+          type: LXC
+          enabled: false
+        - name: dev-maxim
+          ip: 172.16.97.2
+          type: LXC
+        - name: prod-capmonster
+          ip: 172.16.97.6
+          type: VM
+        - name: msk-worker-92
+          ip: 172.16.97.13
+          type: VM
+        - name: dev-docker
+          ip: 172.16.97.10
+          type: VM
+        - name: zabbix
+          ip: 172.16.97.8
+          type: VM
+    - name: MSK-PVE4
+      ip: 172.16.199.0
+      children:
+        - name: dev-qansylli
+          ip: 172.16.199.2
+          type: VM
+        - name: dev-postgres
+          ip: 172.16.199.3
+          type: VM
+        - name: prod-nodejs-vidnoe
+          ip: 172.16.199.4
+          type: VM
+        - name: prod-minio-02
+          ip: 172.16.199.7
+          type: VM
+        - name: mongodb-1
+          ip: 172.16.199.8
+          type: VM
+        - name: prod-mysql-s2
+          ip: 172.16.199.9
+          type: VM
+        - name: test-haproxy-postgres
+          ip: 172.16.199.10
+          type: VM
+- name: STUPINO
+  children:
+    - name: STUPINO-PVE1
+      ip: 172.16.50.0
+      children:
+        - name: test-mysql-2
+          ip: 172.16.50.3
+          type: VM
+        - name: zbx-proxy-stupino1
+          ip: 172.16.50.8
+          type: LXC
+        - name: stupino-worker-01
+          ip: 172.16.50.4
+          type: VM
+        - name: stupino-worker-02
+          ip: 172.16.50.5
+          type: VM
+        - name: stupino-worker-03
+          ip: 172.16.50.6
+          type: VM
+    - name: STUPINO-PVE2
+      ip: 172.16.150.0
+      children:
+        - name: prod-stupino-master
+          ip: 172.16.150.1
+          type: VM
+        - name: prod-stupino-worker-01
+          ip: 172.16.150.2
+          type: VM
+        - name: prod-stupino-loadbalancer-01
+          ip: 172.16.150.3
+          type: VM
+        - name: prod-stupino-worker-02
+          ip: 172.16.150.4
+          type: VM
+        - name: prod-stupino-worker-03
+          ip: 172.16.150.5
+          type: VM
+    - name: STUPINO-PVE3
+      ip: 172.16.50.100
+      children:
+        - name: test-keydb-2
+          ip: 172.16.50.101
+          type: LXC
+          enabled: false
+        - name: test-rabbitmq-2
+          ip: 172.16.50.102
+          type: LXC
+          enabled: false
+        - name: test-postgres-2
+          ip: 172.16.50.103
+          type: VM
+        - name: test-mongodb
+          ip: 172.16.50.104
+          type: VM
+          enabled: false
+        - name: prod-nodejs-stupino
+          ip: 172.16.50.105
+          type: VM
+        - name: prod-minio-04
+          ip: 172.16.50.107
+          type: VM
+        - name: prod-mongodb-2
+          ip: 172.16.50.108
+          type: VM
+        - name: prod-mysql-s3
+          ip: 172.16.50.109
+          type: VM
+- name: MSK
+  children:
+    - name: PVE5
+      ip: 172.16.197.0
+    - name: PVE6
+      ip: 172.16.197.100
+    - name: 1CLOUD
+      children:
+        - name: k8s-master
+          ip: 172.16.1.1
+        - name: i-sphere-main
+          ip: 172.16.99.3
+        - name: front
+        - name: databases
+          ip: 172.16.99.1
+        - name: i-sphere-mysql
+          ip: 172.16.99.4
+        - name: front-dev
+- name: АВН
+  children:
+    - name: 1CLOUD
+      children:
+        - name: front-new
+- name: АЛА
+  children:
+    - name: 1CLOUD
+      children:
+        - name: proxy-kz
+          ip: 172.16.100.1
+- name: АЛА2
+  children:
+    - name: 1CLOUD
+      children:
+        - name: kz-worker-01
+          ip: 172.16.100.100
+- name: SOK
+  children:
+    - name: PVE
+      children:
+        - name: proxy6
+          ip: 172.16.31.1
+- children:
+    - name: TIMEWEB
+      children:
+        - name: timeweb_master
+          ip: 172.16.2.1

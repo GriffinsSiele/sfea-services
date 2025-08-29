@@ -1,0 +1,67 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+
+steps:
+  - name: build
+    image: plugins/kaniko
+    pull: always
+    settings:
+      registry: git.i-sphere.ru
+      username: { from_secret: GIT_USER }
+      password: { from_secret: GIT_TOKEN }
+      repo: "${DRONE_REPO}"
+      tags: "${DRONE_COMMIT_BRANCH}"
+      cache: true
+    environment:
+      COMPOSER_ALLOW_SUPERUSER: "1"
+      container: kube
+      PLUGIN_CACHE_REPO: git.i-sphere.ru/isphere-services/bi
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_REGISTRY: git.i-sphere.ru
+      PLUGIN_SKIP_UNUSED_STAGES: true
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace "${DRONE_REPO_NAMESPACE}"
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      CI_REGISTRY_IMAGE: { from_secret: CI_REGISTRY_IMAGE }
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }

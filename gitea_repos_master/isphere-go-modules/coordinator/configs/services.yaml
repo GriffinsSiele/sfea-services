@@ -1,0 +1,30 @@
+env: "$APP_ENV"
+
+definitions:
+  schema:
+    default:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: hidden
+          minimum: 0
+        key:
+          type: string
+          format: hidden
+        starttime:
+          type: integer
+          format: hidden
+          minimum: 0
+        timeout:
+          type: integer
+          format: hidden
+        type:
+          type: string
+          format: hidden
+          enum: [init, callback]
+          default: init
+      required:
+        - id
+        - key
+        - starttime

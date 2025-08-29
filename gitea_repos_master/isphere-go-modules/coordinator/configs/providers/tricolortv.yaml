@@ -1,0 +1,3 @@
+providers:
+  tricolortv:
+    endpoint: "$MODULE_TRICOLORTV_ENDPOINT"

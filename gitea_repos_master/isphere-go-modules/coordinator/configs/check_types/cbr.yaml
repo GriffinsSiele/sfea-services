@@ -1,0 +1,45 @@
+check_types:
+  cbr:
+    enabled: false
+    source: { code: cbr }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: cbr, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: cbr }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              cbr_cbr(where: {inn: {_eq: $inn}}) {
+                  inn
+                  title {
+                      title
+                  }
+                  reason {
+                      title
+                  }
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .cbr_cbr }}
+          - inn:      !!string    {{ Quote .inn }}
+            reason:               {{ Quote .title.title }}
+            comment:              {{ Quote .reason.title }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          inn: { type: string }
+          reason: { type: string }
+          comment: { type: string }

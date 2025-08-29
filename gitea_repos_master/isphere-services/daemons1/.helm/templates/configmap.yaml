@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.name" . }}-configmap
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+  DATABASE_SERVER: "172.16.99.4"
+  DATABASE_NAME: "isphere"
+
+  IMAGE_CAPTCHA_URLS: "http://captcha-image-api.default"
+  IMAGE_CAPTCHA_PROVIDER: "nnetworks"
+
+  CAPTCHA_SERVICES_0_HOST: "api.capmonster.cloud"
+  CAPTCHA_SERVICES_1_HOST: "api.anti-captcha.com"
+  CAPTCHA_SERVICES_2_HOST: "anti-captcha.com"
+  CAPTCHA_SERVICES_3_HOST: "rucaptcha.com"
+  CAPTCHA_SERVICES_4_HOST: "capmonster.i-sphere.local"
+
+  ANTIGATE_HOST_0: "rucaptcha.com"
+  ANTIGATE_HOST_1: "anti-captcha.com"
+  CAPTCHA_HOST_0: "capmonster.i-sphere.local"
+  CAPTCHA_HOST_1: "api.capmonster.cloud"
+  CAPTCHA_V3_HOST_0: "api.anti-captcha.com"
+  CAPTCHA_V3_HOST_1: "api.anti-captcha.com"
+  H_CAPTCHA_HOST_0: "api.capmonster.cloud"
+  H_CAPTCHA_HOST_1: "rucaptcha.com"
+
+  CAPTCHA_TIMEOUT: "180"
+  IDLE_TIME: "1"
+
+  HTTP_USER_AGENT: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0"
+  HTTP_TIMEOUT: "5"
+
+  LOG_FILE: "/dev/stdout"
+
+  MAX_SESSIONS: "5"
+
+  MAX_SECONDS: "15"

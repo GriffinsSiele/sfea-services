@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: debezium-sa-clusteradmin
+  namespace: debezium
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: debezium-crb-clusteradmin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: debezium-sa-clusteradmin
+    namespace: debezium
+
+---
+{{ include "app" .Values.apicurioRegistry }}
+{{ include "app" .Values.clickhouse }}
+{{ include "app" .Values.debeziumConnect }}
+{{ include "app" .Values.debeziumUi }}
+{{ include "app" .Values.kafka }}
+{{ include "app" .Values.kafkaUi }}
+{{ include "app" .Values.schemaRegistry }}

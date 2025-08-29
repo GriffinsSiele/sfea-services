@@ -1,0 +1,3 @@
+providers:
+  shodan:
+    endpoint: "$MODULE_SHODAN_ENDPOINT"

@@ -1,0 +1,35 @@
+class SearchArguments:
+    ITEMS_SEARCH = [
+        "items.name_ex",
+        "items.org",
+        "items.point",
+        "items.ads.options",
+        "items.reviews",
+        "items.rubrics",
+        "items.schedule",
+        "items.attribute_groups",
+        "items.contact_groups",
+        "items.dates",
+        "items.floors",
+        "items.adm_div",
+        "items.address",
+        "search_attributes",
+        "items.caption",
+    ]
+
+    TYPE_SEARCH = [
+        "adm_div.city",
+        "adm_div.district",
+        "adm_div.district_area",
+        "adm_div.division",
+        "adm_div.living_area",
+        "adm_div.place",
+        "adm_div.region",
+        "adm_div.settlement",
+        "attraction",
+        "branch",
+        "building",
+        "foreign_city",
+        "street",
+        "coordinates",
+    ]

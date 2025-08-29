@@ -1,0 +1,79 @@
+check_types:
+  fsin_person:
+    enabled: true
+    source: { code: fsin }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            last_name: { type: string }
+            first_name: { type: string }
+            patronymic: { type: string }
+            date: { type: string, format: date }
+          required:
+            - last_name
+            - first_name
+            - date
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fsin_person, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fsin_person }
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            query {
+                fsin_fsin(where: {
+                    surname: {_eq: {{ Quote (upper .last_name) }} },
+                    name: {_eq: {{ Quote (upper .first_name) }} },
+                    {{- if not (eq .patronymic "") }}
+                    patronymic: {_eq: {{ Quote (upper .patronymic) }} },
+                    {{- end }}
+                    birthday: {_eq: {{ Quote .date }}  }
+                }) {
+                    surname
+                    name
+                    patronymic
+                    birthday
+                    description
+                    federal_code
+                    territorial_code
+                    external_url
+                    image
+                    image_mime_type
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .fsin_fsin }}
+          - surname:          {{ Quote .surname }}
+            name:             {{ Quote .name }}
+            patronymic:       {{ Quote .patronymic }}
+            birthday:         {{ Quote .birthday }}
+            description:      {{ Quote .description }}
+            federal_code:     {{ Quote .federal_code }}
+            territorial_code: {{ Quote .territorial_code }} 
+            external_url:     {{ Quote .external_url }}
+            image_base64:     {{ Quote (Base64FromPG .image .image_mime_type) }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          surname: { type: string }
+          name: { type: string }
+          patronymic: { type: string }
+          birthday: { type: string, format: date }
+          description: { type: string }
+          federal_code: { type: string }
+          territorial_code: { type: string }
+          external_url: { type: string, format: url }
+          image_base64: { type: string, contentEncoding: base64 }

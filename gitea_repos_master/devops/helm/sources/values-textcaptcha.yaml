@@ -1,0 +1,54 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 3
+
+image:
+  repository: git.i-sphere.ru/keras_captcha/http-service
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+resources:
+  limits:
+    cpu: 900m
+    memory: 3064Mi
+requests:
+  cpu: 200m
+  memory: 1Gi
+
+
+affinity:
+podAntiAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+  - labelSelector:
+      matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - textcaptcha
+    topologyKey: kubernetes.io/hostname
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

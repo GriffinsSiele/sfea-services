@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "${GIT_HTTP_URL_WITH_CREDENTIALS}/api/packages/isphere-classes/pypi/simple"
+verify_ssl = false
+name = "gitea"
+
+[packages]
+numpy = "==1.26.4"
+opencv-python = "==4.9.0.80"
+packaging = "==24.0"
+pillow = "==10.3.0"
+pytesseract = "==0.3.10"
+jellyfish = "==1.0.4"
+easyocr = "==1.7.1"
+fastapi = "==0.111.1"
+uvicorn = "==0.30.3"
+worker-classes = "==16.0.16"
+
+[requires]
+python_version = "3.11"

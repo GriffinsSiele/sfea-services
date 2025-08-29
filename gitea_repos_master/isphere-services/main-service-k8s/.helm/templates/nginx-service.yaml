@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}-nginx
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "chart.name" . }}-php-fpm-with-nginx
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: http
+      port: {{ .Values.nginx.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+  type: {{ .Values.service.type }}

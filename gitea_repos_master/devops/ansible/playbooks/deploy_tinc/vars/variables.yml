@@ -1,0 +1,17 @@
+---
+
+route:             172.16.0.0/16
+tinc_dir:          /etc/tinc/i-sphere
+tinc_dir_hosts:    /etc/tinc/i-sphere/hosts
+tinc_private_key:  /etc/tinc/i-sphere/rsa_key.priv
+service_tinc_name: tinc@i-sphere
+tinc_net_name:     i-sphere
+
+template_server_host_path: ./templates/server-host.j2
+template_tinc_conf_path:   ./templates/tinc.conf.j2
+template_tinc_up_path:     ./templates/tinc-up.j2
+template_tinc_down_path:   ./templates/tinc-down.j2
+
+sync_keys_local_dir: /tmp/tinc-keys
+
+servers_vpn:         "{{ groups['server_tinc'] }}"

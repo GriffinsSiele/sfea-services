@@ -1,0 +1,64 @@
+kind: Deployment
+
+replicaCount: 1
+
+image:
+  repository: ${GIT_HTTP_INTERNAL_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  tag: ${IMAGE_TAG}
+
+command:
+  - python
+args:
+  - start_pro.py
+
+resources:
+  limits:
+    cpu: 150m
+    memory: 300Mi
+  requests:
+    cpu: 60m
+    memory: 150Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+
+service:
+  enabled: false
+
+
+nodeSelector: {}
+
+
+env:
+- name: MONGO_COLLECTION_PRO
+  value: ${MONGO_COLLECTION_PRO}
+- name: KEYDB_QUEUE_PRO
+  value: ${KEYDB_QUEUE_PRO}
+- name: SENTRY_URL
+  value: ${SENTRY_URL}
+- name: KEYDB_TTL_OK
+  value: ${KEYDB_TTL_OK}
+
+envFrom:
+- secretRef:
+    name: settings-kube

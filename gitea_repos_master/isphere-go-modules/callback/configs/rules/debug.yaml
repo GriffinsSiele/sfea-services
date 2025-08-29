@@ -1,0 +1,9 @@
+rules:
+  debug:
+    enabled: true
+    pattern: ^/_debug
+    downstream:
+      debug:
+        enabled: true
+    mutator:
+      marshaller: none

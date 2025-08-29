@@ -1,0 +1,44 @@
+check_types:
+  facebook_id:
+    enabled: true
+    source: { code: hasura }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            facebook_id:
+              type: string
+          required:
+            - facebook_id
+        - $ref: "#/definitions/schema/region"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: facebook_id, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: facebook_id }
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            {
+                facebook_facebook_{{ .region }}(where: {id: {_eq: {{ Quote .facebook_id }} {{`}}`}}) {
+                    phone
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range (Root . (print "facebook_facebook_" ._input.region)) }}
+          - phone: !!string  {{ Quote (print "+" .phone) }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          phone: { type: string, format: tel }

@@ -1,0 +1,33 @@
+nodeSelector:
+  development: "yes"
+
+ingress:
+  enabled: false
+
+persistentVolume:
+  storageClass: local-path
+
+service:
+  port: 80
+  type: LoadBalancer
+
+env:
+  DRONE_SERVER_HOST: drone.i-sphere.local
+  DRONE_SERVER_PROTO: http
+
+  DRONE_DATABASE_DRIVER: postgres
+  #DRONE_DATABASE_DATASOURCE: postgres://app:N1Prz78MTW3ezrwv5FVK7rEehllpFFsicXms1ACU4C5kmOfQvoWntEwbMAoPytL1@drone-rw.cnpg-system.svc.cluster.local:5432/app?sslmode=disable
+  DRONE_DATABASE_DATASOURCE: postgres://drone:fS9Ma6E5AJTrjZq38Xexzw@172.16.99.1:5432/drone_prod?sslmode=disable
+  #DRONE_DATABASE_DATASOURCE: postgres://drone:fS9Ma6E5AJTrjZq38Xexzw@172.16.77.11:5432/drone_prod?sslmode=disable
+
+  DRONE_GIT_ALWAYS_AUTH: true
+  DRONE_GIT_PASSWORD: IL8woHC0j49IyNi2
+  DRONE_GIT_USERNAME: drone-bot
+
+  #DRONE_GITEA_CLIENT_ID: 3aed14d8-12bb-498e-85f6-454cc1a7614f
+  DRONE_GITEA_CLIENT_ID: 23e581e4-19a6-4965-802c-8e0061e29dbb
+  #DRONE_GITEA_CLIENT_SECRET: gto_tt3iwpxpms42j3feavdikcwunvutuxlp3pc25fvg3bpluz6fffba
+  DRONE_GITEA_CLIENT_SECRET: gto_bhjlunnmlezxpylzjiubyyr66xotgwx2aypmafkfvy3vsup23rbq
+  DRONE_GITEA_SERVER: http://git.i-sphere.local
+  DRONE_RPC_SECRET: a049d59837bb8a1167e736a2285f2d1a
+

@@ -1,0 +1,31 @@
+[tool.black]
+line-length = 90
+preview = false
+target-version = ['py39', 'py310', 'py311']
+
+[tool.isort]
+line_length = 90
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+explicit_package_bases = true
+ignore_missing_imports = true
+non_interactive = true
+install_types = true
+
+[tool.tartufo]
+repo-path = "."
+regex = true
+entropy = true
+exclude-path-patterns = [
+ {path-pattern = 'Pipfile\.lock'},
+ {path-pattern = 'Pipfile'},
+ {path-pattern = 'tests/(.*)'},
+ {path-pattern = 'static/swagger(.*)'},
+]
+exclude-entropy-patterns = [
+ {path-pattern = '.drone.yml', pattern = 'GIT_[_-a-zA-Z\d\\\/]+', reason = 'Drone'},
+]

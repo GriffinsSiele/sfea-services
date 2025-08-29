@@ -1,0 +1,3 @@
+providers:
+  samsung_auth:
+    endpoint: "$MODULE_SAMSUNG_AUTH_ENDPOINT"

@@ -1,0 +1,13 @@
+allowUnsafeConfigurations: true
+sharding:
+  enabled: false
+replsets:
+  - name: rs0
+    size: 3
+    volumeSpec:
+      pvc:
+        resources:
+          requests:
+            storage: 10Gi
+backup:
+  enabled: false

@@ -1,0 +1,36 @@
+rules:
+  hlr_phone:
+    enabled: true
+    pattern: ^/hlr
+    schema:
+      type: object
+      properties:
+        uuid: { type: string, format: uuid }
+        status: { type: string }
+        status_time: { type: string }
+        to: { type: string }
+        clientField: { type: string }
+        errCode: { type: string }
+        operator: { type: string }
+        country: { type: string }
+      required:
+        - clientField
+    downstream:
+      rabbitmq: { enabled: true, scope: hlr_phone__callback }
+    mutator:
+      marshaller: form
+      key:
+        # @formatter:off
+        # language=GoTemplate
+        template: >
+          {{ .clientField }}
+        # @formatter:on
+      # @formatter:off
+      # language=GoTemplate
+      template: |
+        id: 1
+        key: {{ Quote .clientField }}
+        callback: {{ ToJSON . }}
+        starttime: {{ Unix Now }}
+        type: callback
+      # @formatter:on

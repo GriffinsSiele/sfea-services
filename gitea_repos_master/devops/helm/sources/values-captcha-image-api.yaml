@@ -1,0 +1,79 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 1
+
+image:
+  repository: git.i-sphere.ru/isphere-services/captcha-image-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "2868c482-dev"
+
+
+resources: 
+  limits: 
+    cpu: 900m
+    memory: 3064Mi
+  requests:
+    cpu: 200m
+    memory: 1Gi
+
+livenessProbe:
+  failureThreshold: 3
+  httpGet:
+    path: /status
+    port: 80
+
+
+affinity:
+podAntiAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+  - labelSelector:
+      matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - textcaptcha
+    topologyKey: kubernetes.io/hostname
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+env:
+- name: S3_BUCKET_MAIN
+  value: neural-networks
+- name: S3_DEFAULT_REGION
+  value: us-east-1
+- name: S3_ACCESS_KEY_ID
+  value: lyKVEusfG3SrUXJ5ECTf
+- name: S3_SECRET_ACCESS_KEY
+  value: rtZo2G98cbqM9rFJBcLRBnotJI3qJI59QuK3Qv0e
+- name: S3_URL_PATH
+  value: http://172.16.99.1:9000
+- name: CAPMONSTER_API_KEY
+  value: ""
+- name: ANTICAPTCHA_API_KEY
+  value: ""
+- name: RUCAPTCHA_API_KEY
+  value: ""
+
+
+envFrom:
+- secretRef:
+    name: settings-kube

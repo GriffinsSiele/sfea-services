@@ -1,0 +1,12 @@
+check process {{ service_name }} with pidfile {{ pidfile }}
+
+    start program = "/bin/systemctl start {{ service_name }}" 
+    stop program = "/bin/systemctl stop {{ service_name }}" 
+
+    if not exist then restart
+
+    if not exist then exec "{{ dest_notify_telegram_script }} '\n#MONIT\n❌ПРОБЛЕМА\nService {{ service_name }} is not running. Trying to restart...'"
+
+    if not exist for 3 cycles then exec "{{ dest_notify_telegram_script }} '\n#MONIT\n❌ОШИБКА\nService {{ service_name }} stopped'"
+
+    if exist then exec "{{ dest_notify_telegram_script }} '\n#MONIT\n✅РЕШЕНО\nService {{ service_name }} started'"

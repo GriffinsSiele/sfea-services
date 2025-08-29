@@ -1,0 +1,124 @@
+check_types:
+  alfastrah:
+    enabled: true
+    source: {code: alfastrah}
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - oneOf:
+            - type: object
+              properties:
+                vin: {type: string}
+              required:
+                - vin
+            - type: object
+              properties:
+                regnum: {type: string}
+              required:
+                - regnum
+    upstream:
+      provider: alfastrah
+      keydb: {enabled: true, scope: alfastrah, ttl: 24h, ttl_failed: 30s}
+      rabbitmq: {enabled: true, scope: alfastrah}
+      tcp:
+        proxy:
+          enabled: true
+          url: "socks5://proxphere-master-socks5.proxphere:1080"
+        template:
+          # language=HTTP
+          query: |
+            POST /corporate/transport/osago-application/ HTTP/1.1
+            User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0
+            Accept: application/json, text/javascript, */*; q=0.01
+            Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3
+            Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+            X-Requested-With: XMLHttpRequest
+            Origin: https://www.alfastrah.ru
+            DNT: 1
+            Sec-GPC: 1
+            Connection: keep-alive
+            Referer: https://www.alfastrah.ru/corporate/transport/osago-application/
+            Sec-Fetch-Dest: empty
+            Sec-Fetch-Mode: cors
+            Sec-Fetch-Site: same-origin
+            Priority: u=1
+            TE: trailers
+
+            {{ if not (eq .vin nil) -}}
+            {{ Encode "method" "autocomplete" "autofillBy" "vin" "number" .vin }}
+            {{- else -}}
+            {{ Encode "method" "autocomplete" "autofillBy" "grz" "number" .regnum }}
+            {{- end }}
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- $t := GetSafeMap .data "transport" }}
+          {{- if not (IsEmpty $t) }}
+          - {{ UnsafeProperty $t "Type" "type" }}
+            {{ UnsafeProperty $t "Category" "category" }}
+            {{ UnsafeProperty $t "Mark" "mark" }}
+            {{- range $d := $t.documents.document }}
+            {{-   if eq $d.type 11.0 }}
+            {{-     if not (IsEmpty $d.series) }}
+            PTS: {{ (printf "%s %s" $d.series $d.number) | Quote }}
+            {{-     else }}
+            PTS: {{ $d.number | Quote }}
+            {{-     end }}
+            PTSDate: {{ $d.issueDate | Quote }}
+            {{-   else if eq $d.type 23.0 }}
+            STS: {{ (printf "%s %s" $d.series $d.number) | Quote }}
+            STSDate: {{ $d.issueDate | Quote }}
+            {{-   end }}
+            {{- end }}
+            {{ UnsafeProperty $t "VIN" "vin" }}
+            {{ UnsafeProperty $t "Model" "model" }}
+            {{ UnsafeProperty $t "Year" "yearIssue" }}
+            {{ UnsafeProperty $t "EnginePower" "power" }}
+            # Wheel: null
+            # Transmission: null
+            # EngineType: null
+            # EngineVolume: null
+            # Color: null
+            # FullWeight: null
+            # Drive: null
+            # BodyType: null
+            # EPTS: null
+            # EPTSDate: null
+            {{- if not (IsEmpty $t.number) }}
+            RegNum: {{ (printf "%s%s" $t.number $t.region) | Quote }}
+            {{- else }}
+            {{-   if not (IsEmpty $t.licensePlate) }}
+            RegNum: {{ $t.licensePlate | Quote }}
+            {{-   end }}
+            {{- end }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: {type: string}
+          Category: {type: string}
+          Mark: {type: string}
+          STS: {type: string}
+          STSDate: {type: string}
+          PTS: {type: string}
+          PTSDate: {type: string}
+          VIN: {type: string}
+          Model: {type: string}
+          Year: {type: string}
+          EnginePower: {type: string}
+          Wheel: {type: string}
+          Transmission: {type: string}
+          EngineType: {type: string}
+          EngineVolume: {type: string}
+          Color: {type: string}
+          FullWeight: {type: string}
+          Drive: {type: string}
+          BodyType: {type: string}
+          EPTS: {type: string}
+          EPTSDate: {type: string}
+          RegNum: {type: string}

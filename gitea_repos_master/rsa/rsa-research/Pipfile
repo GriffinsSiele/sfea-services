@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "http://${GIT_USER}:${GIT_TOKEN}@${GIT_HTTP_DOMAIN}/api/packages/isphere-classes/pypi/simple"
+verify_ssl = true
+name = "gitea"
+
+[packages]
+requests = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

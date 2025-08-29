@@ -1,0 +1,20 @@
+.:53 {
+        errors 
+        health  {
+            lameduck 5s
+        }
+        ready
+        kubernetes   i-sphere.local in-addr.arpa ip6.arpa {
+            pods insecure
+            fallthrough i-sphere.local in-addr.arpa ip6.arpa
+            ttl 30
+        }
+        prometheus   0.0.0.0:9153
+        forward . /etc/resolv.conf {
+          force_tcp
+        }
+        cache   30
+        loop 
+        reload 
+        loadbalance
+    }

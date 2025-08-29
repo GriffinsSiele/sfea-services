@@ -1,0 +1,4 @@
+#!/bin/sh
+ip link set $INTERFACE up
+ip addr add {{ vpn_ip }} dev $INTERFACE
+ip route add {{ route }} dev $INTERFACE

@@ -1,0 +1,7 @@
+initContainers:
+  - name: init
+    image: eqalpha/keydb:x86_64_v6.3.2
+    command: ['sh', '-c', "keydb-cli -h keydb flushall && keydb-cli -h keydb memory purge"]
+    env:
+      - name: REDISCLI_AUTH
+        value: n1vTY76fuCT59MH

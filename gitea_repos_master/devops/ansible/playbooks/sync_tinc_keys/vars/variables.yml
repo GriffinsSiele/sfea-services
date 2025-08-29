@@ -1,0 +1,9 @@
+---
+
+tinc_hosts_dir: /etc/tinc/i-sphere/hosts
+
+repo_url: ssh://git@git.i-sphere.ru:30122/isphere-secrets/tinc-keys.git
+
+private_key_file_path: /home/t1sdwzN3QTbjnTkqDJdC/.ssh/ansible_privkey
+
+tinc_service_name: tinc@i-sphere

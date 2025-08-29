@@ -1,0 +1,53 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 10
+
+image:
+  repository: git.i-sphere.ru/numbuster/numbuster-mobile-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+
+resources: {}
+
+env:
+- name: MONGO_COLLECTION
+  value: numbuster
+- name: KEYDB_QUEUE
+  value: numbuster
+- name: SENTRY_URL
+  value: https://084679786d8944a9aaad1f73eec3a1c6@glitchtip.git.i-sphere.ru/6
+- name: KEYDB_QUEUE_PRO
+  value: numbuster-pro
+- name: MONGO_COLLECTION_PRO
+  value: numbuster-pro
+
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

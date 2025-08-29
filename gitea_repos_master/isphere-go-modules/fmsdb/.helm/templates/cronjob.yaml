@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "chart.fullname" . }}-cronjob
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cron
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+        {{- with .Values.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+          labels:
+            app.kubernetes.io/name: {{ include "chart.name" . }}-cronjob
+            app.kubernetes.io/instance: {{ .Release.Name }}
+            date: "{{ now | unixEpoch }}"
+            app.kubernetes.io/component: cron
+            helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: cronjob
+              image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+              imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+              command: [ 'bin/console', 'source:update', '--hot-reload', 'http://fmsdb-master.isphere-go-modules.svc.cluster.local/_internal/synchronize' ]
+              envFrom:
+                - configMapRef:
+                    name: {{ include "chart.name" . }}-configmap
+          serviceAccountName: {{ include "chart.serviceAccountName" . }}
+          imagePullSecrets:
+            - name: {{ include "chart.name" . }}-registry
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          {{- with .Values.serviceAccount.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

@@ -1,0 +1,21 @@
+---
+
+- name: Configure backup LXC on PVE
+  hosts: '{{ target }}'
+  become: true
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+  
+  - name: Create directory if it doesn't exist
+    file:
+      path:  "{{ script_dir }}"
+      state: directory
+
+  - name: Generate "backup_lxc.sh"
+    template: 
+      src:  "{{ src_backup_lxc_script }}"
+      dest: "{{ dest_backup_lxc_script }}"
+      mode: 0755

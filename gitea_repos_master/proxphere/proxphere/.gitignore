@@ -1,0 +1,5 @@
+.env.local
+.idea/
+goose.sh
+var/
+vendor/

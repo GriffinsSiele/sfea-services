@@ -1,0 +1,152 @@
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: ""
+fullNameOverride: ""
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  tlsEnabled: false
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+nodeSelector: {}
+
+tolerations:
+  - key: prod
+    operator: Equal
+    value: "yes"
+    effect: NoSchedule
+
+serviceAccount:
+  create: true
+  annotations: {}
+  createRole: true
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: Exists
+
+persistence:
+  enabled: false
+
+x-env: &env
+  APP_ENV: "${APP_ENV}"
+  LOG_LEVEL: "${LOG_LEVEL}"
+  JAEGER_ENDPOINT: "${JAEGER_ENDPOINT}"
+  KEYDB_ADDR: "${KEYDB_ADDR}"
+  KEYDB_DATABASE: "${KEYDB_DATABASE}"
+  KEYDB_PASSWORD: "${KEYDB_PASSWORD}"
+  KEYDB_POOL_SIZE: "${KEYDB_POOL_SIZE}"
+  MODULE_APPLE_ENDPOINT: "${MODULE_APPLE_ENDPOINT}"
+  MODULE_CENSYS_ENDPOINT: "${MODULE_CENSYS_ENDPOINT}"
+  MODULE_D0O_ENDPOINT: "${MODULE_D0O_ENDPOINT}"
+  MODULE_DNS_ENDPOINT: "${MODULE_DNS_ENDPOINT}"
+  MODULE_DOMRU_ENDPOINT: "${MODULE_DOMRU_ENDPOINT}"
+  MODULE_ELPTS_ENDPOINT: "${MODULE_ELPTS_ENDPOINT}"
+  MODULE_FMSDB_ENDPOINT: "${MODULE_FMSDB_ENDPOINT}"
+  MODULE_GEOIP_ENDPOINT: "${MODULE_GEOIP_ENDPOINT}"
+  MODULE_HASURA_ENDPOINT: "${MODULE_HASURA_ENDPOINT}"
+  MODULE_HEADERS_X_HASURA_ADMIN_SECRET: "${MODULE_HEADERS_X_HASURA_ADMIN_SECRET}"
+  MODULE_HLR_ENDPOINT: "${MODULE_HLR_ENDPOINT}"
+  MODULE_HOLEHE_ENDPOINT: "${MODULE_HOLEHE_ENDPOINT}"
+  MODULE_LIBLOC_ENDPOINT: "${MODULE_LIBLOC_ENDPOINT}"
+  MODULE_MAIN_SERVICE_ENDPOINT: "${MODULE_MAIN_SERVICE_ENDPOINT}"
+  MODULE_MAIN_SERVICE_FOREIGN_ENDPOINT: "${MODULE_MAIN_SERVICE_FOREIGN_ENDPOINT}"
+  MODULE_MAIN_SERVICE_ACCESS_TOKEN: "${MODULE_MAIN_SERVICE_ACCESS_TOKEN}"
+  MODULE_PHONEINFO_ENDPOINT: "${MODULE_PHONEINFO_ENDPOINT}"
+  MODULE_RIPE_ENDPOINT: "${MODULE_RIPE_ENDPOINT}"
+  MODULE_ROSNEFT_ENDPOINT: "${MODULE_ROSNEFT_ENDPOINT}"
+  MODULE_SAMSUNG_AUTH_ENDPOINT: "${MODULE_SAMSUNG_AUTH_ENDPOINT}"
+  MODULE_SBER_ENDPOINT: "${MODULE_SBER_ENDPOINT}"
+  MODULE_SBER_SIMPLE_ENDPOINT: "${MODULE_SBER_SIMPLE_ENDPOINT}"
+  MODULE_SHODAN_ENDPOINT: "${MODULE_SHODAN_ENDPOINT}"
+  MODULE_SYPEXGEO_ENDPOINT: "${MODULE_SYPEXGEO_ENDPOINT}"
+  MODULE_SMSC_ENDPOINT: "${MODULE_SMSC_ENDPOINT}"
+  MODULE_TRICOLORTV_ENDPOINT: "${MODULE_TRICOLORTV_ENDPOINT}"
+  MODULE_XIAOMI_ENDPOINT: "${MODULE_XIAOMI_ENDPOINT}"
+  MODULE_YOOMONEY_ENDPOINT: "${MODULE_YOOMONEY_ENDPOINT}"
+  RABBITMQ_ADDR: "${RABBITMQ_ADDR}"
+  RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD}"
+  RABBITMQ_USERNAME: "${RABBITMQ_USERNAME}"
+  RABBITMQ_VIRTUAL_HOST: "${RABBITMQ_VIRTUAL_HOST}"
+  SENTRY_DSN: "${SENTRY_DSN}"
+  AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+  AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+
+http_serve:
+  replicaCount: 1
+
+  service:
+    port: 80
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 20m
+      memory: 64Mi
+
+  env:
+    <<: *env
+
+messenger_consume:
+  autoScaling:
+    minReplicaCount: 5
+    maxReplicaCount: 9
+    cpuUtilizationPercentage: 70
+    memoryUtilizationPercentage: 70
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 20m
+      memory: 64Mi
+
+  env:
+    <<: *env
+
+messenger_consume_sber:
+  enabled: false
+  autoScaling:
+    minReplicaCount: 1
+    maxReplicaCount: 2
+    cpuUtilizationPercentage: 70
+    memoryUtilizationPercentage: 70

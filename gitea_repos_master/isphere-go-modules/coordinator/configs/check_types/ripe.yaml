@@ -1,0 +1,192 @@
+check_types:
+  ripe:
+    enabled: true
+    source: { code: ripe }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/ip"
+    upstream:
+      provider: ripe
+      keydb: { enabled: true, scope: ripe, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: ripe }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($ip: String!) {
+              ripe(ip: $ip) {
+                  __typename
+                  
+                  ... on inetnum {
+                      admin_c
+                      country
+                      created
+                      descr
+                      inetnum
+                      last_modified
+                      netname
+                      remarks
+                      source
+                      status
+                      tech_c
+                  }
+                  
+                  ... on organisation {
+                      abuse_c
+                      address
+                      admin_c
+                      country
+                      created
+                      fax_no
+                      last_modified
+                      mnt_by
+                      mnt_ref
+                      organisation
+                      org_name
+                      org_type
+                      phone
+                      source
+                      tech_c
+                  }
+                  
+                  ... on role {
+                      admin_c
+                      created
+                      last_modified
+                      mnt_by
+                      nic_hdl
+                      remarks
+                      role
+                      source
+                      tech_c
+                  }
+                  
+                  ... on route {
+                      created
+                      descr
+                      last_modified
+                      mnt_by
+                      origin
+                      route
+                      source
+                  }
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .ripe }}
+          - type: {{ Quote .__typename }}
+
+            {{- if eq .__typename "inetnum" }}
+            'admin-c':          {{ Quote .admin_c }}
+            country:            {{ Quote .country }}
+            created:            {{ Quote .created }}
+            descr:              {{ Quote .descr }}
+            inetnum:            {{ Quote .inetnum }}
+            'last-modified':    {{ Quote .last_modified }}
+            netname:            {{ Quote .netname }}
+            remarks:            {{ Quote .remarks }}
+            source:             {{ Quote .source }}
+            status:             {{ Quote .status }}
+            'tech-c':           {{ Quote .tech_c }} 
+            {{- end }}
+            
+            {{- if eq .__typename "organisation" }}
+            'abuse-c':          {{ Quote .abuse_c }}
+            address:            {{ Quote .address }}
+            'admin-c':          {{ Quote .admin_c }}
+            country:            {{ Quote .country }}
+            created:            {{ Quote .created }}
+            'fax-no':           {{ Quote .fax_no }}
+            'last-modified':    {{ Quote .last_modified }}
+            'mnt-by':           {{ Quote .mnt_by }}
+            'mnt-ref':          {{ Quote .mnt_ref }}
+            organisation:       {{ Quote .organisation }}
+            'org-name':         {{ Quote .org_name }}
+            'org-type':         {{ Quote .org_type }}
+            phone:              {{ Quote .phone }}
+            source:             {{ Quote .source }}
+            'tech-c':           {{ Quote .tech_c }}
+            {{- end }}
+            
+            {{- if eq .__typename "role" }}
+            'admin-c':          {{ Quote .admin_c }}
+            created:            {{ Quote .created }}
+            'last-modified':    {{ Quote .last_modified }}
+            'mnt-by':           {{ Quote .mnt_by }}
+            'nic-hdl':          {{ Quote .nic_hdl }}
+            remarks:            {{ Quote .remarks }}
+            role:               {{ Quote .role }}
+            source:             {{ Quote .source }}
+            'tech-c':           {{ Quote .tech_c }}
+            {{- end }}
+            
+            {{- if eq .__typename "route" }}
+            created:            {{ Quote .created }}
+            descr:              {{ Quote .descr }}
+            'last-modified':    {{ Quote .last_modified }}
+            'mnt-by':           {{ Quote .mnt_by }}
+            origin:             {{ Quote .origin }}
+            route:              {{ Quote .route }}
+            source:             {{ Quote .source }}
+            {{- end }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        oneOf:
+          - properties:
+              type: { type: string, enum: ["inetnum"] }
+              "admin-c": { type: string }
+              country: { type: string }
+              created: { type: string, format: date-time }
+              descr: { type: string }
+              inetnum: { type: string }
+              "last-modified": { type: string, format: date-time }
+              netname: { type: string }
+              remarks: { type: string }
+              source: { type: string }
+              status: { type: string }
+              "tech-c": { type: string }
+          - properties:
+              type: { type: string, enum: ["organisation"] }
+              "abuse-c": { type: string }
+              address: { type: string }
+              "admin-c": { type: string }
+              country: { type: string }
+              created: { type: string, format: date-time }
+              "fax-no": { type: string }
+              "last-modified": { type: string, format: date-time }
+              "mnt-by": { type: string }
+              "mnt-ref": { type: string }
+              organisation: { type: string }
+              "org-name": { type: string }
+              "org-type": { type: string }
+              phone: { type: string }
+              source: { type: string }
+              "tech-c": { type: string }
+          - properties:
+              type: { type: string, enum: ["role"] }
+              "admin-c": { type: string }
+              created: { type: string, format: date-time }
+              "last-modified": { type: string, format: date-time }
+              "mnt-by": { type: string }
+              "nic-hdl": { type: string }
+              remarks: { type: string }
+              role: { type: string }
+              source: { type: string }
+              "tech-c": { type: string }
+          - properties:
+              type: { type: string, enum: ["route"] }
+              created: { type: string, format: date-time }
+              descr: { type: string }
+              "last-modified": { type: string, format: date-time }
+              "mnt-by": { type: string }
+              origin: { type: string }
+              route: { type: string }
+              source: { type: string }

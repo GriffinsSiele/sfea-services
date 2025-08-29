@@ -1,0 +1,13 @@
+apiVersion:  apps/v1
+kind: Deployment
+metadata:
+  name: i-sphere-dep
+  namespace: wireguard-system
+spec:
+  # TODO(user): Add fields here
+  template:
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: "true"
+      tolerations:
+        - operator: Exists

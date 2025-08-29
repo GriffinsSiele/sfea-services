@@ -1,0 +1,104 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model;
+
+use App\Form\Type\FormatType;
+use Symfony\Component\Validator\Constraints\CardScheme;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
+
+class CheckCard
+{
+    #[NotBlank]
+    #[CardScheme(schemes: [
+        CardScheme::AMEX,
+        CardScheme::CHINA_UNIONPAY,
+        CardScheme::DINERS,
+        CardScheme::DISCOVER,
+        CardScheme::INSTAPAYMENT,
+        CardScheme::JCB,
+        CardScheme::LASER,
+        CardScheme::MAESTRO,
+        CardScheme::MASTERCARD,
+        CardScheme::MIR,
+        CardScheme::UATP,
+        CardScheme::VISA,
+    ])]
+    private ?string $cardNumber = null;
+
+    #[NotNull]
+    #[Count(min: 1)]
+    private ?array $sources = null;
+
+    private ?bool $recursive = null;
+
+    private ?bool $async = null;
+
+    #[NotBlank]
+    #[Choice(choices: FormatType::DEFAULT_CHOICES)]
+    private ?string $format = null;
+
+    public function setCardNumber(?string $cardNumber): self
+    {
+        $this->cardNumber = $cardNumber;
+
+        return $this;
+    }
+
+    public function getCardNumber(): ?string
+    {
+        return $this->cardNumber;
+    }
+
+    public function setSources(?array $sources): self
+    {
+        $this->sources = $sources;
+
+        return $this;
+    }
+
+    public function getSources(): ?array
+    {
+        return $this->sources;
+    }
+
+    public function setRecursive(?bool $recursive): self
+    {
+        $this->recursive = $recursive;
+
+        return $this;
+    }
+
+    public function getRecursive(): ?bool
+    {
+        return $this->recursive;
+    }
+
+    public function setAsync(?bool $async): self
+    {
+        $this->async = $async;
+
+        return $this;
+    }
+
+    public function getAsync(): ?bool
+    {
+        return $this->async;
+    }
+
+    public function setFormat(?string $format): self
+    {
+        $this->format = $format;
+
+        return $this;
+    }
+
+    public function getFormat(): ?string
+    {
+        return $this->format;
+    }
+}

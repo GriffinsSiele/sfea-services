@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  socks5:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    ports:
+      - '1080:1080/tcp'
+    volumes:
+      - .:/app
+      - ~/go/pkg/mod:/go/pkg/mod
+    command: server/socks5
+    dns:
+      - 10.43.0.10
+      - 8.8.8.8
+
+  tls:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/app
+      - ~/go/pkg/mod:/go/pkg/mod
+    command: server/tls
+    dns:
+      - 10.43.0.10
+      - 8.8.8.8

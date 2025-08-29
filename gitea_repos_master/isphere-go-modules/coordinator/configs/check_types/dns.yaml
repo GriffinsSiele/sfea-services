@@ -1,0 +1,38 @@
+check_types:
+  dns:
+    enabled: true
+    source: { code: dns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/ip"
+    upstream:
+      provider: dns
+      keydb: { enabled: true, scope: dns, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: dns }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($ip: String!) {
+              dns(ip: $ip) {
+                  name
+                  hosts
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .dns }}
+          - name:     {{ Quote .name }}
+            hosts:    {{ Quote (StringsJoin .hosts ",") }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          hosts: { type: string }

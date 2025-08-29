@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: prometheus
+data:
+  grafana.ini: |
+    app_mode = production
+
+    [server]
+    domain = grafana.i-sphere.local
+    root_url = http://grafana.i-sphere.local
+    serve_from_sub_path = true
+    enable_gzip = true
+
+    [auth.generic_oauth]
+    enabled = true
+    name = Gitea
+    client_id = 0b550a92-650a-4b64-aa55-7d43c9e0c4a3
+    client_secret = gto_5bxdo6njnhy5dni7hlhmbdd4jyakpmkblftmhejpsq744makqwfa
+    auth_url = http://git.i-sphere.local/login/oauth/authorize
+    token_url = http://git.i-sphere.local/login/oauth/access_token
+    api_url = http://git.i-sphere.local/login/oauth/userinfo
+    scopes = openid,email,profile
+    skip_org_role_sync = true
+
+    [auth]
+    oauth_auto_login = true
+    oauth_skip_org_role_update_sync = true
+
+    [database]
+    type = postgres
+    host = 172.16.99.1:5432
+    name = grafana_prod
+    user = grafana
+    password = LbmgYFSzhcapE7nfJWZBtj
+    ssl_mode = disable

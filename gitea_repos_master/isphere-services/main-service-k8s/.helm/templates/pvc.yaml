@@ -1,0 +1,69 @@
+{{- if and .Values.persistence.xml.enabled (not .Values.persistence.xml.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "chart.fullname" . }}-pvc
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - {{ .Values.persistence.xml.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.xml.size | quote }}
+{{- if .Values.persistence.xml.storageClass }}
+{{- if (eq "-" .Values.persistence.xml.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.xml.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
+---
+{{- if and .Values.persistence.bulk.enabled (not .Values.persistence.bulk.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "chart.fullname" . }}-bulk-pvc
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - {{ .Values.persistence.bulk.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.bulk.size | quote }}
+{{- if .Values.persistence.bulk.storageClass }}
+{{- if (eq "-" .Values.persistence.bulk.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.bulk.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
+---
+{{- if and .Values.persistence.logs.enabled (not .Values.persistence.logs.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "chart.fullname" . }}-logs-pvc
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - {{ .Values.persistence.logs.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.logs.size | quote }}
+{{- if .Values.persistence.logs.storageClass }}
+{{- if (eq "-" .Values.persistence.logs.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.logs.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
+

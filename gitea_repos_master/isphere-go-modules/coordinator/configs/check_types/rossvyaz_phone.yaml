@@ -1,0 +1,55 @@
+check_types:
+  rossvyaz_phone:
+    enabled: true
+    source: {code: rossvyaz_phone}
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: hasura
+      keydb: {enabled: true, scope: rossvyaz_phone, ttl: 24h, ttl_failed: 30s}
+      rabbitmq: {enabled: true, scope: rossvyaz_phone}
+      graphql:
+        template:
+          query: |
+            {{- $phone := (trimPrefix "+" .phone) }}
+            {
+              rossvyaz_rossvyaz(where: {
+                abcdef: {_eq: {{ StringsSubstring $phone 1 3 }} }, 
+                phone_poolstart: {_lte: {{ StringsSubstring $phone 4 7 }} }, 
+                phone_poolend: {_gte: {{ StringsSubstring $phone 4 7 }} }
+              }) {
+                operator
+                phone_regionname
+                regions
+                regioncode
+              }
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .rossvyaz_rossvyaz }}
+          - operator: {{ Quote .operator }}
+            phone_regionname: {{ Quote .phone_regionname }}
+            regions:
+              {{- range .regions }}
+              - {{ Quote . }}
+              {{- end }}
+            regioncode: {{ Quote .regioncode }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          operator: {type: string}
+          phone_regionname: {type: string}
+          regions:
+            type: array
+            items:
+              type: string
+          regioncode: {type: string}

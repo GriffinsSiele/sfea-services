@@ -1,0 +1,43 @@
+check_types:
+  fns_taxoffence:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fns_taxoffence, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_taxoffence }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              fns_taxoffence(where: {inn: {_eq: $inn}}) {
+                  inn
+                  sum
+                  updated_at
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .fns_taxoffence }}
+          - Type:         taxoffence
+            inn:          {{ Quote .inn }}
+            Penalty:      {{ .sum }}
+            dataState:    {{ Quote .updated_at }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: { type: string, enum: [taxoffence] }
+          inn: { type: string }
+          Penalty: { type: number }
+          dataState: { type: string, format: date }

@@ -1,0 +1,26 @@
+DOCKER: "${DOCKER}"
+fullNameOverride: ""
+imageCredentials: { enabled: false, registry: "", username: "", password: "" }
+ingress: { enabled: false, tlsEnabled: false }
+nameOverride: ""
+nodeSelector: { }
+podAnnotations: { }
+podSecurityContext: { }
+securityContext: { capabilities: { drop: [ FOWNER, KILL, MKNOD, SETGID, SETUID ] } }
+serviceAccount: { create: true, annotations: { }, createRole: true, affinity: { } }
+tolerations: [ ]
+
+hub:
+  replicas: 1
+  service: { type: ClusterIP, ports: { xpub: 4442, xsub: 4443, web: 4444 } }
+  image: { repository: selenium/hub, pullPolicy: IfNotPresent, tag: latest }
+  resources:
+    limits: { cpu: 80m, memory: 256Mi }
+    requests: { cpu: 50m, memory: 128Mi }
+
+node_chrome:
+  replicas: 1
+  image: { repository: selenium/node-chrome, pullPolicy: IfNotPresent, tag: latest }
+  resources:
+    limits: { cpu: 120m, memory: 512Mi, ephemeral-storage: 2Gi }
+    requests: { cpu: 80m, memory: 256Mi, ephemeral-storage: 1Gi }

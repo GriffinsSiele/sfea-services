@@ -1,0 +1,79 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 1
+
+image:
+  repository: ${GIT_HTTP_DOMAIN}/${CI_REPO}-daemon-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the latest.
+  tag: ${IMAGE_TAG}
+
+resources:
+  limits:
+    cpu: 75m
+    memory: 100Mi
+  requests:
+    cpu: 50m
+    memory: 30Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+affinity:
+podAntiAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+  - labelSelector:
+      matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - ${DRONE_REPO_NAME}
+    topologyKey: kubernetes.io/hostname
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+env:
+- name: CAPMONSTER_API_KEY
+  value: ${CAPMONSTER_API_KEY}
+- name: ANTICAPTCHA_API_KEY
+  value: ${ANTICAPTCHA_API_KEY}
+- name: RUCAPTCHA_API_KEY
+  value: ${RUCAPTCHA_API_KEY}
+- name: CAPMONSTER_LOCAL_URL
+  value: ${CAPMONSTER_LOCAL_URL}
+- name: POSTGRES_URL_ASYNC
+  value: ${POSTGRES_URL_ASYNC}
+- name: CALLBACK_URL
+  value: ${CALLBACK_URL}
+- name: SENTRY_URL_SERVER
+  value: ${SENTRY_URL_SERVER}
+- name: SURVEY_CYCLE
+  value: ${SURVEY_CYCLE}
+- name: CAPTCHA_TOKEN_TTL
+  value: ${CAPTCHA_TOKEN_TTL}
+
+envFrom:
+- secretRef:
+    name: settings-kube

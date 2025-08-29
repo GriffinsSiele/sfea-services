@@ -1,0 +1,90 @@
+kind: Deployment 
+#StatefulSet
+ingress:
+  enabled: false
+#  annotations:
+#    cert-manager.io/cluster-issuer: letsencrypt
+#    certmanager.k8s.io/acme-challenge-type: http01
+#    kubernetes.io/ingress.class: nginx
+#  hosts:
+#    - host: test.example.com
+#      paths:
+#        - /
+#  tlsEnabled: true
+#  tls:
+#    - hosts:
+#        - test.example.com
+#      secretName   test.example.com
+
+replicaCount: 0
+ 
+image:
+  repository: busybox
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+ 
+imagePullSecrets: 
+ - name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+ 
+ 
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+#command:
+# - "/bin/sleep"
+#arg:
+# - "5000"
+#nodeSelector: {}
+
+#livenessProbe:
+#  httpGet:
+#    path: /
+#    port: http
+
+#readinessProbe:
+#  httpGet:
+#    path: /
+#    port: http
+
+tolerations: 
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - '{{ .Release.Name  }}'
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                  - '{{ .Release.Name  }}'
+          topologyKey: topology.kubernetes.io/zone
+
+#env:
+#- name: ENV
+#  value: test
+#envFrom:
+#- secretRef:
+#    name: settings-kube

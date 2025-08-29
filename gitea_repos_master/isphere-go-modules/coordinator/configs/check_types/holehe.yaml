@@ -1,0 +1,58 @@
+check_types:
+  holehe:
+    enabled: true
+    source: { code: holehe }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - oneOf:
+            - $ref: "#/definitions/schema/email"
+            - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: holehe
+      keydb: { enabled: true, scope: holehe, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: holehe }
+      tcp:
+        template:
+          # language=HTTP
+          query: |
+            POST /{{ if not (eq .phone nil) -}}phone{{- else -}}email{{- end }}/search HTTP/1.1
+            Content-Type: application/json
+            
+            {
+                {{ if not (eq .phone nil) -}}
+                "payload": {{ Quote (print "+" (trimPrefix "+" .phone)) }},
+                {{- else -}}
+                "payload": {{ Quote .email }},
+                {{- end }}
+                "modules": [ "*" ]
+            }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range $index, $value := . }}
+          {{- if not (eq $index "_input") }}
+          {{- if eq $value.code 200.0 }}
+          - source: {{ $index }}
+            status: {{ ResponseStatus (Sprintf "%v" $value.code) }}
+            code: {{ $value.code }}
+            message: {{ ResponseMessage (Sprintf "%v" $value.code) }}
+            {{- if eq $value.code 200.0 }}
+            records:
+            {{- range $rec := $value.records }}
+            - {{- range $k, $v := $rec }}
+              {{ $k }}: {{ ToJSON $v }}
+              {{- end }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties: { }

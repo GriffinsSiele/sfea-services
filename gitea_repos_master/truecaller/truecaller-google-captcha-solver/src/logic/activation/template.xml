@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <boolean name="featureRegion1" value="false" />
+    <long name="key_region_1_timestamp" value="1676816355865" />
+    <string name="networkDomain">noneu</string>
+    <string name="profileNumber"></string>
+    <long name="installationIdFetchTime" value="1676816350964" />
+    <string name="auth_token_cross_domain"></string>
+    <string name="profileCountryIso">RU</string>
+    <long name="xd_t_f_t" value="1677001676057" />
+    <string name="installationId">{}</string>
+    <long name="installationIdTtl" value="259200000" />
+    <long name="xd_t_e_t" value="1677044576057" />
+    <int name="VERSION_account" value="7" />
+</map>

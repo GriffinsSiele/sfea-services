@@ -1,0 +1,3 @@
+providers:
+  hlr:
+    endpoint: "$MODULE_HLR_ENDPOINT"

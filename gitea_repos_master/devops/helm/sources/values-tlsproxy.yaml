@@ -1,0 +1,72 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 6
+
+image:
+  repository: git.i-sphere.ru/rudakov_an/tlsproxy
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+
+resources: {}
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+
+env:
+
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+      matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - tlsproxy
+      topologyKey: kubernetes.io/hostname
+
+livenessProbe:
+  failureThreshold: 3
+  httpGet:
+  path: /check-statuss
+  port: 80
+  scheme: HTTP
+  initialDelaySeconds: 1
+  periodSeconds: 3
+  successThreshold: 1
+  timeoutSeconds: 1
+
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube
+
+

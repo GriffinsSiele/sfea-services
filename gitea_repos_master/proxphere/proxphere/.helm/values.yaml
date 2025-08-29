@@ -1,0 +1,59 @@
+DOCKER: "${DOCKER}"
+fullNameOverride: ""
+imageCredentials: { enabled: false, registry: "", username: "", password: "" }
+ingress: { enabled: false, tlsEnabled: false }
+nameOverride: ""
+nodeSelector: { }
+podAnnotations: { }
+podSecurityContext: { }
+securityContext: { capabilities: { drop: [ FOWNER, KILL, MKNOD, SETGID, SETUID ] } }
+service: { type: LoadBalancer }
+serviceAccount: { create: true, annotations: { }, createRole: true, affinity: { } }
+tolerations: [ ]
+
+all:
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+checkProxy:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 0
+  resources:
+    limits: { cpu: 20m, memory: 64Mi }
+    requests: { cpu: 10m, memory: 32Mi }
+
+socks5:
+  service: { port: 1080 }
+  resources:
+    limits: { cpu: 20m, memory: 64Mi }
+    requests: { cpu: 10m, memory: 32Mi }
+  autoScaling:
+    minReplicaCount: 1
+    maxReplicaCount: 3
+    cpuUtilizationPercentage: 70
+    memoryUtilizationPercentage: 70
+
+tcp:
+  service: { port: 80 }
+  resources:
+    limits: { cpu: 20m, memory: 64Mi }
+    requests: { cpu: 10m, memory: 32Mi }
+  autoScaling:
+    minReplicaCount: 1
+    maxReplicaCount: 3
+    cpuUtilizationPercentage: 70
+    memoryUtilizationPercentage: 70
+
+tls:
+  service: { port: 443 }
+  resources:
+    limits: { cpu: 20m, memory: 64Mi }
+    requests: { cpu: 10m, memory: 32Mi }
+  autoScaling:
+    minReplicaCount: 3
+    maxReplicaCount: 9
+    cpuUtilizationPercentage: 70
+    memoryUtilizationPercentage: 70

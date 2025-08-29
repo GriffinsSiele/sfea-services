@@ -1,0 +1,24 @@
+{
+  "apiVersion": "v1",
+  "kind": "Namespace",
+  "metadata": {
+    "annotations": {
+      "kopf.zalando.org/last-handled-configuration": "{\"spec\":{},\"metadata\":{\"labels\":{\"kubernetes.io/metadata.name\":\"linstor\",\"name\":\"linstor\"}}}\n"
+    },
+    "creationTimestamp": "2023-09-28T00:31:54Z",
+    "deletionTimestamp": "2023-10-01T20:20:23Z",
+    "labels": {
+      "kubernetes.io/metadata.name": "linstor",
+      "name": "linstor"
+    },
+    "name": "linstor",
+    "resourceVersion": "71736536",
+    "uid": "5b693616-dc28-4683-81fa-43c54c07f26f"
+  },
+  "spec": {
+    "finalizers": []
+  },
+  "status": {
+    "phase": "Terminating"
+  }
+}

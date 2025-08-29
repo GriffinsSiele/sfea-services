@@ -1,0 +1,89 @@
+###
+## Common configuration
+###
+
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+fullNameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 8088
+
+ingress:
+  enabled: true
+  tlsEnabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    certmanager.k8s.io/acme-challenge-type: http01
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+  hosts:
+    - host: "${DRONE_REPO_NAMESPACE}-${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}.${DOMAIN}"
+      paths:
+        - /
+  tls:
+    - secretName: "${DRONE_REPO_NAMESPACE}-${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}.${DOMAIN}"
+      hosts:
+        - "${DRONE_REPO_NAMESPACE}-${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}.${DOMAIN}"
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  createRole: true
+  affinity: {}
+
+persistence:
+  enabled: true
+  existingClaim: false
+  accessMode: ReadWriteMany
+  size: 10Gi
+  storageClass: ceph-filesystem
+
+###
+# Superset configuration
+###
+
+superset:
+  replicaCount: 1
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+  env: {}

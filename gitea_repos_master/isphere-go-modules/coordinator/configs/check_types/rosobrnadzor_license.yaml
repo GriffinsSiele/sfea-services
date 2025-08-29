@@ -1,0 +1,53 @@
+check_types:
+  rosobrnadzor_license:
+    enabled: true
+    source: { code: minjust }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: rosobrnadzor_license, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: rosobrnadzor_license }
+      graphql:
+        # @formatter:off
+        # language=GraphQL
+        query: |
+          query($inn: String!){
+              rosobrnadzor_registry(where: {inn: {_eq: $inn}}) {
+                  reg_num
+                  school_name
+                  status_name
+                  date_lic_doc
+                  date_end
+              }
+          }
+        # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .rosobrnadzor_registry }}
+          - reg_num:      {{ Quote .reg_num }}
+            school_name:  {{ Quote .school_name }}
+            status_name:  {{ Quote .status_name }}
+            {{- if not (eq .date_lic_doc nil) }}
+            date_lic_doc: {{ Quote .date_lic_doc }}
+            {{- end }}
+            {{- if not (eq .date_end nil) }}
+            date_end: {{ Quote .date_end }}
+            {{- end }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          reg_num: { type: string }
+          school_name: { type: string }
+          status_name: { type: string }
+          date_lic_doc: { type: string, format: date }
+          date_end: { type: string, format: date }

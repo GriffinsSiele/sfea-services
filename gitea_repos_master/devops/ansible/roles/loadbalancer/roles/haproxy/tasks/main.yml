@@ -1,0 +1,48 @@
+---
+# Certs
+- name: Create a directory /backups if it does not exist
+  ansible.builtin.file:
+    path: /etc/haproxy/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: '0770'
+  tags: certs
+
+# - name: Copy certs
+#   ansible.builtin.copy:
+#     src: "{{ item }}"
+#     dest: /etc/haproxy/ssl
+#     owner: root
+#     group: root
+#     mode: '0770'
+#   loop:
+#     - your-cert.src
+#     - your-cert-2.src
+#     - your-cert-3.src
+#   tags: certs
+
+# Console  
+- name: Install packages
+  package:
+    name:
+    - haproxy
+    state: present
+    use: apt
+    update_cache: yes
+
+- name: Template a file to "/etc/haproxy/haproxy.cfg"
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    validate: "haproxy -f %s -c"
+  register: haproxy_cfg
+  tags: k8s_lb
+
+- name: Restart HAProxy
+  systemd:
+    name: haproxy
+    state: restarted
+    enabled: yes
+  when: haproxy_cfg.changed
+  tags: k8s_lb

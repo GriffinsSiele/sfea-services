@@ -1,0 +1,3 @@
+providers:
+  d0o:
+    endpoint: "$MODULE_D0O_ENDPOINT"

@@ -1,0 +1,31 @@
+{
+    "url": "https://dkbm-web.autoins.ru/dkbm-web-1.0/policyInfo.htm",
+    "tokens": [{
+        "sitekey": null,
+        "action": "submit"
+    }],
+    "known_tags": [["id", "requestForm"], ["class name", "form-block"]],
+    "scenarios": {
+        "1": [{
+            "action": "click",
+            "value": ["id", "tsBlockTab"]
+        }, {
+            "action": "wait",
+            "value": 1
+        }, {
+            "action": "click",
+            "value": ["id", "vin"]
+        }, {
+            "action": "type",
+            "value": [["id", "vin"], ["JTNBV56E70J006152", "NLAF07670AW020511", "XW7R43FV50S007485"]]
+        }, {
+            "action": "move",
+            "value": ["id", "requestForm"]
+        }, {
+            "action": "scroll"
+        }, {
+            "action": "click",
+            "value": ["id", "buttonFind"]
+        }]
+    }
+}

@@ -1,0 +1,190 @@
+name: drone
+kind: pipeline
+type: kubernetes
+pull: if-not-exists
+load: none
+
+volumes:
+- name: lint-cache
+  temp: {}
+
+global-variables:
+  - python_image: &python_image python:3.10
+  - linux_image: &linux_image alpine:latest
+  - master: &master master
+  - dev: &dev dev
+  - on_pr_open_dev: &on_pr_open_dev
+      event: [ pull_request ]
+      branch: [ *dev ]
+  - on_push_master: &on_push_master
+      event: [ push ]
+      branch: [ *master ]
+  - on_push_dev: &on_push_dev
+      event: [ push ]
+      branch: [ *dev ]
+  - on_push_master_and_dev: &on_push_master_and_dev
+      event: [ push ]
+      branch: [ *master, *dev ]
+  - use_lint_cache: &use_lint_cache
+    name: lint-cache
+    path: /drone/src/
+  - use_environment: &use_environment
+      GIT_TOKEN: { from_secret: GIT_TOKEN }
+      GIT_USER: { from_secret: GIT_USER }
+
+steps:
+- name: lint-run
+  image: *python_image
+  when: *on_pr_open_dev
+  volumes: *use_lint_cache
+  commands:
+    - git checkout -b $DRONE_SOURCE_BRANCH
+    - pip install -qq black isort
+    - isort .; black .
+
+- name: lint-check
+  image: *python_image
+  when: *on_pr_open_dev
+  volumes: *use_lint_cache
+  depends_on: [ lint-run ]
+  commands:
+    - git status
+    - |
+      if [ $(git status --porcelain | wc -l) -eq "0" ]; then 
+        echo "No changes detected. Ok"; 
+      else 
+        echo "Changes detected. Refactor your code and run again"; exit 1; 
+      fi
+
+- name: lint-push
+  image: *python_image
+  when: *on_pr_open_dev
+  volumes: *use_lint_cache
+  depends_on: [ lint-run ]
+  commands:
+    - git status
+    - |
+      if [ $(git status --porcelain | wc -l) != "0" ]; then 
+        git commit -am "refactor: lint autofixes"
+        git push --set-upstream origin $DRONE_SOURCE_BRANCH
+      else
+        echo "Nothing to commit. Ok"
+      fi
+
+- name: lint-mypy
+  image: *python_image
+  when: *on_pr_open_dev
+  volumes: *use_lint_cache
+  depends_on: [ lint-push, lint-check ]
+  commands:
+    - pip install -qq mypy
+    - mypy --ignore-missing-imports --ignore-missing-imports --non-interactive --install-types .
+
+- name: build-package
+  image: *python_image
+  when: *on_push_master_and_dev
+  volumes: *use_lint_cache
+  environment: *use_environment
+  commands:
+    - GIT_DOMAIN_WITH_PROTOCOL=`echo $DRONE_GIT_HTTP_URL | cut -d'/' -f1-3`
+    - PACKAGE_ORG=`echo $DRONE_GIT_HTTP_URL | cut -d'/' -f4`
+    - PACKAGE_URL=`echo $GIT_DOMAIN_WITH_PROTOCOL/api/packages/$PACKAGE_ORG/pypi`
+    - VERSION_PREFIX=`if echo ${DRONE_BRANCH} | grep -q 'dev'; then echo 'dev_'; else echo ''; fi`
+    - VERSION_NUMBER=`if echo ${DRONE_BRANCH} | grep -q 'dev'; then echo 'minor'; else echo 'major'; fi`
+    - |
+      pip install --no-cache-dir twine build bumpversion
+      bumpversion `echo $VERSION_NUMBER --tag-name $VERSION_PREFIX_v{new_version}` --message "bump: {current_version} → {new_version} [CI SKIP]"
+      python3 -m build
+      twine upload --repository-url `echo $PACKAGE_URL` `find ./dist/ -path "**.tar.gz"` --verbose -u `echo $GIT_USER` -p `echo $GIT_TOKEN`
+      git push --set-upstream origin $DRONE_BRANCH
+
+- name: auto-pr
+  image: *linux_image
+  when: *on_push_dev
+  environment: *use_environment
+  commands:
+    - apk add --no-cache curl jq
+    - GIT_DOMAIN_WITH_PROTOCOL=`echo $DRONE_GIT_HTTP_URL | cut -d'/' -f1-3`
+    - REPO_PR_URL_GET=`echo $GIT_DOMAIN_WITH_PROTOCOL/api/v1/repos/$DRONE_REPO/pulls?state=open\&access_token=$GIT_TOKEN`
+    - REPO_PR_URL_CREATE=`echo $GIT_DOMAIN_WITH_PROTOCOL/api/v1/repos/$DRONE_REPO/pulls?access_token=$GIT_TOKEN`
+    - PR_DEV=`curl -s $REPO_PR_URL_GET | jq -r '.[].base.label'`
+    - | 
+      if [ "$PR_DEV" != "master" ]; then
+        curl -X 'POST' `echo $REPO_PR_URL_CREATE` \
+        -H 'Content-Type: application/json' \
+        -d '{"base":"'`echo $DRONE_REPO_BRANCH`'","head":"dev","title":"dev to '`echo $DRONE_REPO_BRANCH`'"}'
+      else
+        echo "PR already exists."
+      fi
+
+- name: unit-tests
+  image: *python_image
+  when: *on_pr_open_dev
+  environment: *use_environment
+  depends_on: [ lint-mypy ]
+  commands:
+    - |
+      if [ -d "tests/" ]
+      then 
+        echo "Tests dir exists"
+      else
+        echo "No tests found"; exit 0
+      fi
+    - |      
+      export GIT_HTTP_DOMAIN=`echo $DRONE_GIT_HTTP_URL | cut -d'/' -f3`
+      pip install pipenv==2022.1.8
+      pipenv install --dev
+    - pipenv run python -m unittest discover -s tests/
+
+- name: auto-docs
+  image: *python_image
+  when: *on_push_master
+  environment:
+    DOCS_DIR: "./docs"
+    BUILD_HTML: "./docs/build_html"
+    BUILD_MARKDOWN: "./docs/build_markdown"
+    BUILD_PDF: "./docs/build_pdf"
+    CURRENT_PROJECT: "${DRONE_REPO_NAME}"
+    REPO_NAME: "isphere-docs"
+    <<: *use_environment
+  commands:
+    - GIT_DOMAIN_WITH_PROTOCOL=`echo ${DRONE_GIT_HTTP_URL} | cut -d'/' -f1-3`
+    - REPO_URL=`echo $GIT_DOMAIN_WITH_PROTOCOL/isphere-secrets/$REPO_NAME`
+    - REPO_PATH=`echo $REPO_NAME/Сервисы/Packages/Python/$CURRENT_PROJECT/auto`
+    - |
+      export GIT_HTTP_DOMAIN=`echo $DRONE_GIT_HTTP_URL | cut -d'/' -f3`
+      pip install pipenv==2022.1.8
+      pipenv install --dev
+      pipenv install --skip-lock myst-parser sphinx-autodoc-typehints sphinx-markdown-builder sphinx-rtd-theme weasyprint
+    - |
+      pipenv run sphinx-apidoc -o `echo $DOCS_DIR` .
+      pipenv run sphinx-build -b singlehtml `echo $DOCS_DIR` `echo $BUILD_HTML`
+      pipenv run sphinx-build -b markdown `echo $DOCS_DIR` `echo $BUILD_MARKDOWN`
+    - | 
+      echo '<style>.wy-grid-for-nav{position: static !important}</style>' >> `echo $BUILD_HTML/modules.html`
+      mkdir -p `echo $BUILD_PDF`
+      pipenv run weasyprint `echo $BUILD_HTML/modules.html $BUILD_PDF/doc.pdf`
+    - git clone `echo $REPO_URL`
+    - |
+      mkdir -p `echo $REPO_PATH`
+      cp `echo $BUILD_MARKDOWN/*.md $REPO_PATH`
+      cp `echo $BUILD_PDF/*.pdf $REPO_PATH`
+      cd `echo $REPO_NAME`
+    - |
+      git add .
+      git commit -am "docs: auto docs for `echo $CURRENT_PROJECT`"
+      git push --set-upstream origin master
+
+trigger:
+  event: [ pull_request, push ]
+  branch: [ *master, *dev ]
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }

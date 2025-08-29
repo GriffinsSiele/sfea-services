@@ -1,0 +1,20 @@
+ClientOnly 1
+ClientUseIPv6 0
+ConnectionPadding 0
+FastFirstHopPK 1
+HardwareAccel 1
+StrictNodes 1
+UseEntryGuards 1
+MaxMemInQueues {{ .MaxMemInQueuesMB }}MB
+{{- $entryNodes := .EntryNodes.List }}
+{{- if gt ($entryNodes | len) 0 }}
+EntryNodes {{ range $k, $v := $entryNodes }}{{ if gt $k 0 }},{{ end }}{{ `{` }}{{ $v }}{{ `}` }}{{ end }}
+{{- end }}
+{{- $exitNodes := .ExitNodes.List }}
+{{- if gt ($exitNodes | len) 0 }}
+ExitNodes {{ range $k, $v := $exitNodes }}{{ if gt $k 0 }},{{ end }}{{ `{` }}{{ $v }}{{ `}` }}{{ end }}
+{{- end }}
+{{- $excludeNodes := .ExcludeNodes.List }}
+{{- if gt ($excludeNodes | len) 0 }}
+ExcludeNodes {{ range $k, $v := $excludeNodes }}{{ if gt $k 0 }},{{ end }}{{ `{` }}{{ $v }}{{ `}` }}{{ end }}
+{{- end }}

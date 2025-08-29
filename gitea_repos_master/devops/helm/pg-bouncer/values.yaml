@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: edoburu/pgbouncer
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 6432
+
+pgbouncer:
+  databases:
+    gitea_rw: "host=172.16.77.11 port=5432 dbname=gitea_prod user=gitea password=ML3kSAmdR6xa54FJjXHrPn"
+  auth_type: md5
+  auth_file: /etc/pgbouncer/userlist.txt
+

@@ -1,0 +1,7 @@
+FROM nginx:alpine
+
+WORKDIR /var/www/html/2.00
+
+COPY ./nginx/snippets /etc/nginx/snippets
+COPY ./nginx/templates /etc/nginx/templates
+COPY ./nginx/templates/default.conf.template /etc/nginx/templates/default.conf.template

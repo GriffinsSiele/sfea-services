@@ -1,0 +1,26 @@
+---
+# Source: piraeus/templates/operator-satelliteset.yaml
+apiVersion: piraeus.linbit.com/v1
+kind: LinstorSatelliteSet
+metadata:
+  name: piraeus-op-ns
+  namespace: default
+  labels:
+    name: piraeus-op-ns
+spec:
+  priorityClassName: ""
+  sslSecret: ""
+  drbdRepoCred: ""
+  imagePullPolicy: "IfNotPresent"
+  satelliteImage: quay.io/piraeusdatastore/piraeus-server:v1.24.2
+  linstorHttpsClientSecret: ""
+  controllerEndpoint: http://piraeus-op-cs.default.svc:3370
+  automaticStorageType: "None"
+  affinity: {}
+  tolerations: []
+  resources: {}
+  monitoringImage: "quay.io/piraeusdatastore/drbd-reactor:v1.2.0"
+  kernelModuleInjectionMode: "Compile"
+  kernelModuleInjectionImage: "quay.io/piraeusdatastore/drbd9-bionic:v9.1.16"
+  kernelModuleInjectionResources: {}
+  additionalEnv: [{"name":"LB_SELINUX_AS","value":"modules_object_t"}]

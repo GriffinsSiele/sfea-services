@@ -1,0 +1,32 @@
+{
+    "PROD": "prod",
+    "DEV": "dev",
+    "UNITTEST": "unittest",
+    "TASKS": {
+        "CRITICAL_MIN": "10 min",
+        "MIGRATION": "2 min",
+        "INACTIVE": "20 min",
+        "TEMP_LOCKED": "20 min",
+        "STATISTICS": "at 10:00"
+    },
+    "COLLECTIONS_WATCH_FOR": ["PROD"],
+    "COLLECTIONS_IGNORE_PATTERN": "^_.*",
+    "NEXT_USE_ALLOWABLE_INTERVAL_DEFAULT": 60,
+    "NEXT_USE_ALLOWABLE_INTERVAL_PER_COLLECTION": {
+        "numbuster-prod": 180,
+        "telegram-prod": 3600,
+        "papajohns-prod": 3600
+    },
+    "CRITICAL_MIN_PERCENT_OF_SESSIONS_TO_TRIGGER": 20,
+    "CRITICAL_MIN_REPEAT_NOTIFICATION_DELAY": 1,
+    "CRITICAL_MIN_IGNORE_COLLECTIONS": ["numbuster-pro-prod"],
+    "INACTIVE_IGNORE_COLLECTIONS": ["samsung-auth-prod", "samsung-name-person-prod", "truecaller-prod"],
+    "TEMP_LOCKED_IGNORE_COLLECTIONS": ["truecaller-prod"],
+    "STATISTICS_IGNORE_COLLECTIONS": [],
+    "UNDERPERFORMING_SUCCESS_IGNORE_COLLECTIONS":  ["samsung-auth-prod", "samsung-name-person-prod"],
+    "UNDERPERFORMING_SUCCESS_MIN_USE": 100,
+    "UNDERPERFORMING_SUCCESS_DEVIATION_PERCENT": 20,
+    "MIGRATION_IGNORE_COLLECTIONS": ["telegram-prod"],
+    "MIGRATION_PERCENT_SESSIONS_FROM_DEV_SESSIONS": 65,
+    "MIGRATION_DEV_MIN_SESSIONS": 3
+}

@@ -1,0 +1,25 @@
+{{ template "header" }}
+
+<div class="row mt-5 mb-4">
+    <div class="col-md-10 offset-md-2">
+        <header>
+            <h1>{{ .Exception.Status }}</h1>
+
+            {{ if not (eq .Exception.Message "") }}
+                <p class="lead">{{ .Exception.Message }}</p>
+            {{ end }}
+        </header>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-10 offset-md-2">
+        <main>
+            <div class="alert alert-danger">
+                {{ .Exception.Reason }}
+            </div>
+        </main>
+    </div>
+</div>
+
+{{ template "footer" }}

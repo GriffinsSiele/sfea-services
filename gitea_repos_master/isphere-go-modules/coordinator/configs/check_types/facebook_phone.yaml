@@ -1,0 +1,65 @@
+check_types:
+  facebook_phone:
+    enabled: true
+    source:
+      code: main-service-foreign
+    schema:
+      allOf:
+      - $ref: '#/definitions/schema/default'
+      - $ref: '#/definitions/schema/phone'
+    mutator:
+      template:
+        records: |
+          {{- range .records }}
+          - {{ UnsafeField "Phone" .Phone }}
+            {{ UnsafeField "Result" .Result }}
+            {{ UnsafeField "ResultCode" .ResultCode }}
+            {{ UnsafeField "Email" .Email }}
+            {{ UnsafeField "Name" .Name }}
+            {{ UnsafeField "facebook_id" .facebook_id }}
+            {{ UnsafeField "url" .url }}
+          {{- end }}
+      status_code:
+        non_standard: true
+        format: json
+        property_path: code
+        detail_property_path: message
+    upstream:
+      provider: main-service-foreign
+      keydb:
+        enabled: true
+        scope: facebook_phone
+        ttl: 24h0m0s
+        ttl_failed: 30s
+      rabbitmq:
+        enabled: true
+        scope: facebook_phone
+      tcp:
+        template:
+          query: |
+            GET /2.00/handler.php?{{ QueryArguments
+            "auth" (Env "MODULE_MAIN_SERVICE_ACCESS_TOKEN")
+            "plugin" "FacebookPlugin"
+            "checktype" "facebook_phone"
+            "phone" (trimPrefix "+" .phone)
+            }} HTTP/1.1
+    produce:
+      items:
+        properties:
+          Email:
+            type: string
+          Name:
+            type: string
+          Phone:
+            type: string
+          Result:
+            type: string
+          ResultCode:
+            type: string
+          facebook_id:
+            type: integer
+          url:
+            format: url
+            type: string
+        type: object
+      type: array

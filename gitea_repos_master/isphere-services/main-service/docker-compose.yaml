@@ -1,0 +1,70 @@
+version: '3.7'
+
+x-php-fpm:
+  &php-fpm-common
+  build:
+    dockerfile: Dockerfile
+    context: .
+    args:
+      BUILD_TARGET: dev
+  depends_on:
+    - memcached
+    - mysql_default
+    - rabbitmq
+  volumes:
+    - ./:/var/www/html
+    - root-dir:/root
+
+x-mysql:
+  &mysql-common
+  image: mysql:latest
+  command:
+    - --character-set-server=utf8mb4
+    - --collation-server=utf8mb4_unicode_ci
+    - --skip-character-set-client-handshake
+
+services:
+  php-fpm:
+    <<: *php-fpm-common
+    ports:
+      - '${ISPHERE_NGINX_PORT:-8080}:80'
+
+  messenger-consume-async:
+    <<: *php-fpm-common
+    entrypoint: bin/console
+    command: messenger:consume --time-limit=3600 -v
+    restart: unless-stopped
+
+  update-sessions:
+    <<: *php-fpm-common
+    entrypoint: /bin/sh
+    command: -c "while true; do bin/console app:update-sessions 0 || break; sleep 5; done;"
+    restart: unless-stopped
+
+  mysql_default:
+    <<: *mysql-common
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: isphere_default
+      MYSQL_PASSWORD: isphere_default
+      MYSQL_DATABASE: isphere_default
+      LANG: C.UTF_8
+    ports:
+      - '${ISPHERE_MYSQL_DEFAULT_PORT:-3306}:3306'
+      - '${ISPHERE_MYSQL_X_DEFAULT_PORT:-33060}:33060'
+    volumes:
+      - ./var:/mnt/var
+      - mysql-default-dir:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+  memcached:
+    image: memcached:alpine
+
+volumes:
+  root-dir: ~
+  mysql-default-dir: ~

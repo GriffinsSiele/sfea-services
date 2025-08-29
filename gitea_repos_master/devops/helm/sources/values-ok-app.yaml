@@ -1,0 +1,61 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 3
+
+image:
+  repository: git.i-sphere.ru/ok/ok-mobile-api:worker
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- /bin/sh
+- -c
+- healthtest 600
+args:
+- "5000"
+
+
+
+resources: {}
+
+
+env:
+- name: MONGO_COLLECTION
+  value: ok-mobile
+- name: KEYDB_QUEUE
+  value: ok-mobile
+- name: RABBITMQ_QUEUE_SESSION
+  value: ok-mobile-sessions
+- name: RABBITMQ_QUEUE
+  value: ok-mobile
+- name: RABBITMQ_CONSUMERS
+  value: "3"
+
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

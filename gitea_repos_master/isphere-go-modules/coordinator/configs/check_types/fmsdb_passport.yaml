@@ -1,0 +1,81 @@
+check_types:
+  fmsdb_passport:
+    enabled: true
+    source: { code: fmsdb }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - type: object
+          properties:
+            passport_series: { type: number }
+            passport_number: { type: number }
+          required:
+            - passport_series
+            - passport_number
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fmsdb_passport, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fmsdb_passport }
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            {
+                fmsdb_invalid_passports(where: {
+                    _and: [
+                        {
+                            series: {
+                                _eq: {{ Int .passport_series }}, 
+                            },
+                            number: {
+                                _eq: {{ Int .passport_number }},
+                            },
+                        },
+                    ],
+                }) {
+                    series
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- if gt (len .fmsdb_invalid_passports) 0 }}
+          {{- range .fmsdb_invalid_passports }}
+          - Result:                       Не действителен
+            ResultCode:                   NOT_VALID
+            {{- $region := RegionByCode .series }}
+            {{- if not (eq $region nil) }}
+            Region:                       {{ $region.Region | Quote }}
+            RegionCode:       !!string    {{ $region.Code }}
+            {{- end }}
+            DataSource:                   База данных недействительных паспортов
+            DataSourceCode:               DATABASE
+          {{- end }}
+          {{- else }}
+          - Result:                       Среди недействительных паспортов не значится
+            ResultCode:                   VALID
+            {{- $region := (RegionByCode (StringsSubstring (printf "%g" ._input.passport_series) 0 2)) }}
+            {{- if not (eq $region nil) }}
+            Region:                       {{ $region.Region | Quote }}
+            RegionCode:       !!string    {{ $region.Code }}
+            {{- end }}
+            DataSource:                   База данных недействительных паспортов
+            DataSourceCode:               DATABASE
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Result: { type: string, enum: [ "Не действителен", "Среди недействительных паспортов не значится" ] }
+          ResultCode: { enum: [ "NOT_VALID", "VALID" ] }
+          Region: { type: string }
+          RegionCode: { type: string }
+          DataSource:
+            { type: string, enum: [ "База данных недействительных паспортов" ] }
+          DataSourceCode: { type: string, enum: [ "DATABASE" ] }

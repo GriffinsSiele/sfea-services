@@ -1,0 +1,39 @@
+parameters:
+  #  app.guzzle.user_agent: 'iSphere-HttpClient/2.0.0 (PHP/8.2) +https://i-sphere.ru'
+  app.guzzle.timeout: '%env(int:FORM_TIMEOUT)%'
+  app.guzzle.user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0'
+  app.guzzle.verify_peer: false
+
+services:
+  _defaults:
+    public: true
+
+  app.guzzle:
+    alias: 'GuzzleHttp\Client'
+    public: true
+
+  GuzzleHttp\Client:
+    arguments:
+      - base_uri: 'http://nginx:80'
+        timeout: '%app.guzzle.timeout%'
+        handler: '@GuzzleHttp\HandlerStack'
+        headers:
+          'User-Agent': '%app.guzzle.user_agent%'
+          'X-Origin-Url': '@=service("request_stack").getMainRequest()?.getSchemeAndHttpHost()'
+        defaults:
+          verify: '%app.guzzle.verify_peer%'
+
+  GuzzleHttp\HandlerStack:
+    factory: [ GuzzleHttp\HandlerStack, create ]
+    calls:
+      - [ push, [ '@=service("GuzzleHttp\\Middleware").log(
+          container.get("app.logger"), 
+          container.get("GuzzleHttp\\MessageFormatter")
+        )' ] ]
+
+  GuzzleHttp\MessageFormatter:
+    arguments:
+#      - '{req_headers} {req_body} - {res_headers} {res_body}'
+      - '{method} {uri} - {code}'
+
+  GuzzleHttp\Middleware: ~

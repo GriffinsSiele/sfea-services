@@ -1,0 +1,49 @@
+version: "3.9"
+
+x-healtcheck-params: &healtcheck-params
+  interval: 1s 
+  timeout: 3s 
+  retries: 30
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    depends_on:
+      keydb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+    entrypoint: sleep
+    command: infinity
+    ports:
+      - "8000:3000"
+    volumes:
+      - ./:/app
+      - ~/go/pkg/mod:/go/pkg/mod
+    healthcheck:
+      test: nc -zv localhost 3000
+      <<: *healtcheck-params
+
+  keydb:
+#    image: eqalpha/keydb:alpine
+    image: eqalpha/keydb:arm64_v6.2.0
+    command:
+      - --requirepass keydb
+    healthcheck:
+      test: keydb-cli ping
+      <<: *healtcheck-params
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      <<: *healtcheck-params
+
+volumes:
+  root: ~

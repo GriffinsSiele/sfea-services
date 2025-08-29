@@ -1,0 +1,9 @@
+.git
+working_test
+*/__pycache__
+tests
+.drone.yml
+.gitignore
+.dockerignore
+pyproject.toml
+README.md

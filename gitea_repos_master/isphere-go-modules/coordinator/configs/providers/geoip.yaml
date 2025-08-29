@@ -1,0 +1,3 @@
+providers:
+  geoip:
+    endpoint: "$MODULE_GEOIP_ENDPOINT"

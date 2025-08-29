@@ -1,0 +1,89 @@
+check_types:
+  announcement_phone:
+    enabled: true
+    source: { code: hasura }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: announcement_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: announcement_phone }
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            {
+                announcements_announcements(where: {phone: {_eq: {{ trimPrefix "+" .phone }} {{`}}`}}) {
+                    phone
+                    url
+                    category
+                    subcategory
+                    region
+                    city
+                    contact
+                    operator
+                    service_regions
+                    published_at
+                    title
+                    parameters
+                    text
+                    price
+                    longitude
+                    latitude
+                    metro: subway
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .announcements_announcements }}
+          - phone: {{ Quote (Phone .phone) }}
+            {{ if not (eq .url nil) }}url: {{ Quote .url }}{{ end }}
+            {{ if not (eq .category nil) }}cat: {{ Quote .category }}{{ end }}
+            {{ if not (eq .subcategory nil) }}subcat: {{ Quote .subcategory }}{{ end }}
+            {{ if not (eq .region nil) }}region: {{ Quote .region }}{{ end }}
+            {{ if not (eq .city nil) }}city: {{ Quote .city }}{{ end }}
+            {{ if not (eq .contact nil) }}contact_name: {{ Quote .contact }}{{ end }}
+            {{ if not (eq .operator nil) }}operator: {{ Quote .operator }}{{ end }}
+            {{ if not (eq .service_regions nil) }}operator_region: {{ Quote .service_regions }}{{ end }}
+            {{- if not (eq .published_at nil) }}
+            date: {{ Quote (AsDate .published_at) }}
+            time: {{ Quote (AsTime .published_at) }}
+            {{- end }}
+            {{ if not (eq .title nil) }}title: {{ Quote .title }}{{ end }}
+            {{ if not (eq .parameters nil) }}parameters: {{ Quote .parameters }}{{ end }}
+            {{ if not (eq .text nil) }}text: {{ Quote .text }}{{ end }}
+            {{ if not (eq .price nil) }}price: !!float {{ .price }}{{ end }}
+            {{ if not (eq .longitude nil) }}longitude: !!float {{ .longitude }}{{ end }}
+            {{ if not (eq .latitude nil) }}latitude: !!float {{ .latitude }}{{ end }}
+            {{ if not (eq .subway nil) }}metro: {{ Quote .subway }}{{ end }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          phone: { type: string, format: tel }
+          name: { type: string, format: url }
+          cat: { type: string }
+          subcat: { type: string }
+          region: { type: string }
+          contact_name: { type: string }
+          operator: { type: string }
+          operator_region: { type: string }
+          date: { type: string, format: date }
+          time: { type: string, format: time }
+          title: { type: string }
+          parameters: { type: string }
+          text: { type: string }
+          price: { type: number }
+          longitude: { type: number }
+          latitude: { type: number }
+          metro: { type: string }

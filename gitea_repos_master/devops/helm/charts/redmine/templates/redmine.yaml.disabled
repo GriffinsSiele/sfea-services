@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redmine
+  labels:
+    app.kubernetes.io/name: redmine
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redmine
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        app.kubernetes.io/name: redmine
+    spec:
+      nodeSelector:
+        development: "yes"
+      containers:
+        - name: app
+          image: redmine:alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: REDMINE_DB_POSTGRES
+              value: redmine-rw.cnpg-system.svc.cluster.local
+            - name: REDMINE_DB_USERNAME
+              value: app
+            - name: REDMINE_DB_PASSWORD
+              value: 9MoQxoxxeWinjA3mQ3BhcjQuoRrALVo0dtHT2r6oMyOAwk0pa80ThP4BFtyRDlIh
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - mountPath: /usr/src/redmine/files
+              name: files
+            - mountPath: /usr/src/redmine/plugins
+              name: plugins
+            - name: config
+              mountPath: /tmp/configuration.yml
+              subPath: configuration.yml 
+              readOnly: true
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c 
+                  - |
+                    set -ex ;
+                    cp -R /tmp/configuration.yml /usr/src/redmine/config/configuration.yml ;
+                    ln -sf /usr/src/redmine/files/themes/PurpleMine2 /usr/src/redmine/public/themes/. ;
+      volumes:
+        - name: files
+          persistentVolumeClaim:
+            claimName: redmine-pvc-files
+        - name: plugins
+          persistentVolumeClaim:
+            claimName: redmine-pvc-plugins
+        - name: config
+          configMap:
+            name: redmine-configmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redmine
+  labels:
+    app.kubernetes.io/name: redmine
+spec:
+  selector:
+    app.kubernetes.io/name: redmine
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redmine-pvc-plugins
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redmine-pvc-files
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redmine-configmap
+  labels:
+    app.kubernetes.io/name: redmine
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+data:
+  'configuration.yml': |
+    default:
+    development:
+    production:
+      delivery_method: :smtp
+      smtp_settings:
+        enable_starttls_auto: true
+        address: smtp.yandex.ru
+        port: 465
+        ssl: true
+        authentication: :login
+        user_name: adm1n.infosfera@yandex.ru
+        password: vmxqjotpivaiheor
+

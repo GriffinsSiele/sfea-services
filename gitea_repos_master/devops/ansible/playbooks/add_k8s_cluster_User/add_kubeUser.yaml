@@ -1,0 +1,87 @@
+---
+- name: Manage certificate creation and Kubernetes config
+  hosts: masters
+  become: true
+  gather_facts: false
+  vars:
+    USERNAME: "{{ new_user }}"
+    CERT_DIR: "{{ path_to_certificate_directory }}"
+    TEMP:
+  tasks:
+    - name: Generate private key
+      command: "openssl genrsa -out {{ USERNAME }}.key 4096"
+      args:
+        chdir: "{{ CERT_DIR }}"
+    
+    - name: Generate new_user manifest
+      template: src=
+
+
+    - name: Generate signing request
+      command: "openssl req -new -key {{ USERNAME }}.key -out {{ USERNAME }}.csr -subj '/CN={{ USERNAME }}/O=example:masters'"
+      args:
+        chdir: "{{ CERT_DIR }}"
+
+    - name: Copy signing request template
+      copy:
+        src: "./signing-request-template.yaml"
+        dest: "/{{ USERNAME }}-signing-request.yaml"
+      
+    - name: Replace placeholders in the signing request YAML
+      replace:
+        path: "/{{ USERNAME }}-signing-request.yaml"
+        regexp: "__USERNAME__"
+        replace: "{{ USERNAME }}"
+      
+    - name: Encode CSR to base64 and replace in YAML
+      shell: cat {{ USERNAME }}.csr | base64 | tr -d '\n'
+      args:
+        chdir: "{{ CERT_DIR }}"
+      register: b64_encoded_csr
+
+    - name: Display encoded_csr
+      debug:
+        var: b64_encoded_csr  
+
+    - name: Read encoded CSR and replace in YAML
+      replace:
+        path: "/{{ USERNAME }}-signing-request.yaml"
+        regexp: "__CSRREQUEST__"
+        replace: "{{ b64_encoded_csr.stdout }}"
+      
+    - name: get scr
+      command: cat /{{ USERNAME }}-signing-request.yaml
+      register: b64_encoded_csr
+
+    - name: Display encoded_csr
+      debug:
+        var: b64_encoded_csr
+
+
+    - name: Creating signing request in Kubernetes
+      become_user: kube
+      shell: kubectl create -f /{{ USERNAME }}-signing-request.yaml
+      args:
+        chdir: "{{ CERT_DIR }}"
+
+    - name: Approve signing request
+      become_user: kube
+      shell: kubectl certificate approve {{ USERNAME }}-csr
+
+    - name: Extract and display key and certificate
+      shell: cat {{ USERNAME }}.key | base64 | tr -d '\n'
+      register: extracted_key
+
+    - name: Extract certificate from CSR
+      become_user: kube
+      shell: kubectl get csr {{ USERNAME }}-csr -o jsonpath='{.status.certificate}'
+      register: extracted_cert
+
+    - name: Update Kubernetes config with key and certificate
+      shell: |
+        cat {{ path_to_kubeconfig }} | sed -r 's/^(\s*)(client-certificate-data:.*)$/    client-certificate-data: {{ extracted_cert.stdout }}/' > /home/kube/.kube/{{ USERNAME }}-config && sed -r 's/^(\s*)(client-key-data:.*)$/client-key-data: {{ extracted_key.stdout }}/' /home/kube/.kube/{{ USERNAME }}-config && cat /home/kube/.kube/{{ USERNAME }}-config
+      register: updated_config
+
+    - name: Display config
+      debug:
+        var: updated_config.stdout

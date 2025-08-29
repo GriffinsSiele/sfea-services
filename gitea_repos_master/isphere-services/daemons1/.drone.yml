@@ -1,0 +1,84 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+node_selector:
+  development: "yes"
+
+steps:
+  - name: build
+    image: plugins/kaniko
+    environment:
+      container: kube
+      PLUGIN_DOCKERFILE: Dockerfile
+      PLUGIN_CONTEXT: .
+      PLUGIN_CACHE_REPO: "${DRONE_REPO}"
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_REGISTRY: { from_secret: GIT_HTTP_DOMAIN }
+      PLUGIN_USERNAME: { from_secret: GIT_USER }
+      PLUGIN_PASSWORD: { from_secret: GIT_TOKEN }
+      PLUGIN_REPO: "${DRONE_REPO}"
+      PLUGIN_TAGS: "${DRONE_COMMIT_BRANCH}"
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        -i daemons-${DRONE_COMMIT_BRANCH}
+        -n daemons --create-namespace
+        -f .helm/values.yaml
+        .helm/
+    environment:
+      CI_REGISTRY_IMAGE: "gitea-http.gitea.svc.cluster.local/isphere-services/daemons1"
+      DOCKER: { from_secret: DOCKER }
+      DOMAIN: { from_secret: DOMAIN }
+      GIT_HTTP_DOMAIN: { from_secret: GIT_HTTP_DOMAIN }
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: DOCKER
+get: { path: settings-kube, name: DOCKER }
+
+---
+kind: secret
+name: DOMAIN
+get: { path: settings-kube, name: DOMAIN }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: GIT_HTTP_DOMAIN
+get: { path: settings-kube, name: GIT_HTTP_DOMAIN }
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }

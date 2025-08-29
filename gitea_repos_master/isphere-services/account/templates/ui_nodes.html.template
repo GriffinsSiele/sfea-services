@@ -1,0 +1,25 @@
+{{ define "ui_nodes" }}
+    {{ range FilterNodesByGroups .Nodes .Groups }}
+        {{ if IsUINodeAnchorAttributes . }}
+            <p>anchor</p>
+        {{ else if IsUINodeImageAttributes . }}
+            {{ template "ui_node_image" Dict "Node" . }}
+        {{ else if IsUINodeInputAttributes . }}
+            {{ if eq .Attributes.UiNodeInputAttributes.Type "hidden" }}
+                {{ template "ui_node_input_hidden" Dict "Node" . }}
+            {{ else if eq .Attributes.UiNodeInputAttributes.Type "submit" }}
+                {{ template "ui_node_input_button" Dict "Node" . }}
+            {{ else if eq .Attributes.UiNodeInputAttributes.Type "button" }}
+                {{ template "ui_node_input_button" Dict "Node" . }}
+            {{ else if eq .Attributes.UiNodeInputAttributes.Type "checkbox" }}
+                <p>checkbox</p>
+            {{ else }}
+                {{ template "ui_node_input_default" Dict "Node" . }}
+            {{ end }}
+        {{ else if IsUINodeScriptAttributes . }}
+            <p>script</p>
+        {{ else if IsUINodeTextAttributes . }}
+            {{ template "ui_node_text" Dict "Node" . }}
+        {{ end }}
+    {{ end }}
+{{ end }}

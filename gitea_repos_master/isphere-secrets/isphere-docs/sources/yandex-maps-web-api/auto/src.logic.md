@@ -1,0 +1,38 @@
+# src.logic package
+
+## Subpackages
+
+* [src.logic.adapters package](src.logic.adapters.md)
+  * [Submodules](src.logic.adapters.md#submodules)
+  * [src.logic.adapters.item module](src.logic.adapters.md#src-logic-adapters-item-module)
+  * [src.logic.adapters.response module](src.logic.adapters.md#src-logic-adapters-response-module)
+  * [src.logic.adapters.session module](src.logic.adapters.md#src-logic-adapters-session-module)
+  * [Module contents](src.logic.adapters.md#module-src.logic.adapters)
+* [src.logic.keydb package](src.logic.keydb.md)
+  * [Submodules](src.logic.keydb.md#submodules)
+  * [src.logic.keydb.fieldXML module](src.logic.keydb.md#src-logic-keydb-fieldxml-module)
+  * [Module contents](src.logic.keydb.md#module-src.logic.keydb)
+* [src.logic.proxy package](src.logic.proxy.md)
+  * [Submodules](src.logic.proxy.md#submodules)
+  * [src.logic.proxy.proxy_cache module](src.logic.proxy.md#src-logic-proxy-proxy-cache-module)
+  * [Module contents](src.logic.proxy.md#module-src.logic.proxy)
+* [src.logic.thread package](src.logic.thread.md)
+  * [Submodules](src.logic.thread.md#submodules)
+  * [src.logic.thread.exception_handler module](src.logic.thread.md#src-logic-thread-exception-handler-module)
+  * [Module contents](src.logic.thread.md#module-src.logic.thread)
+* [src.logic.yandex package](src.logic.yandex.md)
+  * [Subpackages](src.logic.yandex.md#subpackages)
+    * [src.logic.yandex.search_engine package](src.logic.yandex.search_engine.md)
+      * [Submodules](src.logic.yandex.search_engine.md#submodules)
+      * [src.logic.yandex.search_engine.search_phone_requests module](src.logic.yandex.search_engine.md#src-logic-yandex-search-engine-search-phone-requests-module)
+      * [Module contents](src.logic.yandex.search_engine.md#module-src.logic.yandex.search_engine)
+  * [Submodules](src.logic.yandex.md#submodules)
+  * [src.logic.yandex.authorizer module](src.logic.yandex.md#src-logic-yandex-authorizer-module)
+  * [src.logic.yandex.search_manager module](src.logic.yandex.md#src-logic-yandex-search-manager-module)
+  * [src.logic.yandex.signature module](src.logic.yandex.md#module-src.logic.yandex.signature)
+    * [`Signature`](src.logic.yandex.md#src.logic.yandex.signature.Signature)
+      * [`Signature.sign()`](src.logic.yandex.md#src.logic.yandex.signature.Signature.sign)
+  * [src.logic.yandex.validation module](src.logic.yandex.md#src-logic-yandex-validation-module)
+  * [Module contents](src.logic.yandex.md#module-src.logic.yandex)
+
+## Module contents

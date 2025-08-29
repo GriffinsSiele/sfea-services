@@ -1,0 +1,79 @@
+check_types:
+  instagram_phone:
+    enabled: true
+    source:
+      code: main-service-foreign
+    schema:
+      allOf:
+      - $ref: '#/definitions/schema/default'
+      - $ref: '#/definitions/schema/phone'
+    mutator:
+      template:
+        records: |
+          {{- range .records }}
+          - {{ UnsafeField "Phone" .Phone }}
+            {{ UnsafeField "Result" .Result }}
+            {{ UnsafeField "ResultCode" .ResultCode }}
+            {{ UnsafeField "Email" .Email }}
+            {{ UnsafeField "Link" .Link }}
+            {{ UnsafeField "UserName" .UserName }}
+            {{ UnsafeField "Name" .Name }}
+            {{ UnsafeField "About" .About }}
+            {{ UnsafeField "Website" .Website }}
+            {{ UnsafeField "Private" .Private }}
+            {{ UnsafeField "Image" .Image }}
+          {{- end }}
+      status_code:
+        non_standard: true
+        format: json
+        property_path: code
+        detail_property_path: message
+    upstream:
+      provider: main-service-foreign
+      keydb:
+        enabled: true
+        scope: instagram_phone
+        ttl: 24h0m0s
+        ttl_failed: 30s
+      rabbitmq:
+        enabled: true
+        scope: instagram_phone
+      tcp:
+        template:
+          query: |
+            GET /2.00/handler.php?{{ QueryArguments
+            "auth" (Env "MODULE_MAIN_SERVICE_ACCESS_TOKEN")
+            "plugin" "InstagramPlugin"
+            "checktype" "instagram_phone"
+            "phone" (trimPrefix "+" .phone)
+            }} HTTP/1.1
+    produce:
+      items:
+        properties:
+          About:
+            type: string
+          Email:
+            type: string
+          Image:
+            contentEncoding: base64
+            type: string
+          Link:
+            format: url
+            type: string
+          Name:
+            type: string
+          Phone:
+            type: string
+          Private:
+            type: string
+          Result:
+            type: string
+          ResultCode:
+            type: string
+          UserName:
+            type: string
+          Website:
+            format: url
+            type: string
+        type: object
+      type: array

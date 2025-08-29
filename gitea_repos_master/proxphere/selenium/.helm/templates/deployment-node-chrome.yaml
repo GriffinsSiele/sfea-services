@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-node-chrome
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: browser
+spec:
+  replicas: {{ .Values.node_chrome.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}-node-chrome
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: browser
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}-node-chrome
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: browser
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.node_chrome.image.repository }}:{{ .Values.node_chrome.image.tag }}"
+          imagePullPolicy: {{ .Values.node_chrome.image.pullPolicy }}
+          env:
+            - name: SE_EVENT_BUS_HOST
+              value: {{ include "chart.fullname" . }}-hub.{{ .Release.Namespace }}
+            - name: SE_EVENT_BUS_PUBLISH_PORT
+              value: {{ .Values.hub.service.ports.xpub | quote }}
+            - name: SE_EVENT_BUS_SUBSCRIBE_PORT
+              value: {{ .Values.hub.service.ports.xsub | quote }}
+          resources:
+            {{- toYaml .Values.node_chrome.resources | nindent 12 }}
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

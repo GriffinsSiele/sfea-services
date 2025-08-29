@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  fmsdb:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production
+    networks:
+      - isphere
+    volumes:
+      - ./var/:/app/var
+
+networks:
+  isphere:
+    external: true

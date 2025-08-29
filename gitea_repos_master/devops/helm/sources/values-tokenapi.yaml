@@ -1,0 +1,85 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 0
+
+image:
+  repository: git.i-sphere.ru/isphere-services/recaptha-tokens-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- "/bin/sleep"
+args:
+- "5000"
+
+
+
+resources: {}
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+
+env:
+- name: MONGO_HOST
+  value: 172.16.11.1
+- name: MONGO_PORT
+  value: "27017"
+- name: MONGO_DB
+  value: i-sphere
+- name: MONGO_COLLECTION
+  value: captcha_tokens
+- name: APP_PORT
+  value: "8003"
+
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - tokensapi
+      topologyKey: kubernetes.io/hostname
+
+
+livenessProbe:
+  failureThreshold: 3
+  httpGet:
+  path: /docs
+  port: 8003
+  scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 3
+  successThreshold: 1
+  timeoutSeconds: 1
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

@@ -1,0 +1,64 @@
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+fullNameOverride: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  tlsEnabled: false
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  createRole: true
+  affinity: {}
+
+app:
+  replicaCount: 1
+
+  service:
+    port: 80
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 20m
+      memory: 32Mi
+    requests:
+      cpu: 10m
+      memory: 16Mi
+
+  env:
+    APP_ENV: "dev"
+    RABBITMQ_DSN: "${RABBITMQ_URL}"

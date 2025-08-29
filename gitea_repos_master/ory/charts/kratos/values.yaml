@@ -1,0 +1,364 @@
+replicaCount: 1
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 30%
+    maxUnavailable: 0
+image:
+  repository: oryd/kratos
+  tag: v0.13.0
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+service:
+  admin:
+    enabled: true
+    type: ClusterIP
+    loadBalancerIP: ""
+    port: 80
+    name: http
+    labels: {}
+    annotations: {}
+  public:
+    enabled: true
+    type: ClusterIP
+    loadBalancerIP: ""
+    port: 80
+    name: http
+    labels: {}
+    annotations: {}
+secret:
+  enabled: true
+  nameOverride: ""
+  secretAnnotations:
+    helm.sh/hook-weight: "0"
+    helm.sh/hook: "pre-install, pre-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation"
+    helm.sh/resource-policy: "keep"
+  hashSumEnabled: true
+ingress:
+  admin:
+    enabled: false
+    className: ""
+    annotations:
+      {}
+    hosts:
+      - host: kratos.admin.local.com
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+  public:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      certmanager.k8s.io/acme-challenge-type: http01
+    hosts:
+      - host: ory-kratos-public-master.git.i-sphere.ru
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - secretName: ory-kratos-public-master.git.i-sphere.ru
+        hosts:
+          - ory-kratos-public-master.git.i-sphere.ru
+kratos:
+  development: false
+  automigration:
+    enabled: false
+    type: job
+    customCommand: []
+    customArgs: []
+  identitySchemas:
+    "identity.default.schema.json": |-
+      {
+        "$id": "https://schemas.ory.sh/presets/kratos/quickstart/email-password/identity.schema.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Person",
+        "type": "object",
+        "properties": {
+          "traits": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "title": "E-Mail",
+                "minLength": 3,
+                "ory.sh/kratos": {
+                  "credentials": {
+                    "password": {
+                      "identifier": true
+                    }
+                  },
+                  "verification": {
+                    "via": "email"
+                  },
+                  "recovery": {
+                    "via": "email"
+                  }
+                }
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "first": {
+                    "title": "First Name",
+                    "type": "string"
+                  },
+                  "last": {
+                    "title": "Last Name",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": [
+              "email"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+  emailTemplates: {}
+  config:
+    ciphers:
+      algorithm: xchacha20-poly1305
+    courier:
+      smtp:
+        connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+    serve:
+      public:
+        port: 4433
+        base_url: https://ory-kratos-public-master.git.i-sphere.ru
+        cors:
+          enabled: false
+          debug: true
+          allowed_origins:
+            - https://*.git.i-sphere.ru
+      admin:
+        port: 4434
+        base_url: http://kratos-admin.ory:4434
+    dsn: postgres://ory:tdpgwlazJ25Xc0B9bgvKlrTHepUpy1JsZTmKuCrgVGHMPmps5VmgaRG5otLLHBED@ory-cluster.isphere-services:5432/ory
+    hashers:
+      algorithm: bcrypt
+      bcrypt:
+        cost: 8
+    identity:
+      default_schema_id: default
+      schemas:
+        - id: default
+          url: file:///etc/config/identity.default.schema.json
+    log:
+      leak_sensitive_values: true
+      level: debug
+    oauth2_provider:
+      url: http://hydra-admin.ory:4445
+    secrets:
+      cookie:
+        - 'jfSyZRH3AWQe46LEPXLyD3MrTwvks7wh'
+        - 'xuEcEQPqH22cXgnSfxzpB4XpqYy5QVz5'
+        - '6FgVCanacQyJxd9X8u8W3tSSZyhUdXWk'
+        - 'szyjKVGszL9zHgsSSBjDHgX7gZrt9DB7'
+      cipher:
+        - 'keLsj8zxCmYw3h8stW2bWMqDXPTyJ5YY'
+        - 'UApt9nNsYavvEg2nF8D9cneUZNHZ2FLf'
+        - 'eu6Zewk3394w4UVTDkpEKKcMdmn28Pr2'
+        - 'cNm2EQXzjDe6QgFEzLRG7TCtT2XxA6WU'
+      default:
+        - 'JyqS6KfqZ7zj5L945Vs8BstB9EvkQvyj'
+        - 'gkJWB26k97fRJFtsmQEZgysUAFApNjMj'
+        - 'HVKeA6T4DGunTK6YJdeAHt5JXyKyJAfk'
+        - 'C4bv9yF3C3CWf39KRxDuC9nqzxGzC9Zc'
+    selfservice:
+      allowed_return_urls:
+        - https://hasura.git.i-sphere.ru
+        - https://isphere-services-account-master.git.i-sphere.ru
+      default_browser_return_url: https://isphere-services-account-master.git.i-sphere.ru
+      flows:
+        error:
+          ui_url: https://isphere-services-account-master.git.i-sphere.ru/error
+        login:
+          ui_url: https://isphere-services-account-master.git.i-sphere.ru/login
+          lifespan: 10m
+        logout:
+          after:
+            default_browser_return_url: https://isphere-services-account-master.git.i-sphere.ru
+        recovery:
+          enabled: true
+          ui_url: https://isphere-services-account-master.git.i-sphere.ru/recovery
+          use: code
+        registration:
+          ui_url: https://isphere-services-account-master.git.i-sphere.ru/registration
+          lifespan: 10m
+          after:
+            password:
+              hooks:
+                - hook: session
+                - hook: show_verification_ui
+        settings:
+          privileged_session_max_age: 15m
+          required_aal: highest_available
+          ui_url: https://isphere-services-account-master.git.i-sphere.ru/settings
+        verification:
+          enabled: true
+          ui_url: https://isphere-services-account-master.git.i-sphere.ru/verification
+          use: code
+          after:
+            default_browser_return_url: https://isphere-services-account-master.git.i-sphere.ru
+      methods:
+        code:
+          enabled: true
+        link:
+          enabled: true
+        lookup_secret:
+          enabled: true
+        password:
+          enabled: true
+        totp:
+          enabled: true
+          config:
+            issuer: iSphere Account
+    cookies:
+      same_site: Lax
+      domain: .git.i-sphere.ru
+    session:
+      cookie:
+        same_site: Lax
+        domain: .git.i-sphere.ru
+deployment:
+  lifecycle: {}
+  livenessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  startupProbe:
+    failureThreshold: 60
+    successThreshold: 1
+    periodSeconds: 1
+    timeoutSeconds: 1
+  customLivenessProbe: {}
+  customReadinessProbe: {}
+  customStartupProbe: {}
+  extraArgs: []
+  extraEnv: []
+  extraVolumes: []
+  extraVolumeMounts: []
+  extraInitContainers: ""
+  extraContainers: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  dnsConfig: {}
+  labels: {}
+  annotations: {}
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+  automountServiceAccountToken: true
+  podMetadata:
+    labels: {}
+    annotations: {}
+  automigration:
+    enabled: true
+    extraEnv: []
+statefulSet:
+  resources: {}
+  extraArgs: []
+  extraEnv: []
+  extraVolumes: []
+  extraVolumeMounts: []
+  extraInitContainers: ""
+  extraContainers: ""
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  dnsConfig: {}
+  log:
+    format: json
+    level: trace
+  podMetadata:
+    labels: {}
+    annotations: {}
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 100
+  allowPrivilegeEscalation: false
+  privileged: false
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPU: {}
+  targetMemory: {}
+job:
+  annotations:
+    helm.sh/hook-weight: "1"
+    helm.sh/hook: "pre-install, pre-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation,hook-succeeded"
+  extraContainers: ""
+  extraInitContainers: ""
+  extraEnv: []
+  nodeSelector: {}
+  tolerations: []
+  lifecycle: ""
+  automountServiceAccountToken: true
+  shareProcessNamespace: false
+  serviceAccount:
+    create: true
+    annotations:
+      helm.sh/hook-weight: "0"
+      helm.sh/hook: "pre-install, pre-upgrade"
+      helm.sh/hook-delete-policy: "before-hook-creation"
+    name: ""
+  podMetadata:
+    labels: {}
+    annotations: {}
+  spec:
+    backoffLimit: 10
+courier:
+  enabled: true
+watcher:
+  enabled: false
+  image: oryd/k8s-toolbox:0.0.5
+  mountFile: ""
+  podMetadata:
+    labels: {}
+    annotations: {}
+  watchLabelKey: "ory.sh/watcher"
+pdb:
+  enabled: false
+  spec:
+    minAvailable: 1
+serviceMonitor:
+  enabled: true
+  scheme: http
+  scrapeInterval: 60s
+  scrapeTimeout: 30s
+  labels: {}
+  tlsConfig: {}
+configmap:
+  hashSumEnabled: true
+  annotations: {}
+test:
+  busybox:
+    repository: busybox
+    tag: 1

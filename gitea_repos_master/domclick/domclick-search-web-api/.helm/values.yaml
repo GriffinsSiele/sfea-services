@@ -1,0 +1,84 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 2
+
+image:
+  repository: ${GIT_HTTP_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the latest.
+  tag: ${IMAGE_TAG}
+
+
+resources:
+  limits:
+    cpu: 900m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 250Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - $DRONE_REPO_NAME
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                  - $DRONE_REPO_NAME
+          topologyKey: topology.kubernetes.io/zone
+
+
+service:
+  enabled: false
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+env:
+- name: KEYDB_QUEUE
+  value: ${KEYDB_QUEUE}
+- name: RABBITMQ_QUEUE
+  value: ${RABBITMQ_QUEUE}
+- name: MONGO_COLLECTION
+  value: ${MONGO_COLLECTION}
+- name: RABBITMQ_CONSUMERS
+  value: ${RABBITMQ_CONSUMERS}
+- name: SENTRY_URL
+  value: ${SENTRY_URL}
+
+envFrom:
+- secretRef:
+    name: settings-kube

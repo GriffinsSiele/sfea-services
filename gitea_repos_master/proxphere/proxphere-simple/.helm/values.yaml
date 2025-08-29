@@ -1,0 +1,25 @@
+DOCKER: "${DOCKER}"
+fullNameOverride: ""
+imageCredentials: { enabled: false, registry: "", username: "", password: "" }
+ingress: { enabled: false, tlsEnabled: false }
+nameOverride: ""
+nodeSelector: { }
+podAnnotations: { }
+podSecurityContext: { }
+securityContext: { capabilities: { drop: [ FOWNER, KILL, MKNOD, SETGID, SETUID ] } }
+service:
+  type: LoadBalancer
+  port: 1080
+serviceAccount: { create: true, annotations: { }, createRole: true, affinity: { } }
+tolerations: [ ]
+image:
+  repository: "${CI_REGISTRY_IMAGE}"
+  pullPolicy: Always
+  tag: "${DRONE_BRANCH}"
+resources:
+  requests:
+    cpu: 20m
+    memory: 20Mi
+  limits:
+    cpu: 40m
+    memory: 100Mi

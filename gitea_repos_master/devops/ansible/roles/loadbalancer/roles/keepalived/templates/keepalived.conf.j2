@@ -1,0 +1,40 @@
+global_defs {
+    router_id {{ lb_name }}
+# Don't run scripts configured to be run as root if any part of the path
+# is writable by a non-root user.
+    enable_script_security
+}
+
+vrrp_script haproxy_check {
+    #script "/usr/bin/killall -0 haproxy"
+    #script "systemctl is-active haproxy.service --quiet"
+    script "/usr/bin/pgrep -x haproxy -F /run/haproxy.pid"
+    interval 1
+    weight 20
+}
+
+vrrp_instance haproxy_k8s_vip {
+    state {{ ha_state }}
+    interface eth0
+
+    track_script {
+        haproxy_check weight 20
+    }
+
+    unicast_src_ip {{ lb_src_ip }}
+
+    unicast_peer {
+        {{ lb_peer_ip }}
+        {{ lb_peer_ip_2 }}
+        {{ lb_peer_ip_3 }}
+    }
+
+    virtual_router_id 1
+    priority {{ priority }}
+    advert_int 1
+
+    virtual_ipaddress {
+        {{ lb_vip_k8s }}
+        
+    }
+}

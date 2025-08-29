@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  grabber:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - ./:/app

@@ -1,0 +1,64 @@
+check_types:
+  libloc:
+    enabled: true
+    source: { code: libloc }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/ip"
+    upstream:
+      provider: libloc
+      keydb: { enabled: true, scope: libloc, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: libloc }
+      tcp:
+        # language=HTTP
+        query: |
+          POST / HTTP/1.1
+
+          { "ip": "{{ ip }}" }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- if not (eq .country_code nil) }}
+          - ip: {{ Quote .ip }}
+            country_code: {{ Quote .country_code }}
+            country: {{ Quote .country }}
+            asn: {{ .asn }}
+            {{- if not (eq .is_anonymous_proxy nil) }}
+            is_anonymous_proxy: {{ .is_anonymous_proxy }}
+            {{- else }}
+            is_anonymous_proxy: false
+            {{- end }}
+            {{- if not (eq .is_anycast nil) }}
+            is_anycast: {{ .is_anycast }}
+            {{- else }}
+            is_anycast: false
+            {{- end }}
+            {{- if not (eq .is_drop nil) }}
+            is_drop: {{ .is_drop }}
+            {{- else }}
+            is_drop: false
+            {{- end }}
+            {{- if not (eq .is_satellite_provider nil) }}
+            is_satellite_provider: {{ .is_satellite_provider }}
+            {{- else }}
+            is_satellite_provider: false
+            {{- end }}
+          {{- end }}
+        # @formatter:off
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          ip: { type: string }
+          country_code: { type: string }
+          country: { type: string }
+          asn: { type: number }
+          is_anonymous_proxy: { type: boolean }
+          is_anycast: { type: boolean }
+          is_drop: { type: boolean }
+          is_satellite_provider: { type: boolean }
+

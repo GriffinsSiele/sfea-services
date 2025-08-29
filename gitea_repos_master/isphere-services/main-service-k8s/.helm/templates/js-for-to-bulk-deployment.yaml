@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-js-for-to-bulk
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: daemon
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}-js-for-to-bulk
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}-js-for-to-bulk
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: daemon
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.js_for_to_bulk.image.repository }}:{{ .Values.js_for_to_bulk.image.tag }}"
+          imagePullPolicy: {{ .Values.php_fpm.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-php-fpm-configmap
+            - secretRef:
+                name: {{ include "chart.name" . }}-php-fpm-secret
+          env:
+            - name: PS4
+              value: '+ $(date "+%Y-%m-%dT%H:%M:%S") '
+          resources:
+            {{- toYaml .Values.js_for_to_bulk.resources | nindent 12 }}
+          command:
+            - sh
+            - -exc
+            # language=shell script
+            - |
+              cd bulkAuto
+              while true; do
+                node jsForToBulk.js
+                if [ $? -ne 0 ]; then
+                  break
+                fi
+              done
+          volumeMounts:
+            - name: xml-data
+              mountPath: /opt/xml
+            - name: bulk-data
+              mountPath: /opt/bulk
+            - name: logs-data
+              mountPath: /var/www/html/2.00/logs
+            - name: tz-config
+              mountPath: /etc/localtime
+              subPath: Moscow
+              readOnly: true
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: shared-data
+          emptyDir: { }
+        - name: xml-data
+          emptyDir: { }
+        - name: bulk-data
+          emptyDir: { }
+        - name: logs-data
+          emptyDir: { }
+        - name: tz-config
+          configMap:
+            name: tz
+            defaultMode: 420

@@ -1,0 +1,243 @@
+name: drone
+kind: pipeline
+type: kubernetes
+node_selector: { development: "yes" }
+
+global-variables:
+  - master: &master master
+  - dev: &dev dev
+  - on_pr_open_dev: &on_pr_open_dev
+      event: [ pull_request ]
+      branch: [ *dev ]
+  - on_push_master: &on_push_master
+      event: [ push ]
+      branch: [ *master ]
+  - on_push_dev: &on_push_dev
+      event: [ push ]
+      branch: [ *dev ]
+  - on_push_master_or_dev: &on_push_master_or_dev
+      event: [ push ]
+      branch: [ *master, *dev ]
+  - use_environment: &use_environment
+      MODE: unittest
+      MONGO_URL: { from_secret: MONGO_URL }
+      MONGO_DB: { from_secret: MONGO_DB }
+      MONGO_COLLECTION: { from_secret: MONGO_COLLECTION }
+      KEYDB_URL: { from_secret: KEYDB_URL }
+      KEYDB_QUEUE: { from_secret: KEYDB_QUEUE }
+      SENTRY_URL: { from_secret: SENTRY_URL }
+      GIT_TOKEN: { from_secret: GIT_TOKEN }
+      GIT_USER: { from_secret: GIT_USER }
+      GIT_HTTP_DOMAIN: { from_secret: GIT_HTTP_DOMAIN }
+      GIT_HTTP_URL: { from_secret: GIT_HTTP_URL }
+      GIT_HTTP_URL_WITH_CREDENTIALS: { from_secret: GIT_HTTP_URL_WITH_CREDENTIALS }
+  - linter_image: &linter_image gitea-http.gitea.svc.cluster.local/isphere-images/python-linter:1.2-3.11
+  - unittest_image: &unittest_image gitea-http.gitea.svc.cluster.local/isphere-images/python:3.11-slim-buster
+  - alpine_image: &alpine_image gitea-http.gitea.svc.cluster.local/isphere-images/alpine-auto-pr:1.0-3.19
+  - hadolint_image: &hadolint_image gitea-http.gitea.svc.cluster.local/isphere-images/hadolint/hadolint:latest-debian
+  - kaniko_image: &kaniko_image gitea-http.gitea.svc.cluster.local/isphere-images/banzaicloud/drone-kaniko:latest
+  - alpine_k8s: &alpine_k8s gitea-http.gitea.svc.cluster.local/isphere-images/alpine/k8s:1.24.13
+  - docs_image: &docs_image gitea-http.gitea.svc.cluster.local/isphere-images/python-sphinx-docs:1.3-3.11
+
+steps:
+- name: lint-black
+  image: *linter_image
+  when: *on_pr_open_dev
+  commands:
+    - git checkout -b $DRONE_SOURCE_BRANCH
+    - isort .; black .
+    - |
+      if [ $(git status --porcelain | wc -l) != "0" ]; then 
+        git commit -am "refactor: lint autofixes"
+        git push --set-upstream origin $DRONE_SOURCE_BRANCH
+        exit 1
+      else
+        echo "Nothing to commit. Ok"
+      fi    
+
+- name: hadolint
+  image: *hadolint_image
+  when: *on_pr_open_dev
+  commands:
+    - hadolint --version
+    - hadolint Dockerfile
+
+- name: lint-mypy
+  image: *linter_image
+  when: *on_pr_open_dev
+  commands:
+    - mypy .
+
+- name: tartufo-scan
+  image: *linter_image
+  when: *on_pr_open_dev
+  commands:
+    - tartufo scan-local-repo .
+
+- name: unit-tests
+  image: *unittest_image
+  when: *on_pr_open_dev
+  environment: *use_environment
+  depends_on: [ lint-mypy, tartufo-scan, hadolint, lint-black ]
+  commands:
+    - |
+      if [ -d "tests/" ]
+      then 
+        echo "Tests dir exists"
+      else
+        echo "No tests found"
+        exit 0
+      fi
+    - pip install pipenv==2022.1.8
+    - pipenv install --dev
+    - pipenv run python -m unittest discover -s tests/
+
+- name: auto-pr
+  image: *alpine_image
+  when: *on_push_dev
+  environment: *use_environment
+  commands:
+    - apk add --no-cache curl jq
+    - REPO_PR_URL_GET=`echo $GIT_HTTP_URL_WITH_CREDENTIALS/api/v1/repos/$DRONE_REPO/pulls?state=open`
+    - REPO_PR_URL_CREATE=`echo $GIT_HTTP_URL_WITH_CREDENTIALS/api/v1/repos/$DRONE_REPO/pulls`
+    - PR_DEV=`curl -s $REPO_PR_URL_GET | jq -r '.[].base.label'`
+    - | 
+      if [ "$PR_DEV" != "master" ]; then
+        curl -X 'POST' `echo $REPO_PR_URL_CREATE` \
+        -H 'Content-Type: application/json' \
+        -d '{"base":"'`echo $DRONE_REPO_BRANCH`'","head":"dev","title":"dev to '`echo $DRONE_REPO_BRANCH`'"}'
+      else
+        echo "PR already exists."
+      fi
+
+- name: kaniko-build
+  image: *kaniko_image
+  when: *on_push_master_or_dev
+  settings:
+    registry: { from_secret: GIT_HTTP_DOMAIN }
+    username: { from_secret: GIT_USER }
+    password: { from_secret: GIT_TOKEN }
+    repo: ${DRONE_REPO}-${DRONE_COMMIT_BRANCH}
+    tags: ${DRONE_COMMIT_SHA:0:10}
+    build_args:
+      - GIT_HTTP_URL_WITH_CREDENTIALS
+  environment:
+    container: kube
+    <<: *use_environment
+
+
+- name: deploy
+  when: *on_push_master
+  depends_on: [ kaniko-build ]
+  image: *alpine_k8s
+  environment:
+    MODE: { from_secret: MODE }
+    PROJECT_NAME: ${DRONE_REPO_NAME}
+    IMAGE_TAG: ${DRONE_COMMIT_SHA:0:10}
+    k8s_CONFIG: { from_secret: k8s_CONFIG }
+    <<: *use_environment
+  commands:
+    - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+    - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+    - helm repo add --username $GIT_USER --password $GIT_TOKEN i-sphere $GIT_HTTP_URL/api/packages/drone-bot/helm
+    - helm repo update
+    - helm upgrade
+        --install
+        --namespace default
+        --values .helm/values.yaml
+        $DRONE_REPO_NAME
+        i-sphere/sources
+
+- name: auto-docs
+  image: *docs_image
+  depends_on: [ deploy ]
+  when: *on_push_master
+  environment:
+    DOCS_DIR: "./docs"
+    BUILD_HTML: "./docs/build_html"
+    BUILD_MARKDOWN: "./docs/build_markdown"
+    BUILD_PDF: "./docs/build_pdf"
+    CURRENT_PROJECT: "${DRONE_REPO_NAME}"
+    REPO_NAME: "isphere-docs"
+    <<: *use_environment
+  commands:
+    - REPO_URL=`echo $GIT_HTTP_URL/isphere-secrets/$REPO_NAME`
+    - REPO_PATH=`echo $REPO_NAME/sources/$CURRENT_PROJECT/auto`
+    - DOCS_CONF=`echo $GIT_HTTP_URL_WITH_CREDENTIALS/isphere-secrets/docs-ci-supplementary/raw/branch/master/conf.py`
+    - |
+      pipenv install --dev
+    - |
+      mkdir docs
+      curl -o docs/conf.py `echo $DOCS_CONF`
+    - |
+      pipenv run sphinx-apidoc -o `echo $DOCS_DIR` .
+      pipenv run sphinx-build -b singlehtml `echo $DOCS_DIR` `echo $BUILD_HTML`
+      pipenv run sphinx-build -b markdown `echo $DOCS_DIR` `echo $BUILD_MARKDOWN`
+    - | 
+      echo '<style>.wy-grid-for-nav{position: static !important}</style>' >> `echo $BUILD_HTML/modules.html`
+      mkdir -p `echo $BUILD_PDF`
+      pipenv run weasyprint `echo $BUILD_HTML/modules.html $BUILD_PDF/doc.pdf`
+    - git clone `echo $REPO_URL`
+    - |
+      mkdir -p `echo $REPO_PATH`
+      cp `echo $BUILD_MARKDOWN/*.md $REPO_PATH`
+      cp `echo $BUILD_PDF/*.pdf $REPO_PATH`
+      cd `echo $REPO_NAME`
+    - |
+      git add .
+      git commit -am "docs: auto docs for `echo $CURRENT_PROJECT`"
+      git push --set-upstream origin master 
+
+trigger:
+  event: [ pull_request, push ]
+  branch: [ *master, *dev ]
+
+---
+kind: secret
+name: MODE
+get: { path: settings-kube, name: MODE }
+
+---
+kind: secret
+name: MONGO_URL
+get: { path: settings-kube, name: MONGO_URL }
+
+---
+kind: secret
+name: MONGO_DB
+get: { path: settings-kube, name: MONGO_DB }
+
+---
+kind: secret
+name: KEYDB_URL
+get: { path: settings-kube, name: KEYDB_URL }
+
+---
+kind: secret
+name: GIT_TOKEN
+get: { path: settings-kube, name: GIT_TOKEN }
+
+---
+kind: secret
+name: GIT_USER
+get: { path: settings-kube, name: GIT_USER }
+
+---
+kind: secret
+name: GIT_HTTP_DOMAIN
+get: { path: settings-kube, name: GIT_HTTP_DOMAIN }
+
+---
+kind: secret
+name: GIT_HTTP_URL
+get: { path: settings-kube, name: GIT_HTTP_URL }
+
+---
+kind: secret
+name: GIT_HTTP_URL_WITH_CREDENTIALS
+get: { path: settings-kube, name: GIT_HTTP_URL_WITH_CREDENTIALS }
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }

@@ -1,0 +1,27 @@
+import os
+import pathlib
+
+from dotenv import load_dotenv
+from request_logic.path_utils import PUtils
+
+_current_file_path = pathlib.Path(__file__).parent.absolute()
+
+
+def parse_dotenv():
+    base_dir = PUtils.bp(_current_file_path, '..', '..')
+    env = PUtils.bp(base_dir, '.env')
+    env_example = PUtils.bp(base_dir, '.env.example')
+
+    load_dotenv(env if PUtils.is_file_exists(env) else env_example)
+
+    _PROXY_LOGIN = os.getenv('PROXY_LOGIN')
+    _PROXY_PASSWORD = os.getenv('PROXY_PASSWORD')
+
+    _KEYDB_HOST = os.getenv('KEYDB_HOST')
+    _KEYDB_PASSWORD = os.getenv('KEYDB_PASSWORD')
+
+    _WITH_GENERATION_TOKEN = os.getenv('WITH_GENERATION_TOKEN') == 'True'
+    _MONGO_TOKEN_DB = os.getenv('MONGO_TOKEN_DB')
+    _MONGO_TOKEN_PORT = os.getenv('MONGO_TOKEN_PORT')
+
+    return _PROXY_LOGIN, _PROXY_PASSWORD, _KEYDB_HOST, _KEYDB_PASSWORD, _WITH_GENERATION_TOKEN, _MONGO_TOKEN_DB, _MONGO_TOKEN_PORT

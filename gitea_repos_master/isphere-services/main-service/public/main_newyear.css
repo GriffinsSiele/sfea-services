@@ -1,0 +1,19 @@
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+.message {
+        font-weight: bold;
+	color: #FF2020;
+}
+
+h1 {
+	background: url(newyear.png) repeat no-repeat;
+	background-size: 600px;
+	background-position: -20px -40px;
+	padding-top: 1em;
+}

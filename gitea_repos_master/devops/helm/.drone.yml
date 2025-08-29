@@ -1,0 +1,60 @@
+kind: pipeline
+name: default
+type: kubernetes
+#pull: if-not-exists
+#load: none
+node_selector:
+     development: "yes"
+
+steps:
+  - name: parallel-runner
+    image: alpine/k8s:1.24.13
+    commands:
+#      - env|grep k8s |rev
+      - sleep 90
+      - echo 1
+
+  #- name: deploy-hasura
+    #image: alpine/k8s:1.24.13
+    #depends_on:
+      #- parallel-runner
+    #commands:
+      #- cd charts/percona-pg
+      #- mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      #- export COUNT_OF_SUITABLE_NODES=$(kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[].effect}{\"\n\"}{end}" | grep -v " No" | wc -l | xargs)
+      #- export COUNT_OF_REPLICAS=$(kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[].effect}{\"\n\"}{end}" | grep -v " No" | head -1 | wc -l | xargs)
+      #- helm repo add percona https://percona.github.io/percona-helm-charts/ || echo 1
+      #- helm repo update || echo 1
+      #- helm upgrade -i -n percona-pg -f values.yaml --set pgBouncer.size=$COUNT_OF_SUITABLE_NODES --set replicas.size=$COUNT_OF_REPLICAS hasura percona/pg-db
+    environment:
+      k8s_CONFIG: { from_secret: k8s_CONFIG }
+    #when:
+      #event:
+        #- push
+      #branch:
+        #- master
+
+  #- name: deploy-wiki
+    #image: alpine/k8s:1.24.13
+    #depends_on:
+      #- parallel-runner
+    #commands:
+      #- cd charts/percona-pg
+      #- mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      #- export COUNT_OF_SUITABLE_NODES=$(kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[].effect}{\"\n\"}{end}" | grep -v " No" | wc -l | xargs)
+      #- export COUNT_OF_REPLICAS=$(kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[].effect}{\"\n\"}{end}" | grep -v " No" | head -1 | wc -l | xargs)
+      #- helm repo add percona https://percona.github.io/percona-helm-charts/ || echo 1
+      #- helm repo update || echo 1
+      #- helm upgrade -i -n percona-pg -f values.yaml --set pgBouncer.size=$COUNT_OF_SUITABLE_NODES --set replicas.size=$COUNT_OF_REPLICAS wiki percona/pg-db
+    #environment:
+      #k8s_CONFIG: { from_secret: k8s_CONFIG }
+    #when:
+      #event:
+        #- push
+      #branch:
+        #- master
+
+---
+kind: secret
+name: k8s_CONFIG
+get: { path: settings-kube, name: k8s_CONFIG }

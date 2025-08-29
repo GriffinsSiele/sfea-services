@@ -1,0 +1,19 @@
+monit_script_dir: /etc/monit/script
+
+src_notify_telegram_script: ./templates/notify_telegram.sh.j2
+dest_notify_telegram_script: /etc/monit/script/notify_telegram.sh
+
+src_service_conf: ./templates/service.conf.j2
+dest_service_conf: /etc/monit/conf.d/zabbix.conf
+
+src_monitrc: ./templates/monitrc.j2
+dest_monitrc: /etc/monit/monitrc
+
+chat_id: '-1001662664995'
+api_token: '2103347962:AAHMdZY-Bh6ELR-NB7qOapnnD7sbh2c3bsQ'
+
+pidfile: /run/zabbix/zabbix_server.pid
+
+service_name: zabbix-server.service
+
+monit_service_name: monit.service

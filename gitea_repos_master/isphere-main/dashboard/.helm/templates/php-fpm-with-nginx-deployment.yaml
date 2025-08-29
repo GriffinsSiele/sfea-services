@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-php-fpm-with-nginx
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.autoScaling.minReplicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}-php-fpm-with-nginx
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}-php-fpm-with-nginx
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        date: "{{ now | unixEpoch }}"
+        app.kubernetes.io/component: web
+    spec:
+      containers:
+        - name: php-fpm
+          image: "{{ .Values.php_fpm.image.repository }}:{{ .Values.php_fpm.image.tag }}"
+          imagePullPolicy: {{ .Values.php_fpm.image.pullPolicy }}
+          ports:
+            - name: tcp
+              containerPort: {{ .Values.php_fpm.service.ports.tcp }}
+              protocol: TCP
+            - name: status
+              containerPort: {{ .Values.php_fpm.service.ports.status }}
+              protocol: TCP
+          env:
+            - name: TZ
+              value: {{ .Values.timezone }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart.name" . }}-php-fpm-configmap
+            - secretRef:
+                name: {{ include "chart.name" . }}-php-fpm-secret
+          resources:
+            {{- toYaml .Values.php_fpm.resources | nindent 12 }}
+          livenessProbe: { tcpSocket: { port: tcp } }
+          startupProbe: { tcpSocket: { port: tcp } }
+          readinessProbe: { tcpSocket: { port: tcp } }
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          env:
+            - name: PHP_FPM_SERVICE_NAME
+              value: "127.0.0.1"
+            - name: TZ
+              value: {{ .Values.timezone }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.nginx.service.ports.http }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.nginx.resources | nindent 12 }}
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "chart.name" . }}-registry
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.serviceAccount.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

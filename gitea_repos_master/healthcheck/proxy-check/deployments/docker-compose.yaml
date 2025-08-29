@@ -1,0 +1,7 @@
+services:
+  proxy-check:
+    build:
+      dockerfile: deployments/Dockerfile
+      context: ..
+    env_file:
+      - path: ../.env

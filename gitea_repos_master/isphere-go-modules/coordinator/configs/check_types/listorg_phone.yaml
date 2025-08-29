@@ -1,0 +1,469 @@
+check_types:
+  listorg_phone:
+    enabled: true
+    source:
+      code: main-service
+    schema:
+      allOf:
+      - $ref: '#/definitions/schema/default'
+      - $ref: '#/definitions/schema/phone'
+    mutator:
+      template:
+        records: |
+          {{- range .records }}
+          - {{ UnsafeField "OrgName" .OrgName }}
+            {{ UnsafeField "OrgFullName" .OrgFullName }}
+            {{ UnsafeField "OrgStatus" .OrgStatus }}
+            {{ UnsafeField "phone" .phone }}
+            {{ UnsafeField "inn" .inn }}
+            {{ UnsafeField "address" .address }}
+            {{ UnsafeField "OGRN" .OGRN }}
+            {{ UnsafeField "Name" .Name }}
+            {{ UnsafeField "FullName" .FullName }}
+            {{ UnsafeField "Head" .Head }}
+            {{ UnsafeField "RegDate" .RegDate }}
+            {{ UnsafeField "Type" .Type }}
+            {{ UnsafeField "IPType" .IPType }}
+            {{ UnsafeField "IPName" .IPName }}
+            {{ UnsafeField "OKPO" .OKPO }}
+            {{ UnsafeField "OKATO" .OKATO }}
+            {{ UnsafeField "CloseDate" .CloseDate }}
+            {{ UnsafeField "FNS" .FNS }}
+            {{ UnsafeField "FNSDate" .FNSDate }}
+            {{ UnsafeField "PFRNum" .PFRNum }}
+            {{ UnsafeField "PFRDate" .PFRDate }}
+            {{ UnsafeField "OKVED" .OKVED }}
+            {{ UnsafeField "OKVEDName" .OKVEDName }}
+            {{ UnsafeField "IPStatus" .IPStatus }}
+            {{ UnsafeField "OKТМO" .OKТМO }}
+            {{ UnsafeField "FSSNum" .FSSNum }}
+            {{ UnsafeField "FSSDate" .FSSDate }}
+            {{ UnsafeField "KPP" .KPP }}
+            {{ UnsafeField "Capital" .Capital }}
+            {{ UnsafeField "HeadTitle" .HeadTitle }}
+            {{ UnsafeField "HeadINN" .HeadINN }}
+            {{ UnsafeField "HeadDate" .HeadDate }}
+            {{ UnsafeField "Owner" .Owner }}
+            {{ UnsafeField "OwnerINN" .OwnerINN }}
+            {{ UnsafeField "OwnerPercent" .OwnerPercent }}
+            {{ UnsafeField "OwnerTotal" .OwnerTotal }}
+            {{ UnsafeField "OwnerDate" .OwnerDate }}
+            {{ UnsafeField "UnrelialbleAddress" .UnrelialbleAddress }}
+            {{ UnsafeField "other1" .other1 }}
+            {{ UnsafeField "other2" .other2 }}
+            {{ UnsafeField "other3" .other3 }}
+            {{ UnsafeField "other4" .other4 }}
+            {{ UnsafeField "other5" .other5 }}
+            {{ UnsafeField "other6" .other6 }}
+            {{ UnsafeField "other7" .other7 }}
+            {{ UnsafeField "other8" .other8 }}
+            {{ UnsafeField "other9" .other9 }}
+            {{ UnsafeField "other10" .other10 }}
+            {{ UnsafeField "other11" .other11 }}
+            {{ UnsafeField "other12" .other12 }}
+            {{ UnsafeField "other13" .other13 }}
+            {{ UnsafeField "other14" .other14 }}
+            {{ UnsafeField "other15" .other15 }}
+            {{ UnsafeField "other16" .other16 }}
+            {{ UnsafeField "other17" .other17 }}
+            {{ UnsafeField "other18" .other18 }}
+            {{ UnsafeField "other19" .other19 }}
+            {{ UnsafeField "other20" .other20 }}
+            {{ UnsafeField "other21" .other21 }}
+            {{ UnsafeField "other22" .other22 }}
+            {{ UnsafeField "other23" .other23 }}
+            {{ UnsafeField "other24" .other24 }}
+            {{ UnsafeField "other25" .other25 }}
+            {{ UnsafeField "other26" .other26 }}
+            {{ UnsafeField "other27" .other27 }}
+            {{ UnsafeField "other28" .other28 }}
+            {{ UnsafeField "other29" .other29 }}
+            {{ UnsafeField "other30" .other30 }}
+            {{ UnsafeField "other31" .other31 }}
+            {{ UnsafeField "other32" .other32 }}
+            {{ UnsafeField "other33" .other33 }}
+            {{ UnsafeField "other34" .other34 }}
+            {{ UnsafeField "other35" .other35 }}
+            {{ UnsafeField "other36" .other36 }}
+            {{ UnsafeField "other37" .other37 }}
+            {{ UnsafeField "other38" .other38 }}
+            {{ UnsafeField "other39" .other39 }}
+            {{ UnsafeField "other40" .other40 }}
+            {{ UnsafeField "other41" .other41 }}
+            {{ UnsafeField "other42" .other42 }}
+            {{ UnsafeField "other43" .other43 }}
+            {{ UnsafeField "other44" .other44 }}
+            {{ UnsafeField "other45" .other45 }}
+            {{ UnsafeField "other46" .other46 }}
+            {{ UnsafeField "other47" .other47 }}
+            {{ UnsafeField "other48" .other48 }}
+            {{ UnsafeField "other49" .other49 }}
+            {{ UnsafeField "other50" .other50 }}
+            {{ UnsafeField "other51" .other51 }}
+            {{ UnsafeField "other52" .other52 }}
+            {{ UnsafeField "other53" .other53 }}
+            {{ UnsafeField "other54" .other54 }}
+            {{ UnsafeField "other55" .other55 }}
+            {{ UnsafeField "other56" .other56 }}
+            {{ UnsafeField "other57" .other57 }}
+            {{ UnsafeField "other58" .other58 }}
+            {{ UnsafeField "other59" .other59 }}
+            {{ UnsafeField "other60" .other60 }}
+            {{ UnsafeField "other61" .other61 }}
+            {{ UnsafeField "other62" .other62 }}
+            {{ UnsafeField "other63" .other63 }}
+            {{ UnsafeField "other64" .other64 }}
+            {{ UnsafeField "other65" .other65 }}
+            {{ UnsafeField "other66" .other66 }}
+            {{ UnsafeField "other67" .other67 }}
+            {{ UnsafeField "other68" .other68 }}
+            {{ UnsafeField "other69" .other69 }}
+            {{ UnsafeField "other70" .other70 }}
+            {{ UnsafeField "other71" .other71 }}
+            {{ UnsafeField "other72" .other72 }}
+            {{ UnsafeField "other73" .other73 }}
+            {{ UnsafeField "other74" .other74 }}
+            {{ UnsafeField "other75" .other75 }}
+            {{ UnsafeField "other76" .other76 }}
+            {{ UnsafeField "other77" .other77 }}
+            {{ UnsafeField "other78" .other78 }}
+            {{ UnsafeField "other79" .other79 }}
+            {{ UnsafeField "other80" .other80 }}
+            {{ UnsafeField "other81" .other81 }}
+            {{ UnsafeField "other82" .other82 }}
+            {{ UnsafeField "other83" .other83 }}
+            {{ UnsafeField "other84" .other84 }}
+            {{ UnsafeField "other85" .other85 }}
+            {{ UnsafeField "other86" .other86 }}
+            {{ UnsafeField "other87" .other87 }}
+            {{ UnsafeField "other88" .other88 }}
+            {{ UnsafeField "other89" .other89 }}
+            {{ UnsafeField "other90" .other90 }}
+            {{ UnsafeField "other91" .other91 }}
+            {{ UnsafeField "other92" .other92 }}
+            {{ UnsafeField "other93" .other93 }}
+            {{ UnsafeField "other94" .other94 }}
+            {{ UnsafeField "other95" .other95 }}
+            {{ UnsafeField "other96" .other96 }}
+            {{ UnsafeField "other97" .other97 }}
+            {{ UnsafeField "other98" .other98 }}
+            {{ UnsafeField "other99" .other99 }}
+            {{ UnsafeField "other100" .other100 }}
+            {{ UnsafeField "OKOGU" .OKOGU }}
+            {{ UnsafeField "OKOPF" .OKOPF }}
+            {{ UnsafeField "OKFS" .OKFS }}
+            {{ UnsafeField "Location" .Location }}
+          {{- end }}
+      status_code:
+        non_standard: true
+        format: json
+        property_path: code
+        detail_property_path: message
+    upstream:
+      provider: main-service
+      keydb:
+        enabled: true
+        scope: listorg_phone
+        ttl: 24h0m0s
+        ttl_failed: 30s
+      rabbitmq:
+        enabled: true
+        scope: listorg_phone
+      tcp:
+        template:
+          query: |
+            GET /2.00/handler.php?{{ QueryArguments
+            "auth" (Env "MODULE_MAIN_SERVICE_ACCESS_TOKEN")
+            "plugin" "ListOrgPlugin"
+            "checktype" "listorg_phone"
+            "phone" (trimPrefix "+" .phone)
+            }} HTTP/1.1
+    produce:
+      items:
+        properties:
+          Capital:
+            type: string
+          CloseDate:
+            type: string
+          FNS:
+            type: string
+          FNSDate:
+            type: string
+          FSSDate:
+            type: string
+          FSSNum:
+            type: string
+          FullName:
+            type: string
+          Head:
+            type: string
+          HeadDate:
+            type: string
+          HeadINN:
+            type: string
+          HeadTitle:
+            type: string
+          IPName:
+            type: string
+          IPStatus:
+            type: string
+          IPType:
+            type: string
+          KPP:
+            type: string
+          Location:
+            type: string
+          Name:
+            type: string
+          OGRN:
+            type: string
+          OKATO:
+            type: string
+          OKFS:
+            type: string
+          OKOGU:
+            type: string
+          OKOPF:
+            type: string
+          OKPO:
+            type: string
+          OKVED:
+            type: string
+          OKVEDName:
+            type: string
+          OKТМO:
+            type: string
+          OrgFullName:
+            type: string
+          OrgName:
+            type: string
+          OrgStatus:
+            type: string
+          Owner:
+            type: string
+          OwnerDate:
+            type: string
+          OwnerINN:
+            type: string
+          OwnerPercent:
+            type: string
+          OwnerTotal:
+            type: string
+          PFRDate:
+            type: string
+          PFRNum:
+            type: string
+          RegDate:
+            type: string
+          Type:
+            type: string
+          UnrelialbleAddress:
+            type: string
+          address:
+            type: string
+          inn:
+            type: string
+          other1:
+            type: string
+          other2:
+            type: string
+          other3:
+            type: string
+          other4:
+            type: string
+          other5:
+            type: string
+          other6:
+            type: string
+          other7:
+            type: string
+          other8:
+            type: string
+          other9:
+            type: string
+          other10:
+            type: string
+          other11:
+            type: string
+          other12:
+            type: string
+          other13:
+            type: string
+          other14:
+            type: string
+          other15:
+            type: string
+          other16:
+            type: string
+          other17:
+            type: string
+          other18:
+            type: string
+          other19:
+            type: string
+          other20:
+            type: string
+          other21:
+            type: string
+          other22:
+            type: string
+          other23:
+            type: string
+          other24:
+            type: string
+          other25:
+            type: string
+          other26:
+            type: string
+          other27:
+            type: string
+          other28:
+            type: string
+          other29:
+            type: string
+          other30:
+            type: string
+          other31:
+            type: string
+          other32:
+            type: string
+          other33:
+            type: string
+          other34:
+            type: string
+          other35:
+            type: string
+          other36:
+            type: string
+          other37:
+            type: string
+          other38:
+            type: string
+          other39:
+            type: string
+          other40:
+            type: string
+          other41:
+            type: string
+          other42:
+            type: string
+          other43:
+            type: string
+          other44:
+            type: string
+          other45:
+            type: string
+          other46:
+            type: string
+          other47:
+            type: string
+          other48:
+            type: string
+          other49:
+            type: string
+          other50:
+            type: string
+          other51:
+            type: string
+          other52:
+            type: string
+          other53:
+            type: string
+          other54:
+            type: string
+          other55:
+            type: string
+          other56:
+            type: string
+          other57:
+            type: string
+          other58:
+            type: string
+          other59:
+            type: string
+          other60:
+            type: string
+          other61:
+            type: string
+          other62:
+            type: string
+          other63:
+            type: string
+          other64:
+            type: string
+          other65:
+            type: string
+          other66:
+            type: string
+          other67:
+            type: string
+          other68:
+            type: string
+          other69:
+            type: string
+          other70:
+            type: string
+          other71:
+            type: string
+          other72:
+            type: string
+          other73:
+            type: string
+          other74:
+            type: string
+          other75:
+            type: string
+          other76:
+            type: string
+          other77:
+            type: string
+          other78:
+            type: string
+          other79:
+            type: string
+          other80:
+            type: string
+          other81:
+            type: string
+          other82:
+            type: string
+          other83:
+            type: string
+          other84:
+            type: string
+          other85:
+            type: string
+          other86:
+            type: string
+          other87:
+            type: string
+          other88:
+            type: string
+          other89:
+            type: string
+          other90:
+            type: string
+          other91:
+            type: string
+          other92:
+            type: string
+          other93:
+            type: string
+          other94:
+            type: string
+          other95:
+            type: string
+          other96:
+            type: string
+          other97:
+            type: string
+          other98:
+            type: string
+          other99:
+            type: string
+          other100:
+            type: string
+          phone:
+            type: string
+        type: object
+      type: array

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: grafana
+description: grafana
+type: application
+version: '1721727302'
+appVersion: '1721727302'

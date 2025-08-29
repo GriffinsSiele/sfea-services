@@ -1,0 +1,10 @@
+definitions:
+  schema:
+    phone:
+      type: object
+      properties:
+        phone:
+          type: string
+          format: tel
+      required:
+        - phone

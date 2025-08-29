@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}-tls
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "chart.name" . }}-tls
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: web
+  ports:
+    - name: tls
+      port: {{ .Values.tls.service.port }}
+      targetPort: tls
+  type: {{ .Values.service.type }}

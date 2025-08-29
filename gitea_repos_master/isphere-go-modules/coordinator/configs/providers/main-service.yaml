@@ -1,0 +1,5 @@
+providers:
+  main-service:
+    endpoint: "$MODULE_MAIN_SERVICE_ENDPOINT"
+  main-service-foreign:
+    endpoint: "$MODULE_MAIN_SERVICE_FOREIGN_ENDPOINT"

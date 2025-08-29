@@ -1,0 +1,84 @@
+kind: Deployment
+#StatefulSet
+
+replicaCount: 7
+
+image:
+  repository: ${GIT_HTTP_INTERNAL_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the latest.
+  tag: ${IMAGE_TAG}
+
+command:
+  - python
+args:
+  - start_auth.py
+
+
+resources:
+  limits:
+    cpu: 450m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 250Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+
+service:
+  enabled: false
+
+
+nodeSelector: {}
+
+env:
+- name: KEYDB_QUEUE
+  value: ${KEYDB_QUEUE}
+- name: RABBITMQ_QUEUE
+  value: ${RABBITMQ_QUEUE}
+- name: DEFAULT_FOLDER
+  value: ${DEFAULT_FOLDER}
+- name: IMPLICITLY_WAIT
+  value: ${IMPLICITLY_WAIT}
+- name: EXPLICIT_WAIT_FOR_LINK
+  value: ${EXPLICIT_WAIT_FOR_LINK}
+- name: EXPLICIT_WAIT
+  value: ${EXPLICIT_WAIT}
+- name: MULTIPLE_WAIT
+  value: ${MULTIPLE_WAIT}
+- name: MAX_LINKS_ON_SCREEN
+  value: ${MAX_LINKS_ON_SCREEN}
+- name: TG_BOT_TOKEN
+  value: ${TG_BOT_TOKEN}
+- name: TG_CHAT_ID
+  value: ${TG_CHAT_ID}
+- name: SENTRY_URL
+  value: ${SENTRY_URL}
+- name: CAPTCHA_PROVIDER
+  value: ${CAPTCHA_PROVIDER}
+- name: CHROME_VERSION
+  value: ${CHROME_VERSION}
+
+envFrom:
+- secretRef:
+    name: settings-kube

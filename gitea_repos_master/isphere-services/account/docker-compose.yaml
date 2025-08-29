@@ -1,0 +1,290 @@
+version: '3.9'
+
+x-hydra-environment:
+  &hydra-environment
+  DEV: 'true'
+  DSN: 'postgres://hydra:hydra@postgres-hydra:5432/hydra'
+  LOG_LEAK_SENSITIVE_VALUES: 'true'
+  LOG_LEVEL: 'info'
+  ORY_SDK_URL: 'http://localhost:4445'
+  SECRETS_COOKIE: 'EeNGsCJaKes8zrrK6yDZByqKdkWzM3tx'
+  SECRETS_SYSTEM: '9gWMtJ8bNzCPBp6bmxU4HSXbTfvjAenK'
+  TRACING_PROVIDER: 'jaeger'
+  TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS: 'jaeger:6831'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL: 'http://jaeger:5778/sampling'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_TYPE: 'const'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_VALUE: '1'
+  URLS_CONSENT: 'http://localhost:3000/consent'
+  URLS_ERROR: 'http://localhost:3000/error'
+  URLS_LOGIN: 'http://localhost:3000/login'
+  URLS_LOGOUT: 'http://localhost:3000/logout'
+  URLS_POST_LOGOUT_REDIRECT: 'http://localhost:3000'
+  URLS_SELF_ADMIN: 'http://localhost:4445'
+  URLS_SELF_ISSUER: 'http://localhost:4444'
+  URLS_SELF_PUBLIC: 'http://localhost:4444'
+
+x-kratos-environment:
+  &kratos-environment
+  DEV: 'true'
+  CIPHERS_ALGORITHM: 'xchacha20-poly1305'
+  COURIER_SMTP_CONNECTION_URI: 'smtps://test:test@mailslurper:1025/?skip_ssl_verify=true'
+  DSN: 'postgres://kratos:kratos@postgres-kratos:5432/kratos'
+  HASHERS_ALGORITHM: 'bcrypt'
+  HASHERS_BCRYPT_COST: '8'
+  IDENTITY_DEFAULT_SCHEMA_ID: 'default'
+  IDENTITY_SCHEMAS_0_ID: 'default'
+  IDENTITY_SCHEMAS_0_URL: 'file:///etc/config/kratos/identity.schema.json'
+  KRATOS_ADMIN_URL: 'http://localhost:4434'
+  LOG_FORMAT: 'text'
+  LOG_LEAK_SENSITIVE_VALUES: 'true'
+  LOG_LEVEL: 'info'
+  OAUTH2_PROVIDER_URL: 'http://hydra:4445'
+  SECRETS_CIPHER_0: 'HrTHPnQRmLewk7D5PLpdw6TCT6kVZtJg'
+  SECRETS_COOKIE_0: 'UPmdP8PwjsmAX6nk777hujt4jQGCnNzy'
+  SECRETS_DEFAULT_0: 'ajSgttg8kxwR92gwUvHvTv9xVSJL7saR'
+  SELFSERVICE_ALLOWED_RETURN_URLS_0: 'http://localhost:3000'
+  SELFSERVICE_ALLOWED_RETURN_URLS_1: 'http://localhost:8000'
+  SELFSERVICE_DEFAULT_BROWSER_RETURN_URL: 'http://localhost:3000'
+  SELFSERVICE_FLOWS_ERROR_UI_URL: 'http://localhost:3000/error'
+  SELFSERVICE_FLOWS_LOGIN_LIFESPAN: '10m'
+  SELFSERVICE_FLOWS_LOGIN_UI_URL: 'http://localhost:3000/login'
+  SELFSERVICE_FLOWS_LOGOUT_AFTER_DEFAULT_BROWSER_RETURN_URL: 'http://localhost:3000'
+  SELFSERVICE_FLOWS_RECOVERY_ENABLED: 'true'
+  SELFSERVICE_FLOWS_RECOVERY_UI_URL: 'http://localhost:3000/recovery'
+  SELFSERVICE_FLOWS_RECOVERY_USE: 'code'
+  SELFSERVICE_FLOWS_REGISTRATION_AFTER_PASSWORD_HOOKS_0_HOOK: 'session'
+  SELFSERVICE_FLOWS_REGISTRATION_AFTER_PASSWORD_HOOKS_1_HOOK: 'show_verification_ui'
+  SELFSERVICE_FLOWS_REGISTRATION_LIFESPAN: '10m'
+  SELFSERVICE_FLOWS_REGISTRATION_UI_URL: 'http://localhost:3000/registration'
+  SELFSERVICE_FLOWS_SETTINGS_PRIVILEGED_SESSION_MAX_AGE: '15m'
+  SELFSERVICE_FLOWS_SETTINGS_REQUIRED_AAL: 'highest_available'
+  SELFSERVICE_FLOWS_SETTINGS_UI_URL: 'http://localhost:3000/settings'
+  SELFSERVICE_FLOWS_VERIFICATION_AFTER_DEFAULT_BROWSER_RETURN_URL: 'http://localhost:3000'
+  SELFSERVICE_FLOWS_VERIFICATION_ENABLED: 'true'
+  SELFSERVICE_FLOWS_VERIFICATION_UI_URL: 'http://localhost:3000/verification'
+  SELFSERVICE_FLOWS_VERIFICATION_USE: 'code'
+  SELFSERVICE_METHODS_CODE_ENABLED: 'true'
+  SELFSERVICE_METHODS_LINK_ENABLED: 'true'
+  SELFSERVICE_METHODS_LOOKUP_SECRET_ENABLED: 'true'
+  SELFSERVICE_METHODS_PASSWORD_ENABLED: 'true'
+  SELFSERVICE_METHODS_TOTP_CONFIG_ISSUER: 'Kratos'
+  SELFSERVICE_METHODS_TOTP_ENABLED: 'true'
+  SERVE_ADMIN_BASE_URL: 'http://kratos:4434'
+  SERVE_PUBLIC_BASE_URL: 'http://localhost:4433'
+  SERVE_PUBLIC_CORS_ENABLED: 'true'
+  TRACING_PROVIDER: 'jaeger'
+  TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS: 'jaeger:6831'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL: 'http://jaeger:5778/sampling'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_TYPE: 'const'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_VALUE: '1'
+
+x-oathkeeper-environment:
+  &oathkeeper-environment
+  ACCESS_RULES_MATCHING_STRATEGY: regexp
+  ACCESS_RULES_REPOSITORIES_0: 'file:///etc/config/oathkeeper/rules.json'
+  AUTHENTICATORS_COOKIE_SESSION_CONFIG_CHECK_SESSION_URL: 'http://kratos:4433/sessions/whoami'
+  AUTHENTICATORS_COOKIE_SESSION_CONFIG_EXTRA_FROM: '@this'
+  AUTHENTICATORS_COOKIE_SESSION_CONFIG_ONLY_0: 'ory_kratos_session'
+  AUTHENTICATORS_COOKIE_SESSION_CONFIG_PRESERVE_PATH: 'true'
+  AUTHENTICATORS_COOKIE_SESSION_CONFIG_SUBJECT_FROM: 'identity.id'
+  AUTHENTICATORS_COOKIE_SESSION_ENABLED: 'true'
+  AUTHENTICATORS_NOOP_ENABLED: 'true'
+  AUTHENTICATORS_OAUTH2_CLIENT_CREDENTIALS_CONFIG_TOKEN_URL: 'http://hydra:4444/oauth2/token'
+  AUTHENTICATORS_OAUTH2_CLIENT_CREDENTIALS_ENABLED: 'true'
+  AUTHENTICATORS_OAUTH2_INTROSPECTION_CONFIG_INTROSPECTION_URL: 'http://hydra:4445/admin/oauth2/introspect'
+  AUTHENTICATORS_OAUTH2_INTROSPECTION_ENABLED: 'true'
+  AUTHORIZERS_ALLOW_ENABLED: 'true'
+  DEV: 'true'
+  LOG_LEAK_SENSITIVE_VALUES: 'true'
+  LOG_LEVEL: 'info'
+  MUTATORS_ID_TOKEN_CONFIG_CLAIMS: '{"session": {{ .Extra | toJson }}}'
+  MUTATORS_ID_TOKEN_CONFIG_ISSUER_URL: 'http://oathkeeper:4456'
+  MUTATORS_ID_TOKEN_CONFIG_JWKS_URL: 'file:///etc/config/oathkeeper/id_token.jwks.json'
+  MUTATORS_ID_TOKEN_ENABLED: 'true'
+  MUTATORS_HEADER_ENABLED: 'true'
+  MUTATORS_HEADER_CONFIG: '{"headers": {"X-User": "{{ print .Subject }}"}}'
+  MUTATORS_NOOP_ENABLED: 'true'
+  TRACING_PROVIDER: 'jaeger'
+  TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS: 'jaeger:6831'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL: 'http://jaeger:5778/sampling'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_TYPE: 'const'
+  TRACING_PROVIDERS_JAEGER_SAMPLING_VALUE: '1'
+
+services:
+  app:
+    depends_on:
+      hydra:
+        condition: service_healthy
+      kratos:
+        condition: service_healthy
+      oathkeeper:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app
+      - root-data:/root
+    healthcheck:
+      test: nc -z localhost 3000
+      interval: 5s
+      retries: 5
+
+  hydra:
+    depends_on:
+      hydra-migrations:
+        condition: service_completed_successfully
+      postgres-hydra:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    image: oryd/hydra
+    environment:
+      <<: *hydra-environment
+    ports:
+      - '4444:4444' # public
+      - '4445:4445' # admin
+    healthcheck:
+      test: nc -z localhost 4444
+      interval: 5s
+      retries: 5
+
+  hydra-migrations:
+    depends_on:
+      postgres-hydra:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    image: oryd/hydra
+    environment:
+      <<: *hydra-environment
+    command: migrate sql 'postgres://hydra:hydra@postgres-hydra:5432/hydra' --yes
+
+  kratos:
+    depends_on:
+      kratos-migrations:
+        condition: service_completed_successfully
+      postgres-kratos:
+        condition: service_healthy
+      mailslurper:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    image: oryd/kratos
+    environment:
+      <<: *kratos-environment
+    command: serve --dev --watch-courier
+    ports:
+      - '4433:4433' # public
+      - '4434:4434' # admin
+    volumes:
+      - ./config/packages/kratos/email-password:/etc/config/kratos:ro
+    healthcheck:
+      test: nc -z localhost 4433
+      interval: 5s
+      retries: 5
+
+  kratos-migrations:
+    depends_on:
+      postgres-kratos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    image: oryd/kratos
+    environment:
+      <<: *kratos-environment
+    command: migrate sql -e --yes
+    volumes:
+      - ./config/packages/kratos/email-password:/etc/config/kratos:ro
+
+  oathkeeper:
+    image: oryd/oathkeeper
+    depends_on:
+      jaeger:
+        condition: service_healthy
+    environment:
+      <<: *oathkeeper-environment
+    ports:
+      - '4455:4455' # proxy
+      - '4456:4456' # api
+    volumes:
+      - ./config/packages/oathkeeper:/etc/config/oathkeeper:ro
+    healthcheck:
+      test: nc -z localhost 4455
+      interval: 5s
+      retries: 5
+
+  postgres-hydra:
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: hydra
+      POSTGRES_USER: hydra
+      POSTGRES_PASSWORD: hydra
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-hydra-data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U hydra
+      interval: 5s
+      retries: 5
+
+  postgres-kratos:
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: kratos
+      POSTGRES_USER: kratos
+      POSTGRES_PASSWORD: kratos
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-kratos-data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U kratos
+      interval: 5s
+      retries: 5
+
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    healthcheck:
+      test: nc -z localhost 4436
+      interval: 5s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    ports:
+      - '14268:14268'
+      - '14269:14269'
+      - '16686:16686' # ui
+      - '16687:16687'
+      - '5775:5775/udp'
+      - '5778:5778'
+      - '6831:6831/udp'
+      - '6832:6832/udp'
+      - '9411:9411'
+    healthcheck:
+      test: nc -z localhost 14269
+      interval: 5s
+      retries: 5
+
+  testing-nginx:
+    image: openresty/openresty:alpine
+    depends_on:
+      app:
+        condition: service_healthy
+    volumes:
+      - ./config/packages/testing-nginx/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - '8000:8000'
+
+volumes:
+  postgres-hydra-data: ~
+  postgres-kratos-data: ~
+  root-data: ~

@@ -1,0 +1,12 @@
+.idea/
+/config/
+/files/
+/logs/
+/public/*.lock
+!/public/composer.lock
+/public/*.log
+/public/*.txt
+/public/google/
+/public/skypephp/
+/public/vendor/
+/tmp/

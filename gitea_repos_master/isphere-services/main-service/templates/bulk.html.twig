@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <h5 class="card-header">Список реестров</h5>
+                    <div class="card-body">
+                        {{ form(form) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <h5 class="card-header">Обработка реестра</h5>
+                    <div class="card-body">
+                        {{ form(uploadForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Название файла</th>
+                            <th>Время создания</th>
+                            <th>Время обработки</th>
+                            <th>Пользователь</th>
+                            <th>Источники</th>
+                            <th>Строк</th>
+                            <th>Статус</th>
+                            <th>Комментарии</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in result %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('bulk_status', { id: item.id }) }}">
+                                        {{ item.filename }}
+                                    </a>
+                                </td>
+                                <td>{{ item.createdAt | date }}</td>
+                                <td>{{ item.processedAt | date }}</td>
+                                <td>
+                                    {% set args = app.request.query.all | merge({ user: item.user_id }) %}
+                                    <a href="{{ path('bulk', args) }}">
+                                        {{ item.user_login }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% for source in (item.sources | split(',') | sort) %}
+                                        {%- if not loop.first -%}, {% endif -%}
+                                        {%- set value = non_strict_choice_value(source, form.source.vars.choices) -%}
+                                        {%- if value is not null -%}
+                                            {%- set args = app.request.query.all | merge({ source: value }) -%}
+                                            <a href="{{ path('bulk', args) }}">{{ source }}</a>
+                                        {%- else -%}
+                                            <del class="text-muted">{{ source }}</del>
+                                        {%- endif -%}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ item.processedRows | default(item.totalRows | default(0)) }}</td>
+                                <td class="text-nowrap">
+                                    {% include 'bulk_item_status.html.twig' with { status: item.status } %}
+                                </td>
+                                <td>{{ item.resultsNote }}</td>
+                                <td>
+                                    {% if app.user.accessArea > 0 %}
+                                        <a href="{{ path('bulk_request', { id: item.id }) }}">Скачать реестр</a>
+                                    {% endif %}
+
+                                    {% if item.status == 1 %}
+                                        <a href="/bulkresult.php?id={{ item.id }}"
+                                           target="_blank">Скачать результаты</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% include 'pagination.html.twig' with { route: 'bulk' } %}
+        </div>
+    </div>
+{% endblock %}

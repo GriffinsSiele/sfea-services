@@ -1,0 +1,6 @@
+apiVersion: v2
+name: "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+description: iSphere Module Shodan
+type: application
+version: "2.0.0"
+appVersion: "${DRONE_COMMIT_SHA}"

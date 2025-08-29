@@ -1,0 +1,43 @@
+- name: users-source
+  databaseServerID: 100701
+  tables:
+    - isphere.Access
+    - isphere.AccessRule
+    - isphere.AccessSource
+    - isphere.Client
+    - isphere.ClientUsageLimits
+    - isphere.Message
+    - isphere.Phone
+    - isphere.SystemUsers
+    - isphere.Tariff
+    - isphere.UserSourcePrice
+    - isphere.UserUsageLimits
+
+- name: config-source
+  databaseServerID: 100702
+  tables:
+    - isphere.CheckType
+    - isphere.Field
+    - isphere.HiddenAccessField
+    - isphere.RequestForm
+    - isphere.RequestFormField
+    - isphere.RequestFormFieldRelation
+    - isphere.ResponseObject
+    - isphere.Site
+    - isphere.migrations
+    - isphere.proxy
+    - isphere.session
+    - isphere.session_getcontact
+    - isphere.session_gosuslugi
+    - isphere.source
+    - isphere.sourceaccess
+
+- name: history-source
+  databaseServerID: 100703
+  tables:
+    - isphere.Bulk
+    - isphere.RequestDate
+    - isphere.RequestNew
+    - isphere.RequestSource
+    - isphere.ResponseDate
+    - isphere.ResponseNew

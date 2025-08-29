@@ -1,0 +1,6 @@
+services:
+  rabbitmq:
+    addr: "$RABBITMQ_ADDR"
+    username: "$RABBITMQ_USERNAME"
+    password: "$RABBITMQ_PASSWORD"
+    vhost: "$RABBITMQ_VIRTUAL_HOST"

@@ -1,0 +1,7 @@
+script_dir: /root/backup_script
+
+src_backup_vm_script: ./templates/backup_vm.sh.j2
+dest_backup_vm_script: /root/backup_script/backup_vm.sh
+
+chat_id: ''
+api_token: ''

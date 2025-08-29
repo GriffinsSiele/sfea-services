@@ -1,0 +1,117 @@
+x-s3-params: &s3-params
+  endpoint: http://minio.i-sphere.local:9000
+  region: ru-central-1
+  secretAccessKey: 0WUVD5IXnldpygzItkCAF9zoUXpwZ2ePlNaqE6i3
+  accessKeyId: //revjMYNbfWjGi9HlhRd8
+  s3ForcePathStyle: true
+  insecure: true
+
+global:
+  dnsService: rke2-coredns-rke2-coredns
+
+deploymentMode: SimpleScalable
+
+loki:
+  auth_enabled: false
+
+  schemaConfig:
+    configs:
+      - from: 2024-07-17
+        object_store: s3
+        store: tsdb
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+
+  ingester:
+    chunk_encoding: snappy
+  tracing:
+    enabled: false
+  querier:
+    max_concurrent: 4
+
+  resources:
+    limits:
+      cpu: 1100m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1200Mi
+
+  storage:
+    bucketNames:
+      chunks: loki-chunks
+      ruler: loki-ruler
+      admin: loki-admin
+    type: s3
+    s3:
+      <<: *s3-params
+
+  limits_config:
+    ingestion_burst_size_mb: 64
+    ingestion_rate_mb: 64
+    max_concurrent_tail_requests: 100
+    max_global_streams_per_user: 0
+    max_label_names_per_series: 100
+    max_query_series: 100000
+    max_streams_per_user: 0
+    per_stream_rate_limit: 64MB
+    per_stream_rate_limit_burst: 64MB
+  limits_config:
+    split_queries_by_interval: 24h
+  frontend:
+    max_outstanding_per_tenant: 1024
+  commonConfig:
+    replication_factor: 1
+
+gateway:
+  service:
+    type: LoadBalancer
+    nginxConfig:
+      enableIPv6: false
+
+backend:
+  replicas: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+read:
+  replicas: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+write:
+  replicas: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+
+singleBinary:
+  replicas: 0
+ingester:
+  replicas: 0
+querier:
+  replicas: 0
+queryFrontend:
+  replicas: 0
+queryScheduler:
+  replicas: 0
+distributor:
+  replicas: 0
+compactor:
+  replicas: 0
+indexGateway:
+  replicas: 0
+bloomCompactor:
+  replicas: 0
+bloomGateway:
+  replicas: 0
+
+test:
+  enabled: false
+lokiCanary:
+  enabled: false

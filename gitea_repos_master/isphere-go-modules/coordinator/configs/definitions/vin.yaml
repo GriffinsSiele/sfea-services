@@ -1,0 +1,9 @@
+definitions:
+  schema:
+    vin:
+      type: object
+      properties:
+        phone:
+          type: string
+      required:
+        - vin

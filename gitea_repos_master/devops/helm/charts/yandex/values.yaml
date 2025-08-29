@@ -1,0 +1,15 @@
+secret:
+  create: true
+  name: csi-s3-secret
+  accessKey: revjMYNbfWjGi9HlhRd8
+  secretKey: 0WUVD5IXnldpygzItkCAF9zoUXpwZ2ePlNaqE6i3
+  endpoint: http://172.16.2.224:9000
+  region: ru-central-1
+
+#secret:
+#  create: true
+#  name: csi-s3-secret
+#  accessKey: 532_admin
+#  secretKey: Haq8WQzFGdJc
+#  endpoint: https://1cloud.store:443/
+#  region: us-west-2

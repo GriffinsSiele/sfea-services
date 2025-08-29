@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "${GIT_HTTP_URL_WITH_CREDENTIALS}/api/packages/isphere-classes/pypi/simple"
+verify_ssl = false
+name = "gitea"
+
+[packages]
+requests-logic = "==23.7.0"
+queue-logic = "==10.0.7"
+worker-classes = "==16.0.18"
+putils-logic = "==10.0.0"
+python-dotenv = "==0.21.0"
+websocket-client = "==1.3.2"
+
+[dev-packages]
+parameterized = "==0.9.0"
+
+[requires]
+python_version = "3.11"

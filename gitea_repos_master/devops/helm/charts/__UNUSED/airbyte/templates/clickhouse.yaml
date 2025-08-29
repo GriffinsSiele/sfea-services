@@ -1,0 +1,215 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse-http
+  namespace: analytics
+spec:
+  type: ClusterIP
+  selector:
+    app: clickhouse
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8123
+      targetPort: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse-tcp
+  namespace: analytics
+spec:
+  type: ClusterIP
+  selector:
+    app: clickhouse
+  ports:
+    - name: tcp
+      protocol: TCP
+      port: 9000
+      targetPort: tcp
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clickhouse-env
+  namespace: analytics
+data:
+  {{- range $k, $v := .Values.clickhouse.env }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: clickhouse-secret
+  namespace: analytics
+data:
+  {{- range $k, $v := .Values.clickhouse.secrets }}
+  {{ $k }}: {{ $v | b64enc | quote }}
+  {{- end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clickhouse-config
+  namespace: analytics
+data:
+  # language=xml
+  'config-overrides.xml': |
+    <?xml version="1.0"?>
+    <clickhouse>
+      <logger>
+        <level>information</level>
+      </logger>
+    </clickhouse>
+
+  # language=xml
+  'users-overrides.xml': |
+    <?xml version="1.0"?>
+    <clickhouse>
+      <profiles>
+        <default>
+        </default>
+      </profiles>
+    </clickhouse>
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clickhouse
+  namespace: analytics
+spec:
+  selector:
+    matchLabels:
+      app: clickhouse
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: clickhouse
+    spec:
+      serviceAccountName: analytics-sa-clusteradmin
+      containers:
+        - name: clickhouse
+          image: bitnami/clickhouse:latest
+          imagePullPolicy: IfNotPresent
+          #resources:
+            #requests:
+              #memory: 26Gi
+              #cpu: 2000m
+            #limits:
+              #memory: 28Gi
+              #cpu: 4000m
+          env:
+            - name: CLICKHOUSE_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clickhouse-env
+                  key: "CLICKHOUSE_ADMIN_USER"
+            - name: CLICKHOUSE_HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: clickhouse-env
+                  key: "CLICKHOUSE_HTTP_PORT"
+            - name: CLICKHOUSE_INTERSERVER_HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: clickhouse-env
+                  key: "CLICKHOUSE_INTERSERVER_HTTP_PORT"
+            - name: CLICKHOUSE_MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: clickhouse-env
+                  key: "CLICKHOUSE_MYSQL_PORT"
+            - name: CLICKHOUSE_POSTGRESQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: clickhouse-env
+                  key: "CLICKHOUSE_POSTGRESQL_PORT"
+            - name: CLICKHOUSE_TCP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: clickhouse-env
+                  key: "CLICKHOUSE_TCP_PORT"
+            - name: CLICKHOUSE_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clickhouse-secret
+                  key: "CLICKHOUSE_ADMIN_PASSWORD"
+          ports:
+            - name: http
+              containerPort: 8123
+            - name: https
+              containerPort: 8443
+            - name: tcp
+              containerPort: 9000
+            - name: tcp-secure
+              containerPort: 9440
+            - name: keeper
+              containerPort: 2181
+            - name: keeper-secure
+              containerPort: 3181
+            - name: keeper-inter
+              containerPort: 9444
+            - name: mysql
+              containerPort: 9004
+            - name: postgresql
+              containerPort: 9005
+            - name: interserver
+              containerPort: 9009
+            - name: metrics
+              containerPort: 8001
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/clickhouse/
+            - name: config
+              mountPath: /etc/clickhouse-server/conf.d/config-overrides.xml
+              subPath: config-overrides.xml
+              readOnly: true
+            - name: config
+              mountPath: /etc/clickhouse-server/users.d/users-overrides.xml
+              subPath: users-overrides.xml
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /ping
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /ping
+          startupProbe:
+            httpGet:
+              port: http
+              path: /ping
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: clickhouse-data-pvc
+        - name: config
+          configMap:
+            name: clickhouse-config
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clickhouse-data-pvc
+  namespace: analytics
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Ti

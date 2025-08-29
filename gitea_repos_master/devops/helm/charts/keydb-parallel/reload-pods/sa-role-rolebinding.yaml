@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: keydb-reloader-sa
+  namespace: keydb 
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: keydb-reloader
+  namespace: keydb
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["delete"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: keydb-reloader-binding
+  namespace: keydb
+subjects:
+- kind: ServiceAccount
+  name: keydb-reloader-sa
+  namespace: keydb
+roleRef:
+  kind: Role
+  name: keydb-reloader
+  apiGroup: rbac.authorization.k8s.io

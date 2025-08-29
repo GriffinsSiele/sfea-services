@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "${GIT_HTTP_URL_WITH_CREDENTIALS}/api/packages/isphere-classes/pypi/simple"
+verify_ssl = false
+name = "gitea"
+
+[packages]
+worker-classes = "==16.0.18"
+requests-logic = "==23.7.0"
+mongo-client = "==10.2.1"
+fastapi = {extras = ["all"], version = "==0.110.1"}
+pydantic-settings = "==2.2.1"
+asgiref = "==3.8.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

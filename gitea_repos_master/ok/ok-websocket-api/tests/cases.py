@@ -1,0 +1,68 @@
+cases = {
+    "+79208313140": [
+        {
+            "phone_number": None,
+            "email": None,
+            "user_name": "Владимир К******",
+            "city": "Брянск",
+            "register_date": None,
+            "register_year": "2010",
+            "avatar": "https://i.mycdn.me/image?id=203578542928&t=0&plc=API&viewToken=K4WwccbClWLnsPptY7xzMQ&tkn=*pU_E6DdZ_iDUVnH8M9q_Yh6Xtgk",
+            "avatar_cropped": "data:image/webp;base64,UklGRiABAABXRUJQVlA4IBQBAADwBwCdASoyACYAP3GkyVo0rCikLVzKSpAuCWIAxQxbAVUSCGhYS/3lXdQ/1BdsjZs+JejGMP5p1ItGxltVZA9mrq4vUdvGLagA/h5HBgm4k/KJ1jQQymM2sizOWpZucO4oaz0uQm8ReUkVOGPvR5wSZelwl6xOau87d9BrbAM6kfbTJbW5OIZXvWf5UVD9KESq2Qy/Im0jdo1NK3I+tI+0HZjqzLx2oS42x00LLswLhbtMOiVPmiigjL3IAVTSWNlIV03TrxyKaz79UIlD5wF0dUMutPeijx25fiS7qLA/sr5jfgobwew5w96RXlUihPknYRGym28F8bWCV/zX3L9/ai/5X5UzS8KGSsBtJ2isjl8AAAA=",
+        }
+    ],
+    "+79206015411": [
+        {
+            "phone_number": None,
+            "email": None,
+            "user_name": "Ирина К******************",
+            "city": "Брянск",
+            "register_date": None,
+            "register_year": "2010",
+            "avatar": "https://i.mycdn.me/image?id=220078498086&t=0&plc=API&viewToken=swgj-D2WE8vCTJ_h5Q3ZWA&tkn=*XwJNdZmYGWx2D_wTV7hNif9r3fQ",
+            "avatar_cropped": "data:image/webp;base64,UklGRvAAAABXRUJQVlA4IOQAAACwBwCdASouADIAP3GuzF00rik5pWzLMC4JYwAAneqYPWtw1An7Z0RfIqZMFGkhq0TAUO5pfKt4BCMGlJ0xb9GZ5H2LxmvgAP7r2egPtMDMZialSBJiEteU5SaOViFWBFwQGt+X2reJwke4sYLTc2HlqxBXEgIdauy97o9fZQWwnHaw2eb3PJ+1dbeDNaQq34rnO0DZw58L2FsKPFHCVAoxlbzpnU7bDrzqsR6vMCtm8SvkQ52yrnrJhpFPdR/S4UIgJoKiv5TgmP5uJNlRv+JcRnTzNsjSBG+C6gdgFixIFbGeAAA=",
+        },
+        {
+            "phone_number": None,
+            "email": "g.***@mail.ru",
+            "user_name": "♥ღ♥ღ♥GALATEA ♥****",
+            "city": "Брянск",
+            "register_date": None,
+            "register_year": "2009",
+            "avatar": "https://i.mycdn.me/image?id=857388625559&t=3&plc=API&viewToken=J7bmasilRXSdT7HpKCzwDA&tkn=*eIdt0UKTSaNCEc1bifapf_55kmo",
+            "avatar_cropped": "data:image/webp;base64,UklGRhoBAABXRUJQVlA4IA4BAADQCACdASoyACIAP2WkvlizLSYjsBquqmAsiWQAy2gOeMIures4yF9wLlSarlaq2Y9Hs8cEo+z0sS/lM/aIcirZP62mEZ2BTQk0xokry9SwAP524f81KLbNzKohzFah08NuH673GUb/YBhtKR+i3cO7/TDttLRR2b8SIxte4OvxCWN4QjCEPfOJmxhX3h/TAIRZOvaZcIa9pHDlF0kAmnjWTjxk8WZbuxkQkpHfHtQqn8YVUqt1t0DVvdYqZ7w+CSvz8mteNzkbdzC7UUQRiBnykKfjTGTcPXwHRJ8GFb4JjanD+6IuDocLeIaIBXoG3QYJNjTdM+QqdABn81Tl4NxuvHmFgbL4VwOjBC0z8AA=",
+        },
+    ],
+    "+79204896136": [
+        {
+            "phone_number": None,
+            "email": "al***@mail.ru",
+            "user_name": "Александр К********",
+            "city": "Первомайск",
+            "register_date": None,
+            "register_year": "2010",
+            "avatar": "https://i.mycdn.me/image?id=580077561038&t=3&plc=API&viewToken=1YFKMCKHicL7l63_MLUH9Q&tkn=*O_Qd3Ini5RY-j4xvqUGKzFvsUmA",
+            "avatar_cropped": "data:image/webp;base64,UklGRtoAAABXRUJQVlA4IM4AAACQCACdASooADIAP3GqzGE0q6glpXgLMpAuCWUA0YA3cyZr4tqq1dufnXSo2m+bSIK+9wyouN/o1om2O5sBK8a7F8+q1lxfnjzDrk8YAAD+7E4ICGURLtUDqMFPT+/L9jZ8E53hJ7++K1L9yZX5GdBV3mJdzuaDNU6wXuY4FofOaJ+9TxSEZAx7FDIg+rY0tI7F57F54OJCNbeQmnCjQdYNIPFb/outaB4j9lUxT+Qza3h4zhDV8APD8r/jqwoSrY3tZtCCEak1NObIUY4AAA==",
+        },
+        {
+            "phone_number": None,
+            "email": None,
+            "user_name": "Сергей Г******",
+            "city": "Москва",
+            "register_date": None,
+            "register_year": "2016",
+            "avatar": None,
+            "avatar_cropped": None,
+        },
+        {
+            "phone_number": None,
+            "email": None,
+            "user_name": "Сергей С********",
+            "city": "Москва",
+            "register_date": None,
+            "register_year": "2018",
+            "avatar": None,
+            "avatar_cropped": None,
+        },
+    ],
+}

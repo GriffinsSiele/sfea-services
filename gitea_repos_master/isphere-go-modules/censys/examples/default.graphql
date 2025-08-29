@@ -1,0 +1,26 @@
+query {
+    censys(ip: "78.140.221.69") {
+        __typename
+
+        ... on ip {
+            ip
+            country
+            country_code
+            province
+            city
+            timezone
+            location {
+                coords
+                text
+            }
+            asn
+            organization
+        }
+
+        ... on service {
+            service
+            port
+            transport
+        }
+    }
+}

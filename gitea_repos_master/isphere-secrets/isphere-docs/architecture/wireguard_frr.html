@@ -1,0 +1,65 @@
+<!--
+title: Mesh сеть на основе wireguard и FRR
+description: 
+published: true
+date: 2024-10-04T05:50:02.856Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-09-27T07:52:21.723Z
+-->
+
+<h1>установка пакетов</h1>
+<pre><code class="language-plaintext">apt install wireguard-tools frr</code></pre>
+<h1>настройка wg</h1>
+<h3>создаем ключи</h3>
+<pre><code class="language-plaintext">wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publickey</code></pre>
+<h3>делаем конфиг wg на сервере</h3>
+<pre><code class="language-plaintext">[Interface]
+#Name = prod-mysql-gaydary
+PrivateKey = &lt;your private key&gt;
+ListenPort = 10000
+Address = 10.10.161.0/31
+Table = off
+
+[Peer]
+#Name = testsrv
+PublicKey = &lt;peer public key&gt;
+AllowedIPs = 0.0.0.0/0</code></pre>
+<p>на каждое подключение создается отдельный конфиг</p>
+<h3>запускаем wg</h3>
+<pre><code class="language-plaintext">systemctl enable --now wg-quick@&lt;interface&gt;</code></pre>
+<h2>&nbsp;</h2>
+<h1>настройка FRR</h1>
+<p>правим файл /etc/frr/daemons</p>
+<pre><code class="language-plaintext">bgpd=yes</code></pre>
+<p>перезапускаем frr</p>
+<pre><code class="language-plaintext">systemctl restart frr</code></pre>
+<p>правим файл /etc/frr/frr.conf</p>
+<pre><code class="language-plaintext">frr version 8.4.4
+frr defaults traditional
+hostname prod-mysql-timeweb
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+! задаем уникальный номер маршрута
+router bgp 16
+! задаем id роутера равный его ip адресу
+bgp router-id 10.10.161.0
+no bgp ebgp-requires-policy
+! добавляем соседа с его id и номером маршрута
+neighbor 10.10.161.1 remote-as 161
+!
+! указываем сеть за этим роутером
+address-family ipv4 unicast
+ network 172.16.16.0/16
+exit-address-family
+exit
+!</code></pre>
+<p>опять перезапускаем frr</p>
+<pre><code class="language-plaintext">systemctl reload frr</code></pre>
+<p>маршруты должны появиться как на настраивоемом узле так и на соседях (если у соседей прописали <code>neighbor</code>)</p>
+<h1>разрешаем маршрутизацию ip трафика на узле</h1>
+<p>правим файл /etc/sysctl.conf</p>
+<pre><code class="language-plaintext">net.ipv4.ip_forward=1</code></pre>
+<p>после применяем командой</p>
+<pre><code class="language-plaintext">sysctl -p</code></pre>

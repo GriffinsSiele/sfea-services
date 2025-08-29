@@ -1,0 +1,42 @@
+security:
+  password_hashers:
+    App\Entity\SystemUser:
+      id: App\Security\Hasher\SystemUserHasher
+
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt))/
+      security: false
+
+    healthcheck:
+      pattern: ^/api/v1/healthcheck
+      security: false
+
+    login:
+      pattern: ^/api/v1/login
+      stateless: true
+      json_login:
+        check_path: /api/v1/login
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+    main:
+      lazy: true
+      provider: app.system_user_provider
+      logout:
+        path: app_logout
+      http_basic:
+        realm: Secured Area
+      jwt: ~
+      refresh_jwt:
+        check_path: /api/v1/tokens
+      entry_point: http_basic
+
+  providers:
+    app.system_user_provider:
+      id: App\Security\SystemUserProvider
+
+  access_control:
+    - { path: ^/api/v1/identity/login/\w+$, roles: PUBLIC_ACCESS }
+    - { path: ^/api/v1/(login|tokens), roles: PUBLIC_ACCESS }
+    - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

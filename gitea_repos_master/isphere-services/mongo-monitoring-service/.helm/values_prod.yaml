@@ -1,0 +1,56 @@
+kind: Deployment
+
+replicaCount: 1
+
+image:
+  repository: ${GIT_HTTP_INTERNAL_DOMAIN}/${CI_REPO}-${DRONE_COMMIT_BRANCH}
+  pullPolicy: IfNotPresent
+  tag: ${IMAGE_TAG}
+
+
+resources:
+  limits:
+    cpu: 25m
+    memory: 150Mi
+  requests:
+    cpu: 10m
+    memory: 100Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - '-c'
+      - healthtest 600
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app: ${DRONE_REPO_NAME}
+
+
+service:
+  enabled: false
+
+nodeSelector: {}
+
+env:
+- name: TELEGRAM_TOKEN_BOT
+  value: ${TELEGRAM_TOKEN_BOT}
+- name: TELEGRAM_CHAT_ID
+  value: ${TELEGRAM_CHAT_ID}
+- name: SENTRY_URL
+  value: ${SENTRY_URL}
+
+envFrom:
+- secretRef:
+    name: settings-kube

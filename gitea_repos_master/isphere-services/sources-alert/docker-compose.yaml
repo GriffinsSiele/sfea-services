@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  alert:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    dns:
+      - 10.43.0.10
+    env_file:
+      - .env
+    volumes:
+      - ./public:/var/www/crontab/sourcesAlert

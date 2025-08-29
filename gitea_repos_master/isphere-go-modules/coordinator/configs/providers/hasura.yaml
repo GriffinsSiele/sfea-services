@@ -1,0 +1,6 @@
+providers:
+  hasura:
+    endpoint: "$MODULE_HASURA_ENDPOINT"
+    headers:
+      - name: "X-Hasura-Admin-Secret"
+        value: "$MODULE_HEADERS_X_HASURA_ADMIN_SECRET"

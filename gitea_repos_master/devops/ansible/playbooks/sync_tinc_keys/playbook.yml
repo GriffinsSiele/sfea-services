@@ -1,0 +1,39 @@
+---
+
+- name: Sync tinc keys
+  hosts: '{{ target }}'
+  become: true
+
+  vars_files:
+    - ./vars/variables.yml
+
+  tasks:
+
+  - name: Install git
+    apt: 
+      name:  git
+      state: present
+      update_cache: yes
+
+  - name: Check if repository exists
+    stat:
+      path: "{{ tinc_hosts_dir }}"
+    register: repo_stat
+
+  - name: Clone git repository
+    git: 
+      repo: "{{ repo_url }}"
+      dest: "{{ tinc_hosts_dir }}"
+      key_file: "{{ private_key_file_path }}"
+      accept_hostkey: true
+    when: not repo_stat.stat.exists
+
+  - name: Pull git repository
+    git: 
+      repo: "{{ repo_url }}"
+      dest: "{{ tinc_hosts_dir }}"
+      key_file: "{{ private_key_file_path }}"
+      accept_hostkey: true
+      update: yes
+      force: yes
+    when: repo_stat.stat.exists

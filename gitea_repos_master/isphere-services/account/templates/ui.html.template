@@ -1,0 +1,22 @@
+{{ define "ui" }}
+    <form action="{{ .UI.Action }}" method="{{ .UI.Method }}">
+        <div class="mb-3">
+            {{ template "ui_nodes" Dict "Nodes" .UI.Nodes "Groups" .Groups }}
+        </div>
+
+        {{ if .UI.Messages }}
+            <div class="global-messages">
+                {{ range .UI.Messages }}
+                    <div
+                            class="alert alert-danger shadow"
+                            {{ if IsDebug }}
+                                data-debug-message-id="{{ .Id }}"
+                            {{ end }}
+                    >
+                        {{ .Text }}
+                    </div>
+                {{ end }}
+            </div>
+        {{ end }}
+    </form>
+{{ end }}

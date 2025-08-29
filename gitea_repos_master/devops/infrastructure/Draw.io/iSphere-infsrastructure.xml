@@ -1,0 +1,262 @@
+<mxfile host="Electron" modified="2024-01-19T09:37:44.361Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.18 Chrome/120.0.6099.199 Electron/28.1.2 Safari/537.36" etag="tJMI9TmkLJofxHWc4WGX" version="22.1.18" type="device">
+  <diagram name="Page-1" id="e3a06f82-3646-2815-327d-82caf3d4e204">
+    <mxGraphModel dx="6287" dy="2973" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.5" pageWidth="1169" pageHeight="827" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" style=";html=1;" />
+        <mxCell id="1" style=";html=1;" parent="0" />
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-22" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="120" y="100" width="1440" height="2270" as="geometry" />
+        </mxCell>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-23" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-22" vertex="1" connectable="0">
+          <mxGeometry x="40" y="-10" width="410" height="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="2FcHc8AuNYfymtkvsyMI-19" value="&lt;b&gt;&lt;font style=&quot;font-size: 40px;&quot;&gt;DATACENTRE&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeWidth=5;verticalAlign=bottom;fontSize=29;align=center;" parent="TgwpmsYL4EIVjYNZ3UVn-23" vertex="1">
+          <mxGeometry width="410" height="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-19" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-23" vertex="1" connectable="0">
+          <mxGeometry x="22.465753424657535" y="40.12048192771085" width="359.45205479452056" height="213.9759036144578" as="geometry" />
+        </mxCell>
+        <mxCell id="6a7d8f32e03d9370-58" value="&lt;font style=&quot;font-size: 48px;&quot;&gt;XELENT&amp;nbsp;&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=14;strokeColor=default;verticalAlign=top;rounded=1;" parent="TgwpmsYL4EIVjYNZ3UVn-19" vertex="1">
+          <mxGeometry width="359.45205479452056" height="213.9759036144578" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;FZ152&lt;/font&gt;" internal_ip="172.16.99.2&#xa;" external_ip="5.200.43.70&#xa;" domain_name="none&#xa;" hostname="152fz-storage&#xa;" location="ДЦ Xelent СПб&#xa;" description="Хранение персональных данных (xml-файлы, реестры). Веб-сервисы с проверкой прав доступа&#xa;" id="2FcHc8AuNYfymtkvsyMI-7">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-19" vertex="1">
+            <mxGeometry x="87.05479452054794" y="99.88096385542168" width="185.34246575342465" height="40.12048192771084" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-21" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-23" vertex="1" connectable="0">
+          <mxGeometry x="22.465753424657535" y="307.5903614457831" width="359.45205479452056" height="534.9397590361446" as="geometry" />
+        </mxCell>
+        <mxCell id="6a7d8f32e03d9370-57" value="&lt;font style=&quot;font-size: 48px;&quot;&gt;DATASPACE&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#FFD470;gradientColor=none;fontSize=14;strokeColor=none;verticalAlign=top;rounded=1;" parent="TgwpmsYL4EIVjYNZ3UVn-21" vertex="1">
+          <mxGeometry width="359.45205479452056" height="534.9397590361446" as="geometry" />
+        </mxCell>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-20" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-21" vertex="1" connectable="0">
+          <mxGeometry x="89.86301369863014" y="100.30120481927712" width="185.34246575342465" height="327.65060240963857" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;FRONTEND&lt;/font&gt;" internal_ip="-" external_ip="185.158.155.34" domain_name="-" hostname="-" location="ДЦ Dataspace Москва" description="Реверс-прокси. Фильтрация https-трафика и перенаправление на бэк-енды" id="TgwpmsYL4EIVjYNZ3UVn-2">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-20" vertex="1">
+            <mxGeometry width="185.34246575342465" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;BACKEND&lt;/font&gt;" internal_ip="172.16.99.0" external_ip="185.158.155.22" domain_name="-" hostname="-" location="ДЦ Dataspace Москва" description="Новый бэк-енд (php). API и личный кабинет для пользователей" id="TgwpmsYL4EIVjYNZ3UVn-7">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-20" vertex="1">
+            <mxGeometry y="66.86746987951807" width="185.34246575342465" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;DATABASE&lt;/font&gt;" internal_ip="172.16.99.1&#xa;" external_ip="5.200.56.29&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="ДЦ Dataspace Москва&#xa;" description="БД источников и внутренних сервисов (postgres), S3 для собственных нужд&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-8">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-20" vertex="1">
+            <mxGeometry y="140.42168674698792" width="185.34246575342465" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;MAIN&lt;/font&gt;" internal_ip="172.16.99.3&#xa;" external_ip="78.140.221.69&#xa;           78.140.221.2&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="ДЦ Dataspace Москва&#xa;" description="Старый бэк-енд. API и личный кабинет для пользователей. БД mysql&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-9">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-20" vertex="1">
+            <mxGeometry y="213.9759036144578" width="185.34246575342465" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;1CLOUD&lt;/font&gt;" internal_ip="172.16.1.1&#xa;" external_ip="5.200.56.3&#xa;" domain_name="-&#xa;" hostname="1cloud&#xa;" location="ДЦ Dataspace Москва&#xa;" description="Новый kubernetes (master + control plane)&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-10">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-20" vertex="1">
+            <mxGeometry y="287.53012048192767" width="185.34246575342465" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-32" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="620" y="90" width="1020" height="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="2FcHc8AuNYfymtkvsyMI-20" value="&lt;font style=&quot;font-size: 40px;&quot;&gt;HARDWARE&lt;br&gt;&lt;br&gt;&amp;nbsp;&lt;br&gt;&lt;br&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;glass=0;arcSize=6;strokeWidth=6;verticalAlign=bottom;fontSize=33;fontStyle=1" parent="TgwpmsYL4EIVjYNZ3UVn-32" vertex="1">
+          <mxGeometry width="1020" height="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-31" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-32" vertex="1" connectable="0">
+          <mxGeometry x="30.177514792899405" y="40.12048192771085" width="947.5739644970414" height="742.2289156626506" as="geometry" />
+        </mxCell>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-25" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-31" vertex="1" connectable="0">
+          <mxGeometry width="947.5739644970414" height="213.97590361445782" as="geometry" />
+        </mxCell>
+        <mxCell id="6a7d8f32e03d9370-59" value="&lt;font style=&quot;font-size: 48px;&quot;&gt;Видное (Офис)&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;fontSize=14;strokeColor=#b85450;verticalAlign=top;rounded=1;" parent="TgwpmsYL4EIVjYNZ3UVn-25" vertex="1">
+          <mxGeometry width="947.5739644970414" height="213.97590361445782" as="geometry" />
+        </mxCell>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-24" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-25" vertex="1" connectable="0">
+          <mxGeometry x="42.24852071005917" y="80.24096385542168" width="760.4733727810651" height="100.3012048192771" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;MSK1&lt;/font&gt;" internal_ip="172.16.77.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-11">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-24" vertex="1">
+            <mxGeometry width="199.17159763313606" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;MSK2&lt;/font&gt;" internal_ip="172.16.177.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-12">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-24" vertex="1">
+            <mxGeometry x="223.3136094674556" width="199.17159763313606" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;PVE3&lt;/font&gt;" internal_ip="172.16.97.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (внутренние нужды)&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-13">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-24" vertex="1">
+            <mxGeometry y="60.18072289156627" width="199.17159763313606" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;PVE4&lt;/font&gt;" internal_ip="-&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (внутренние нужды)&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-14">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-24" vertex="1">
+            <mxGeometry x="223.3136094674556" y="60.18072289156627" width="199.17159763313606" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 22px;&quot;&gt;&lt;b&gt;Windows (TEMP)&lt;/b&gt;&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="TgwpmsYL4EIVjYNZ3UVn-15">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-24" vertex="1">
+            <mxGeometry x="561.3017751479289" width="199.17159763313606" height="40.12048192771085" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-26" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-31" vertex="1" connectable="0">
+          <mxGeometry x="295.7396449704142" y="267.4698795180722" width="386.27218934911235" height="213.97590361445782" as="geometry" />
+        </mxCell>
+        <mxCell id="2FcHc8AuNYfymtkvsyMI-13" value="&lt;font style=&quot;font-size: 48px;&quot;&gt;Гайдары&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;fontSize=14;strokeColor=#82b366;verticalAlign=top;rounded=1;" parent="TgwpmsYL4EIVjYNZ3UVn-26" vertex="1">
+          <mxGeometry width="386.27218934911235" height="213.97590361445782" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;GAYDARY&lt;/font&gt;" internal_ip="172.16.161.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Гайдары (Алексей)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-16">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-26" vertex="1">
+            <mxGeometry x="93.55029585798815" y="86.92771084337348" width="199.17159763313606" height="40.12048192771084" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="TgwpmsYL4EIVjYNZ3UVn-27" value="" style="group" parent="TgwpmsYL4EIVjYNZ3UVn-31" vertex="1" connectable="0">
+          <mxGeometry x="295.7396449704142" y="528.2530120481928" width="386.27218934911235" height="213.97590361445782" as="geometry" />
+        </mxCell>
+        <mxCell id="2FcHc8AuNYfymtkvsyMI-15" value="&lt;font style=&quot;font-size: 48px;&quot;&gt;Ростов&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#e1d5e7;fontSize=14;strokeColor=#9673a6;verticalAlign=top;rounded=1;" parent="TgwpmsYL4EIVjYNZ3UVn-27" vertex="1">
+          <mxGeometry width="386.27218934911235" height="213.97590361445782" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;RND&lt;/font&gt;" internal_ip="172.16.61.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Ростов-на-Дону (Алексей)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="TgwpmsYL4EIVjYNZ3UVn-17">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" parent="TgwpmsYL4EIVjYNZ3UVn-27" vertex="1">
+            <mxGeometry x="93.55029585798815" y="86.92771084337348" width="199.17159763313606" height="40.12048192771084" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-37" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="2660" y="920" width="770" height="890" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;&amp;nbsp; &amp;nbsp; &lt;br&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;b&gt;RND&lt;/b&gt;&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-38">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;align=left;verticalAlign=top;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-37">
+            <mxGeometry width="770" height="890" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-39" value="&lt;b style=&quot;border-color: var(--border-color); font-size: 28px;&quot;&gt;PVE virtual machines&lt;br&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8a8a8;verticalAlign=bottom;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-37">
+          <mxGeometry x="267.83" y="52.14" width="462.17" height="777.86" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;rnd-master&lt;/font&gt;" internal_ip="172.16.1.2&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="rnd-master&#xa;" location="VM (rnd)&#xa;" description="kubernetes rnd-master" id="uzpgzlPV-xw5ZNTDVdrV-40">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-37">
+            <mxGeometry x="357.07" y="92.7" width="287.7" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-77" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="uzpgzlPV-xw5ZNTDVdrV-37" source="uzpgzlPV-xw5ZNTDVdrV-41" target="uzpgzlPV-xw5ZNTDVdrV-75">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;rnd-worker-01&lt;br&gt;&lt;/font&gt;" internal_ip="172.16.61.4&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="rnd-worker-01&#xa;" location="VM (rnd)" description="kubernetes" id="uzpgzlPV-xw5ZNTDVdrV-41">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-37">
+            <mxGeometry x="357.07" y="243.33" width="287.7" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;rnd-worker-02&lt;br&gt;&lt;/font&gt;" internal_ip="172.16.61.2&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="rnd-worker-02&#xa;" location="VM (rnd)" description="kubernetes" id="uzpgzlPV-xw5ZNTDVdrV-75">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-37">
+            <mxGeometry x="355.05999999999995" y="390" width="287.7" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;rnd-worker-03&lt;br&gt;&lt;/font&gt;" internal_ip="172.16.61.3&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="rnd-worker-03&#xa;" location="VM (rnd)" description="kubernetes" id="uzpgzlPV-xw5ZNTDVdrV-76">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-37">
+            <mxGeometry x="355.05999999999995" y="530" width="287.7" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;br&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;b&gt;MSK1&lt;/b&gt;&lt;/font&gt;" internal_ip="172.16.77.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="uzpgzlPV-xw5ZNTDVdrV-2">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;verticalAlign=top;align=left;fillColor=#ffcccc;strokeColor=#36393d;" vertex="1" parent="1">
+            <mxGeometry x="1870" y="80" width="750" height="630" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-3" value="&lt;font style=&quot;font-size: 28px;&quot;&gt;&lt;b&gt;PVE virtual machines&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=bottom;fillColor=#969696;strokeColor=#666666;gradientColor=#b3b3b3;" vertex="1" parent="1">
+          <mxGeometry x="2041.43" y="102.76" width="546.43" height="557.24" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;msk-worker-01&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-22">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="1">
+            <mxGeometry x="2140.83" y="180" width="343.75" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;msk-worker-02&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-23">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="1">
+            <mxGeometry x="2140.83" y="310" width="343.75" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;msk-worker-91&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-24">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="1">
+            <mxGeometry x="2140.83" y="440" width="343.75" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-69" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="1870" y="730" width="750" height="670" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;br&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;b&gt;MSK1&lt;/b&gt;&lt;/font&gt;" internal_ip="172.16.77.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="uzpgzlPV-xw5ZNTDVdrV-46">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;verticalAlign=top;align=left;fillColor=#ffcccc;strokeColor=#36393d;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-69">
+            <mxGeometry width="750" height="670" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-47" value="&lt;font style=&quot;font-size: 28px;&quot;&gt;&lt;b&gt;PVE virtual machines&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=bottom;fillColor=#969696;strokeColor=#666666;gradientColor=#b3b3b3;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-69">
+          <mxGeometry x="171.43000000000006" y="35.76999999999998" width="546.43" height="584.23" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;msk-worker-10&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-51">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-69">
+            <mxGeometry x="272.77" y="80" width="343.75" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;msk-worker-11&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-52">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-69">
+            <mxGeometry x="272.77083333333326" y="220.0010638297872" width="343.75" height="73.72340425531915" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;msk-worker-12&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-53">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-69">
+            <mxGeometry x="272.77083333333326" y="350.00404255319154" width="343.75" height="73.72340425531915" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-70" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="1870" y="1420" width="750" height="300" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;br&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;b&gt;PVE3&lt;/b&gt;&lt;/font&gt;" internal_ip="172.16.77.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="uzpgzlPV-xw5ZNTDVdrV-56">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;verticalAlign=top;align=left;fillColor=#ffcccc;strokeColor=#36393d;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-70">
+            <mxGeometry width="750" height="300" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-57" value="&lt;font style=&quot;font-size: 28px;&quot;&gt;&lt;b&gt;PVE virtual machines&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=bottom;fillColor=#969696;strokeColor=#666666;gradientColor=#b3b3b3;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-70">
+          <mxGeometry x="170.51570666666672" y="16.016417910447753" width="543.5157066666666" height="261.5955223880597" as="geometry" />
+        </mxCell>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-71" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="1870" y="1740" width="750" height="300" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;br&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;b&gt;PVE4&lt;/b&gt;&lt;/font&gt;" internal_ip="172.16.77.0&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="Видное (Офис)&#xa;" description="proxmox для виртуальных машин (ноды кубера)&#xa;" id="uzpgzlPV-xw5ZNTDVdrV-72">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;verticalAlign=top;align=left;fillColor=#ffcccc;strokeColor=#36393d;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-71">
+            <mxGeometry width="750" height="300" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-73" value="&lt;font style=&quot;font-size: 28px;&quot;&gt;&lt;b&gt;PVE virtual machines&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=bottom;fillColor=#969696;strokeColor=#666666;gradientColor=#b3b3b3;" vertex="1" parent="uzpgzlPV-xw5ZNTDVdrV-71">
+          <mxGeometry x="170.51570666666672" y="16.016417910447753" width="543.5157066666666" height="261.5955223880597" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;&lt;b&gt;&amp;nbsp; &amp;nbsp; &lt;br&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;GAYDARY&lt;/b&gt;&lt;/font&gt;" internal_ip="" external_ip="" domain_name="" hostname="" location="" description="" id="uzpgzlPV-xw5ZNTDVdrV-29">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;align=left;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;container=0;" vertex="1" parent="1">
+            <mxGeometry x="2660" y="80" width="770" height="810" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="uzpgzlPV-xw5ZNTDVdrV-32" value="&lt;b style=&quot;border-color: var(--border-color); font-size: 28px;&quot;&gt;PVE virtual machines&lt;br&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8a8a8;verticalAlign=bottom;container=0;" vertex="1" parent="1">
+          <mxGeometry x="2927.83" y="125" width="462.17" height="715" as="geometry" />
+        </mxCell>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;gaydary-master&lt;/font&gt;" internal_ip="172.16.1.3&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="-&#xa;" location="VM (gaydary)&#xa;" description="Новый kubernetes (master + control plane)&#xa;" id="uzpgzlPV-xw5ZNTDVdrV-31">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;container=0;" vertex="1" parent="1">
+            <mxGeometry x="3017.0651811594203" y="159.99904255319157" width="287.7038043478261" height="82.93882978723404" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;gaydary-worker-01&lt;br&gt;&lt;/font&gt;" internal_ip="172.16.161.1&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="gaydary-worker-01&#xa;" location="VM (gaydary)&#xa;" description="Новый kubernetes&#xa;" id="uzpgzlPV-xw5ZNTDVdrV-33">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;container=0;" vertex="1" parent="1">
+            <mxGeometry x="3017.0651811594203" y="289.99904255319154" width="287.7038043478261" height="82.93882978723404" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;gaydary-worker-02&lt;br&gt;&lt;/font&gt;" internal_ip="172.16.161.2&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="gaydary-worker-02&#xa;" location="VM (gaydary)&#xa;" description="kubernetes" id="uzpgzlPV-xw5ZNTDVdrV-34">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;container=0;" vertex="1" parent="1">
+            <mxGeometry x="3017.0640942028986" y="429.99904255319154" width="287.7038043478261" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;font style=&quot;font-size: 30px;&quot;&gt;gaydary-worker-03&lt;br&gt;&lt;/font&gt;" internal_ip="172.16.161.3&#xa;" external_ip="-&#xa;" domain_name="-&#xa;" hostname="gaydary-worker-03&#xa;" location="VM (gaydary)&#xa;" description="kubernetes" id="uzpgzlPV-xw5ZNTDVdrV-74">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;perimeterSpacing=0;container=0;" vertex="1" parent="1">
+            <mxGeometry x="3017.07" y="570" width="287.7038043478261" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

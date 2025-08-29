@@ -1,0 +1,214 @@
+kind: pipeline
+name: default
+type: kubernetes
+pull: if-not-exists
+load: none
+node_selector:
+  development: "yes"
+
+x-environments: &environments
+  APP_ENV: "prod"
+  LOG_LEVEL: "info"
+  CI_REGISTRY_IMAGE: "git.i-sphere.local/isphere-go-modules/coordinator"
+  JAEGER_AGENT_HOST_PORT: "172.16.97.10:6831"
+  JAEGER_ENDPOINT: "http://172.16.97.10:14268/api/traces"
+  DOCKER: {from_secret: DOCKER}
+  DOMAIN: {from_secret: DOMAIN}
+  GIT_HTTP_DOMAIN: {from_secret: GIT_HTTP_DOMAIN}
+  KEYDB_ADDR: "keydb.keydb:6379"
+  KEYDB_DATABASE: "0"
+  KEYDB_PASSWORD: {from_secret: KEYDB_PASSWORD}
+  KEYDB_POOL_SIZE: "50"
+  MODULE_APPLE_ENDPOINT: "http://apple-recovery-api.default"
+  MODULE_CENSYS_ENDPOINT: "http://censys-master.isphere-go-modules/graphql"
+  MODULE_D0O_ENDPOINT: "http://d0o-master.isphere-go-modules/graphql"
+  MODULE_DNS_ENDPOINT: "http://dns-master.isphere-go-modules/graphql"
+  MODULE_DOMRU_ENDPOINT: "http://domru-search-api.default"
+  MODULE_ELPTS_ENDPOINT: "http://elpts-portal-web-api.default"
+  MODULE_FMSDB_ENDPOINT: "http://fmsdb-master.isphere-go-modules"
+  MODULE_GEOIP_ENDPOINT: "http://geoip-master.isphere-go-modules"
+  MODULE_HASURA_ENDPOINT: "http://hasura.hasura/v1/graphql"
+  MODULE_HEADERS_X_HASURA_ADMIN_SECRET:
+    {from_secret: MODULE_HEADERS_X_HASURA_ADMIN_SECRET}
+  MODULE_HLR_ENDPOINT: "http://hlr-master.isphere-go-modules"
+  MODULE_HOLEHE_ENDPOINT: "http://holehe-fastapi.default"
+  MODULE_LIBLOC_ENDPOINT: "http://libloc-master.isphere-go-modules:8000"
+  MODULE_MAIN_SERVICE_ENDPOINT: "http://main-service-1-master.main-service/2.00"
+  MODULE_MAIN_SERVICE_FOREIGN_ENDPOINT: "http://main-service-1-master-foreign.main-service/2.00"
+  MODULE_MAIN_SERVICE_ACCESS_TOKEN: "n1vTY76fuCT59MH"
+  MODULE_PHONEINFO_ENDPOINT: "http://phoneinfo-master.isphere-go-modules"
+  MODULE_RIPE_ENDPOINT: "http://ripe-master.isphere-go-modules/graphql"
+  MODULE_ROSNEFT_ENDPOINT: "http://rosneft-master.isphere-go-modules"
+  MODULE_SAMSUNG_AUTH_ENDPOINT: "http://samsung-auth-api.default"
+  MODULE_SBER_ENDPOINT: "http://sber-master.isphere-go-modules"
+  MODULE_SBER_SIMPLE_ENDPOINT: "http://sber-proxphere-simple.isphere-go-modules"
+  MODULE_SHODAN_ENDPOINT: "http://shodan-master.isphere-go-modules/graphql"
+  MODULE_SMSC_ENDPOINT: "http://smsc-master.isphere-go-modules"
+  MODULE_SYPEXGEO_ENDPOINT: "http://sypexgeo-master.isphere-go-modules/graphql"
+  MODULE_TRICOLORTV_ENDPOINT: "http://tricolortv-auth-api.default"
+  MODULE_XIAOMI_ENDPOINT: "http://xiaomi-request-api.default"
+  MODULE_YOOMONEY_ENDPOINT: "http://yoomoney-master.isphere-go-modules/graphql"
+  #RABBITMQ_ADDR: "i-sphere.rabbitmq:5672"
+  RABBITMQ_ADDR: "rabbitmq-simple.rabbitmq-simple:5672"
+  #RABBITMQ_ADDR: "172.16.99.1:5672"
+  RABBITMQ_PASSWORD: {from_secret: RABBITMQ_PASSWORD}
+  #RABBITMQ_PASSWORD: "yPYGgx4Ee8uwYNuD"
+  RABBITMQ_USERNAME: {from_secret: RABBITMQ_USERNAME}
+  #RABBITMQ_USERNAME: "aPbH4vnmq23rQ7uD"
+  RABBITMQ_VIRTUAL_HOST: "/"
+  SENTRY_DSN: "http://19e62863db3746418b52df61144dd6c3@glitchtip-web.glitchtip/1"
+  AWS_ACCESS_KEY_ID: "FroGKFSNiws0vSFQSg6w"
+  AWS_SECRET_ACCESS_KEY: "9YuAt71D3GiHkspNnxo6LUdRv1rrOSmYlmt3VRMZ"
+
+steps:
+  - name: vendor
+    image: golang:1.21
+    environment:
+      GIT_USER: {from_secret: GIT_USER}
+      GIT_TOKEN: {from_secret: GIT_TOKEN}
+      GOPRIVATE: gitea-http.gitea.svc.cluster.local
+      GOINSECURE: gitea-http.gitea.svc.cluster.local
+    commands:
+      - echo "machine gitea-http.gitea.svc.cluster.local" > ~/.netrc
+      - echo "\tlogin $GIT_USER" >> ~/.netrc
+      - echo "\tpassword $GIT_TOKEN" >> ~/.netrc
+      - go mod vendor
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: build
+    image: plugins/kaniko
+    depends_on:
+      - vendor
+    environment:
+      container: kube
+      PLUGIN_CACHE_REPO: "${DRONE_REPO}"
+      PLUGIN_CONTEXT: .
+      PLUGIN_DOCKERFILE: Dockerfile
+      PLUGIN_ENABLE_CACHE: true
+      PLUGIN_EXPAND_REPO: true
+      PLUGIN_PASSWORD: {from_secret: GIT_TOKEN}
+      PLUGIN_REGISTRY: {from_secret: GIT_HTTP_DOMAIN}
+      PLUGIN_REPO: "${DRONE_REPO}"
+      PLUGIN_TAGS: "${DRONE_COMMIT_BRANCH}"
+      PLUGIN_TARGET: production
+      PLUGIN_USERNAME: {from_secret: GIT_USER}
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy_staging
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace coordinator
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      <<: *environments
+      k8s_CONFIG: {from_secret: k8s_CONFIG}
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: deploy_prod
+    image: alpine/k8s:1.24.13
+    depends_on:
+      - build
+    commands:
+      - mkdir -p ~/.kube && printenv k8s_CONFIG | base64 -d > ~/.kube/config
+      - sed -E -i -e "s/appVersion.*/appVersion:\ '${DRONE_COMMIT_SHA}-$(date +%s)'/g" .helm/Chart.yaml
+      - echo "$(envsubst < .helm/Chart.yaml)" > .helm/Chart.yaml
+      - echo "$(envsubst < .helm/values.yaml)" > .helm/values.yaml
+      - helm upgrade
+        --install
+        --create-namespace
+        --namespace coordinator
+        --values .helm/values.yaml
+        "${DRONE_REPO_NAME}-${DRONE_COMMIT_BRANCH}"
+        .helm/
+    environment:
+      <<: *environments
+      k8s_CONFIG: {from_secret: prod_k8s_CONFIG}
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+---
+kind: secret
+name: DOCKER
+get: {path: settings-kube, name: DOCKER}
+
+---
+kind: secret
+name: DOMAIN
+get: {path: settings-kube, name: DOMAIN}
+
+---
+kind: secret
+name: GIT_TOKEN
+get: {path: settings-kube, name: GIT_TOKEN}
+
+---
+kind: secret
+name: GIT_USER
+get: {path: settings-kube, name: GIT_USER}
+
+---
+kind: secret
+name: GIT_HTTP_DOMAIN
+get: {path: settings-kube, name: GIT_HTTP_DOMAIN}
+
+---
+kind: secret
+name: k8s_CONFIG
+get: {path: settings-kube, name: k8s_CONFIG}
+
+---
+kind: secret
+name: prod_k8s_CONFIG
+get: { path: settings-kube, name: prod_k8s_CONFIG }
+
+---
+kind: secret
+name: KEYDB_PASSWORD
+get: {path: settings-kube, name: KEYDB_PASSWORD}
+
+---
+kind: secret
+name: RABBITMQ_PASSWORD
+get: {path: settings-kube, name: RABBITMQ_PASSWORD}
+
+---
+kind: secret
+name: RABBITMQ_USERNAME
+get: {path: settings-kube, name: RABBITMQ_USERNAME}
+
+---
+kind: secret
+name: MODULE_HEADERS_X_HASURA_ADMIN_SECRET
+get: {path: settings-kube, name: MODULE_HEADERS_X_HASURA_ADMIN_SECRET}
+
+---
+kind: secret
+name: MAIN_SERVICE_ACCESS_TOKEN
+get: {path: settings-kube, name: MAIN_SERVICE_ACCESS_TOKEN}
+

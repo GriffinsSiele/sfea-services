@@ -1,0 +1,58 @@
+kind: StatefulSet
+#StatefulSet
+
+replicaCount: 10
+
+image:
+  repository: git.i-sphere.ru/callapp/callapp-mobile-api
+  pullPolicy: Always
+  # Overrides the image tag whose default is the latest.
+  tag: "latest"
+
+command:
+- "/bin/sleep"
+args:
+- "5000"
+
+
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 100Mi
+  requests:
+    cpu: 10m
+    memory: 30Mi
+
+
+env:
+- name: MONGO_COLLECTION
+  value: callapp
+- name: KEYDB_QUEUE
+  value: callapp
+
+affinity: {}
+
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+- name: docker-registry
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations:
+- effect: NoSchedule
+  key: prod
+  operator: Equal
+  value: "yes"
+
+envFrom:
+- secretRef:
+    name: settings-kube

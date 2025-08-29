@@ -1,0 +1,52 @@
+check_types:
+  fns_rsmp:
+    enabled: true
+    source: { code: fns }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/inn"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: fns_rsmp, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: fns_rsmp }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($inn: String!) {
+              fns_rsmp(where: {inn: {_eq: $inn}}) {
+                  inn
+                  type
+                  category
+                  employees
+                  created_at
+                  updated_at
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{ range .fns_rsmp }}
+          - Type:                 rsmp
+            inn:                  {{ Quote .inn }}
+            organization_type:    {{ Quote .type }}
+            category:             {{ Quote .category }}
+            employees:            {{ Quote .employees }}
+            date_added:           {{ Quote .created_at }}
+            date:                 {{ Quote .updated_at }}
+          {{ end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          Type: { type: string, enum: [rsmp] }
+          inn: { type: string }
+          type: { type: string }
+          category: { type: string }
+          employees: { type: string }
+          date_added: { type: string, format: date }
+          date: { type: string, format: date }

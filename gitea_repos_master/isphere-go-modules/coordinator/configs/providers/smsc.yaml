@@ -1,0 +1,3 @@
+providers:
+  smsc:
+    endpoint: "$MODULE_SMSC_ENDPOINT"

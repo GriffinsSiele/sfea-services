@@ -1,0 +1,55 @@
+check_types:
+  twitter_phone:
+    enabled: true
+    source:
+      code: main-service
+    schema:
+      allOf:
+      - $ref: '#/definitions/schema/default'
+      - $ref: '#/definitions/schema/phone'
+    mutator:
+      template:
+        records: |
+          {{- range .records }}
+          - {{ UnsafeField "Email" .Email }}
+            {{ UnsafeField "Result" .Result }}
+            {{ UnsafeField "ResultCode" .ResultCode }}
+            {{ UnsafeField "Phone" .Phone }}
+          {{- end }}
+      status_code:
+        non_standard: true
+        format: json
+        property_path: code
+        detail_property_path: message
+    upstream:
+      provider: main-service
+      keydb:
+        enabled: true
+        scope: twitter_phone
+        ttl: 24h0m0s
+        ttl_failed: 30s
+      rabbitmq:
+        enabled: true
+        scope: twitter_phone
+      tcp:
+        template:
+          query: |
+            GET /2.00/handler.php?{{ QueryArguments
+            "auth" (Env "MODULE_MAIN_SERVICE_ACCESS_TOKEN")
+            "plugin" "TwitterPlugin"
+            "checktype" "twitter_phone"
+            "phone" (trimPrefix "+" .phone)
+            }} HTTP/1.1
+    produce:
+      items:
+        properties:
+          Email:
+            type: string
+          Phone:
+            type: string
+          Result:
+            type: string
+          ResultCode:
+            type: string
+        type: object
+      type: array

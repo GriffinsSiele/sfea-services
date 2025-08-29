@@ -1,0 +1,7 @@
+__pycache__
+.env*
+.drone.yml
+.gitignore
+.style.yapf
+.Dockerfile 
+README.md

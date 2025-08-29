@@ -1,0 +1,12 @@
+{{ define "messages" }}
+    {{ range .Messages }}
+        <div
+                class="uk-text-small uk-text-danger"
+                {{ if IsDebug }}
+                    data-debug-message-id="{{ .Id }}"
+                {{ end }}
+        >
+            {{ .Text }}
+        </div>
+    {{ end }}
+{{ end }}

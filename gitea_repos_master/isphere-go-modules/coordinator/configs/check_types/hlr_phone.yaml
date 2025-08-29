@@ -1,0 +1,82 @@
+check_types:
+  hlr_phone:
+    enabled: true
+    source: { code: hlr }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - dependencies:
+            type:
+              oneOf:
+                - allOf:
+                    - $ref: "#/definitions/schema/phone"
+                    - properties:
+                        type: { enum: [init] }
+                - allOf:
+                    - type: object
+                      properties:
+                        callback: { type: object, additionalProperties: true }
+                      required:
+                        - callback
+                    - properties:
+                        type: { enum: [callback] }
+    upstream:
+      provider: hlr
+      keydb: { enabled: true, scope: hlr_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq:
+        {
+          enabled: true,
+          scope: hlr_phone,
+          async: { enabled: true, scope: hlr_phone__callback },
+        }
+      tcp:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            {{- if eq .type "init" }}
+            POST /api/v1/hlr HTTP/1.1
+            Content-Type: application/json
+            X-Message-ID: {{ .key }}
+
+            {"tel": {{ Quote .phone }}}
+            {{- else if eq .type "callback" }}
+            POST /callback/hlr HTTP/1.1
+            Content-Type: application/json
+
+            {{ ToJSON .callback }}
+            {{- end }}
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{/* @todo перенести в контент сервис */}}
+          {{ range .data }}
+          - PhoneNumber: {{ Quote .to }}
+            {{ if (In .status "delivered" "read" "reply" "reject") }}
+            HLRStatusText: "Доступен"
+            {{ else }}
+            {{   if (In .status "undelivered" "timeout") }}
+            HLRStatusText: "Не доступен"
+            {{   else }}
+            HLRStatusText: "Ошибка, неправильные параметры запроса"
+            {{   end }}
+            {{ end }}
+            HLRStatus:    {{ .status }}
+            ErrorCode:    {{ .errCode }}
+            Operator:     {{ .operator }}
+            Country:      {{ .country }}
+          {{- end }} {{/* range .data */}}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          PhoneNumber: { type: string }
+          HLRStatus: { type: string }
+          HLRStatusText: { type: string }
+          Operator: { type: string }
+          Country: { type: string }

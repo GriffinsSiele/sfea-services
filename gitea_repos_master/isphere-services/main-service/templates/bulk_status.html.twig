@@ -1,0 +1,364 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <ol class="breadcrumb text-nowrap">
+            <li class="breadcrumb-item"><a href="{{ path('bulk') }}">Обработка реестра</a></li>
+            <li class="breadcrumb-item active">Реестр №{{ bulk.id }}</li>
+        </ol>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <h5 class="card-header">Реестр №{{ bulk.id }}</h5>
+
+                    <ul class="list-group list-group-flush">
+                        {% if bulk.filename is not empty %}
+                            <li class="list-group-item">
+                                <div class="fw-bold">Файл реестра</div>
+                                {% if app.user.accessArea > 0 %}
+                                    <a href="{{ path('bulk_request', { id: bulk.id }) }}" class="text-decoration-none">
+                                        <i class="fa fa-solid fa-download"></i>
+                                        {{ bulk.filename }}
+                                    </a>
+                                {% else %}
+                                    {{ bulk.filename }}
+                                {% endif %}
+                            </li>
+
+                            {% if bulk.user is not empty %}
+                                <li class="list-group-item">
+                                    <div class="fw-bold">Пользователь</div>
+                                    {{ bulk.user.userIdentifier }}
+                                </li>
+                            {% endif %}
+
+                            {% if bulk.createdAt is not empty %}
+                                <li class="list-group-item">
+                                    <div class="fw-bold">Создан</div>
+                                    {{ bulk.createdAt | date }}
+                                </li>
+                            {% endif %}
+
+                            {% if bulk.processedAt is not empty %}
+                                <li class="list-group-item">
+                                    <div class="fw-bold">Обработан</div>
+                                    {{ bulk.processedAt | date }}
+                                </li>
+                            {% endif %}
+
+                            {% if bulk.sources is not empty %}
+                                <li class="list-group-item">
+                                    <div class="fw-bold">Источники</div>
+                                    {% for source in (bulk.sources | split(',') | sort ) %}
+                                        <span class="badge bg-secondary">{{ source }}</span>
+                                    {% endfor %}
+                                </li>
+                            {% endif %}
+
+                            {% if bulk.totalRows %}
+                                <li class="list-group-item">
+                                    <div class="fw-bold">Всего строк</div>
+                                    <div class="d-flex align-items-center" style="gap: .75rem;">
+                                        <div id="total-rows">
+                                            {{ bulk.totalRows }}
+                                        </div>
+
+                                        {% if bulk.status == 0 or bulk.status == 1 or bulk.status == 3 %}
+                                            <div class="flex-grow-1">
+                                                <div class="progress-stacked">
+                                                    <div class="progress" role="progressbar"
+                                                         id="total-rows-success"
+                                                         style="width: {{ bulk.processedRows / bulk.totalRows * 100 }}%">
+                                                        <div class="progress-bar bg-success"></div>
+                                                    </div>
+                                                    <div class="progress" role="progressbar"
+                                                         id="total-rows-errors"
+                                                         style="width: {{ (bulk.processedRows - bulk.successRows) / bulk.totalRows * 100 }}%">
+                                                        <div class="progress-bar bg-danger"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if bulk.processedRows > 0 %}
+                                            <div style="cursor: help;" title="Обработано {{ bulk.processedRows }}">
+                                                {{ (bulk.processedRows / bulk.totalRows * 100) | round }}%
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endif %}
+
+                            <li class="list-group-item">
+                                <div class="fw-bold">Статус</div>
+                                {% include 'bulk_item_status.html.twig' with { status: bulk.status } %}
+                            </li>
+                        {% endif %}
+                    </ul>
+
+                    {% if (app.user.accessArea > 0 and bulk.status == 1) or bulk.status == 0 or bulk.status == 100 %}
+                        <div class="card-footer">
+                            {% if app.user.accessArea > 0 and bulk.status == 1 %}
+                                <div>
+                                    {% if bulk.resultFilename %}
+                                        <a class="btn btn-primary"
+                                           href="{{ path('bulk_response', { id: bulk.id }) }}"
+                                        >
+                                            Скачать результаты
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-primary" disabled>
+                                            <i class="fa fa-spin fa-spinner"></i>
+                                            Результаты генерируются
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            {% if bulk.status == 0 or bulk.status == 100 %}
+                                <div>
+                                    <form action="{{ path('cancel_bulk', { id: bulk.id }) }}"
+                                          method="post">
+                                        <button class="btn btn-danger">
+                                            Прервать обработку
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if bulk.status == 20 %}
+                <div class="col-lg-6">
+                    <div class="card shadow">
+                        <h5 class="card-header">Справка</h5>
+                        <div class="card-body">
+                            <p class="card-text text-center">
+                                <i class="fa fa-5x fa-regular fa-lightbulb fa-bounce text-muted"></i>
+                            </p>
+                            <p class="card-text text-center">
+                                Проверьте тип данных в таблице и при необходимости измените
+                            </p>
+                            <p class="card-text text-center">
+                                Поля с уникальными значениями вы можете использовать как идентификаторы.
+                                Идентификаторы добавляются к итоговым таблицам
+                            </p>
+                            <p class="card-text text-center">
+                                После проверки нажмите кнопку "Подтвердить"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card shadow">
+                    <h5 class="card-header">Типы данных</h5>
+                    <div class="card-body">
+                        {% if bulk.rows | length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table main-table">
+                                    <thead>
+                                    <tr>
+                                        {% set scalar_types = all_scalar_types() %}
+                                        {% for definition in bulk.definitionsRepresentative %}
+                                            <th>
+                                                {% if bulk.status == 20 %}
+                                                    <div class="position-relative">
+                                                        <select
+                                                                name="definition[{{ definition.number }}]"
+                                                                class="form-select change-definition"
+                                                                data-number="{{ definition.number }}"
+                                                                data-unique-target="#unique_switch_{{ definition.number }}"
+                                                        >
+                                                            {% for scalar_type in scalar_types %}
+                                                                <option
+                                                                        value="{{ scalar_type.value }}"
+                                                                        {% if definition.type == scalar_type -%}
+                                                                            selected
+                                                                        {%- endif %}
+                                                                >
+                                                                    {{ scalar_type.name | trans([], 'scalar_types') }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="form-select-spinner">
+                                                            <i class="fa fa-spin fa-spinner"></i>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    {{ definition.type.name | trans([], 'scalar_types') }}
+                                                {% endif %}
+
+                                                <div class="form-check form-switch mt-2 unique-switch"
+                                                     style="font-weight: normal;">
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           value="1"
+                                                           {% if definition.identifier %}checked{% endif %}
+                                                           id="unique_switch_{{ definition.number }}"
+                                                            {% if not definition.unique or bulk.status != 20 %}disabled{% endif %}/>
+                                                    <label class="form-check-label"
+                                                           for="unique_switch_{{ definition.number }}">
+                                                        Идентификатор
+                                                    </label>
+                                                </div>
+                                            </th>
+                                        {% endfor %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% set maxCount = bulk.rows | length %}
+                                    {% for row in (bulk.rows | slice(0, min(countPerPage, maxCount))) %}
+                                        <tr>
+                                            {% for scalar in row %}
+                                                <td>
+                                                    {% if not scalar.isEmpty %}
+                                                        {{ scalar.value | escape }}
+                                                    {% else %}
+                                                        <small class="badge text-bg-secondary opacity-25">пусто</small>
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                {% if (bulk.rows | length) > countPerPage %}
+                                    <div class="alert alert-info">
+                                        <i class="fa fa-solid fa-circle-info"></i>
+                                        Обратите внимание, отображается только первых {{ countPerPage }} записей
+                                        из {{ bulk.rows | length }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fa fa-solid fa-circle-info"></i>
+                                Реестр проходит предварительную подготовку, ожидайте
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="d-flex">
+                            <div class="flex-grow-1">
+                                {% if bulk.status == 20 %}
+                                    <form action="{{ path('confirm_bulk', { id: bulk.id }) }}" method="post">
+                                        <button id="confirm-btn" type="submit" class="btn btn-primary">Подтвердить
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label for="total-pages">Количество записей для предварительного просмотра</label>
+                                </div>
+                                <div class="col-auto">
+                                    <select id="total-pages"
+                                            class="form-select"
+                                            data-args="{{ app.request.query.all | json_encode }}"
+                                    >
+                                        <option value="10" {% if countPerPage == 10 %}selected{% endif %}>10</option>
+                                        <option value="20" {% if countPerPage == 20 %}selected{% endif %}>20</option>
+                                        <option value="50" {% if countPerPage == 50 %}selected{% endif %}>50</option>
+                                        <option value="100" {% if countPerPage == 100 %}selected{% endif %}>100</option>
+                                        <option value="500" {% if countPerPage == 500 %}selected{% endif %}>500</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script defer>
+      document.addEventListener('DOMContentLoaded', function () {
+          {% if (bulk.rows | length) == 0 or bulk.status == 0 or bulk.status == 21 or bulk.status == 100 or bulk.status == 101 or (bulk.status == 1 and not bulk.resultFilename) %}
+        const totalRowsEl = document.querySelector('#total-rows')
+        const totalRowsSuccessEl = document.querySelector('#total-rows-success')
+        const totalRowsErrorsEl = document.querySelector('#total-rows-errors')
+
+        async function checkStatus () {
+          const res = await fetch('/api/v1/bulk/{{ bulk.id }}/status')
+          const { processedRows, status, successRows, totalRows } = await res.json()
+
+          if (status === {{ bulk.status }}) {
+            if (totalRowsEl) {
+              totalRowsEl.textContent = totalRows
+            }
+
+            if (totalRowsSuccessEl) {
+              totalRowsSuccessEl.style.width = `${processedRows / totalRows * 100}%`
+            }
+
+            if (totalRowsErrorsEl) {
+              totalRowsErrorsEl.style.width = `${(processedRows - successRows) / totalRows * 100}%`
+            }
+
+            setTimeout(checkStatus, 3000)
+          }
+          else {
+            document.location.reload()
+          }
+        }
+
+        setTimeout(checkStatus, 3000)
+          {% endif %}
+
+        const submitBtn = document.getElementById('confirm-btn')
+
+        document.querySelectorAll('.change-definition').forEach(select => {
+          const uniqueTarget = document.querySelector(select.dataset.uniqueTarget)
+
+          uniqueTarget.addEventListener('change', e => {
+            select.dispatchEvent(new Event('change'))
+          })
+
+          select.addEventListener('change', async e => {
+            const number = parseInt(select.name.match(/\[(\d+)]/)[1], 0)
+            const type = select.value
+            const identifier = uniqueTarget.checked
+
+            select.classList.add('loading')
+            submitBtn.disabled = true
+
+            await fetch('{{ path('update_bulk_definition', { id: bulk.id }) }}', {
+              method: 'post',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: JSON.stringify({
+                number,
+                type,
+                identifier,
+              }),
+            })
+
+            select.classList.remove('loading')
+            submitBtn.disabled = false
+
+            window.notice('success', 'Тип колонки успешно изменён')
+          })
+        })
+      })
+    </script>
+{% endblock %}

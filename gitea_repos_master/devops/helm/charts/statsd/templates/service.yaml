@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "statsd.fullname" . }}
+  labels:
+    {{- include "statsd.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 8125
+      targetPort: udp
+      protocol: UDP
+      name: udp
+    - port: 8126
+      targetPort: tcp
+      protocol: TCP
+      name: tcp
+  selector:
+    {{- include "statsd.selectorLabels" . | nindent 4 }}

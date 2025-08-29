@@ -1,0 +1,263 @@
+x-defaults: &defaults
+  nodeSelector:
+    "kubernetes.io/hostname": msk-worker-91
+
+  tolerations:
+    - key: "qansylli"
+      operator: Equal
+      value: "true"
+      effect: NoExecute
+
+apicurioRegistry:
+  name: apicurio-registry
+  repository:
+    image: apicurio/apicurio-registry-sql:2.5.0.Final
+    imagePullPolicy: IfNotPresent
+  env:
+    REGISTRY_DATASOURCE_PASSWORD: vf9WVTRaCyp5FtM6DLebZK
+    REGISTRY_DATASOURCE_URL: jdbc:postgresql://172.16.99.1/apicurio_registry
+    REGISTRY_DATASOURCE_USERNAME: postgres
+  ports:
+    - { name: http, protocol: TCP, port: 8080 }
+  livenessProbe:
+    tcpSocket: { port: http }
+  readinessProbe:
+    tcpSocket: { port: http }
+  startupProbe:
+    tcpSocket: { port: http }
+  <<: *defaults
+
+clickhouse:
+  name: clickhouse
+  repository:
+    image: bitnami/clickhouse:23.10.3
+    imagePullPolicy: IfNotPresent
+  env:
+    ALLOW_EMPTY_PASSWORD: "yes"
+  ports:
+    - { name: http, protocol: TCP, port: 8123 }
+    - { name: https, protocol: TCP, port: 8443 }
+    - { name: tcp, protocol: TCP, port: 9000 }
+    - { name: tcp-secure, protocol: TCP, port: 9440 }
+    - { name: keeper, protocol: TCP, port: 2181 }
+    - { name: keeper-secure, protocol: TCP, port: 3181 }
+    - { name: keeper-inter, protocol: TCP, port: 9444 }
+    - { name: mysql, protocol: TCP, port: 9004 }
+    - { name: postgresql, protocol: TCP, port: 9005 }
+    - { name: interserver, protocol: TCP, port: 9009 }
+    - { name: metrics, protocol: TCP, port: 8001 }
+  livenessProbe:
+    httpGet: { path: /ping, port: http }
+  readinessProbe:
+    httpGet: { path: /ping, port: http }
+  startupProbe:
+    httpGet: { path: /ping, port: http }
+  persistentVolumeClaims:
+    - name: data
+      storageClassName: local-path
+      accessModes: [ ReadWriteOnce ]
+      storageSize: 1Ti
+  volumeMounts:
+    - name: data
+      mountPath: /bitnami/clickhouse
+  <<: *defaults
+
+debeziumConnect:
+  name: debezium-connect
+  repository:
+    image: quay.io/debezium/connect:2.1
+#    image: debezium/connect:2.4
+    imagePullPolicy: IfNotPresent
+#  beforeCommands:
+#    - - sh
+#      - -c
+#      # language=sh
+#      - |
+#        set -ex
+#
+#        guava_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/guava-11.0.2.jar
+#        if [ ! -f "$guava_jar" ]; then
+#          curl -sfSL -o $guava_jar \
+#            https://repo1.maven.org/maven2/com/google/guava/guava/11.0.2/guava-11.0.2.jar
+#        fi
+#
+#        kafka_connect_avro_converter_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/kafka-connect-avro-converter-7.5.2.jar
+#        if [ ! -f "$kafka_connect_avro_converter_jar" ]; then
+#          curl -sfSL -o $kafka_connect_avro_converter_jar \
+#            https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-converter/7.5.2/kafka-connect-avro-converter-7.5.2.jar
+#        fi
+#
+#        kafka_connect_avro_data_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/kafka-connect-avro-data-7.5.2.jar
+#        if [ ! -f "$kafka_connect_avro_data_jar" ]; then
+#          curl -sfSL -o $kafka_connect_avro_data_jar \
+#            https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-data/7.5.2/kafka-connect-avro-data-7.5.2.jar
+#        fi
+#
+#        kafka_avro_serializer_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/kafka-avro-serializer-7.5.2.jar
+#        if [ ! -f "$kafka_avro_serializer_jar" ]; then
+#          curl -sfSL -o $kafka_avro_serializer_jar \
+#            https://packages.confluent.io/maven/io/confluent/kafka-avro-serializer/7.5.2/kafka-avro-serializer-7.5.2.jar
+#        fi
+#
+#        kafka_schema_serializer_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/kafka-schema-serializer-7.5.2.jar
+#        if [ ! -f "$kafka_schema_serializer_jar" ]; then
+#          curl -sfSL -o $kafka_schema_serializer_jar \
+#            https://packages.confluent.io/maven/io/confluent/kafka-schema-serializer/7.5.2/kafka-schema-serializer-7.5.2.jar
+#        fi
+#
+#        kafka_schema_registry_client_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/kafka-schema-registry-client-7.5.2.jar
+#        if [ ! -f "$kafka_schema_registry_client_jar" ]; then
+#          curl -sfSL -o $kafka_schema_registry_client_jar \
+#            https://packages.confluent.io/maven/io/confluent/kafka-schema-registry-client/7.5.2/kafka-schema-registry-client-7.5.2.jar
+#        fi
+#
+#        common_config_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/common-config-7.5.2.jar
+#        if [ ! -f "$common_config_jar" ]; then
+#          curl -sfSL -o $common_config_jar \
+#            https://packages.confluent.io/maven/io/confluent/common-config/7.5.2/common-config-7.5.2.jar
+#        fi
+#
+#        common_utils_jar=$KAFKA_CONNECT_PLUGINS_DIR/confluent-avro-converter/common-utils-7.5.2.jar
+#        if [ ! -f "$common_utils_jar" ]; then
+#          curl -sfSL -o $common_utils_jar \
+#            https://packages.confluent.io/maven/io/confluent/common-utils/7.5.2/common-utils-7.5.2.jar
+#        fi
+  env:
+    ADVERTISED_HOST_NAME: debezium-ui.debezium.svc.cluster.local
+    BOOTSTRAP_SERVERS: kafka.debezium.svc.cluster.local:9092
+    HOST_NAME: debezium-ui.debezium.svc.cluster.local
+    ENABLE_JOLOKIA: "true"
+    ENABLE_APICURIO_CONVERTERS: "true"
+    GROUP_ID: "1"
+    CONFIG_STORAGE_TOPIC: connect_configs
+    OFFSET_STORAGE_TOPIC: connect_offsets
+    STATUS_STORAGE_TOPIC: connect_statuses
+    KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+    VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+    CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry.debezium.svc.cluster.local:8081
+    CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry.debezium.svc.cluster.local:8081
+#  extraCommands:
+#    - - sh
+#      - -c
+#      # language=sh
+#      - |
+#        set -ex
+#
+#        /kafka/bin/kafka-console-consumer.sh \
+#          --bootstrap-server kafka.debezium.svc.cluster.local:9092:9092 \
+#          --property print.key=true \
+#          --formatter io.confluent.kafka.formatter.AvroMessageFormatter \
+#          --property schema.registry.url=http://schema-registry.debezium.svc.cluster.local:8081 \
+#          --topic isphere-mysql-connector.isphere.RequestNew
+  ports:
+    - { name: http, protocol: TCP, port: 8083 }
+    - { name: jolokia, protocol: TCP, port: 8778 }
+  livenessProbe:
+    httpGet: { path: /, port: http }
+  readinessProbe:
+    httpGet: { path: /, port: http }
+  startupProbe:
+    httpGet: { path: /, port: http }
+  persistentVolumeClaims:
+    - name: data
+      storageClassName: local-path
+      accessModes: [ ReadWriteOnce ]
+      storageSize: 1Gi
+#    - name: confluent-avro-converter
+#      storageClassName: local-path
+#      accessModes: [ ReadWriteOnce ]
+#      storageSize: 10Mi
+  volumeMounts:
+    - name: data
+      mountPath: /kafka/config
+#    - name: confluent-avro-converter
+#      mountPath: /kafka/connect/confluent-avro-converter
+  <<: *defaults
+
+debeziumUi:
+  name: debezium-ui
+  repository:
+    image: debezium/debezium-ui:2.1
+    imagePullPolicy: IfNotPresent
+  env:
+    KAFKA_CONNECT_URIS: http://debezium-connect.debezium.svc.cluster.local:8083
+  ports:
+    - { name: http, protocol: TCP, port: 8080, servicePort: 80 }
+  livenessProbe:
+    tcpSocket: { port: http }
+  readinessProbe:
+    tcpSocket: { port: http }
+  startupProbe:
+    tcpSocket: { port: http }
+  <<: *defaults
+
+kafka:
+  name: kafka
+  repository:
+    image: bitnami/kafka:3.5.1
+    imagePullPolicy: IfNotPresent
+  env:
+    ALLOW_PLAINTEXT_LISTENER: "yes"
+    KAFKA_BROKER_ID: "0"
+    KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka.debezium.svc.cluster.local:9092
+    KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@localhost:9093
+    KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+    KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+    KAFKA_CFG_NODE_ID: "0"
+    KAFKA_CFG_PROCESS_ROLES: controller,broker
+    KAFKA_ENABLE_KRAFT: "yes"
+  ports:
+    - { name: controller, protocol: TCP, port: 9092 }
+    - { name: interbroker, protocol: TCP, port: 9093 }
+  livenessProbe:
+    tcpSocket: { port: controller }
+  readinessProbe:
+    tcpSocket: { port: controller }
+  startupProbe:
+    tcpSocket: { port: controller }
+  persistentVolumeClaims:
+    - name: data
+      storageClassName: local-path
+      accessModes: [ ReadWriteOnce ]
+      storageSize: 1Ti
+  volumeMounts:
+    - name: data
+      mountPath: /bitnami/kafka
+  <<: *defaults
+
+kafkaUi:
+  name: kafka-ui
+  repository:
+    image: provectuslabs/kafka-ui:master
+    imagePullPolicy: IfNotPresent
+  env:
+    KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka.debezium.svc.cluster.local:9092
+    KAFKA_CLUSTERS_0_NAME: analytics
+  ports:
+    - { name: http, protocol: TCP, port: 8080, servicePort: 80 }
+  livenessProbe:
+    httpGet: { path: /actuator/health, port: http }
+  readinessProbe:
+    httpGet: { path: /actuator/health, port: http }
+  startupProbe:
+    httpGet: { path: /actuator/health, port: http }
+  <<: *defaults
+
+schemaRegistry:
+  name: schema-registry
+  repository:
+    image: bitnami/schema-registry:7.5.2
+    imagePullPolicy: IfNotPresent
+  env:
+    SCHEMA_REGISTRY_ADVERTISED_HOSTNAME: schema-registry.debezium.svc.cluster.local
+    SCHEMA_REGISTRY_KAFKA_BROKERS: PLAINTEXT://kafka.debezium.svc.cluster.local:9092
+  ports:
+    - { name: http, protocol: TCP, port: 8081 }
+  livenessProbe:
+    tcpSocket: { port: http }
+  readinessProbe:
+    tcpSocket: { port: http }
+  startupProbe:
+    tcpSocket: { port: http }
+  <<: *defaults

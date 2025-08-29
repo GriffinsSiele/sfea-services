@@ -1,0 +1,7 @@
+.env
+.idea/
+bin/console
+clean.sh
+node-worker.sh
+server.sh
+vendor/

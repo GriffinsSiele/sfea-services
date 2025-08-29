@@ -1,0 +1,38 @@
+check_types:
+  vk_phone:
+    enabled: true
+    source: { code: hasura }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: hasura
+      keydb: { enabled: true, scope: vk_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: vk_phone }
+      graphql:
+        template:
+          # @formatter:off
+          # language=GoTemplate
+          query: |
+            {
+                vk_phones(where: {phone: {_eq: {{ Quote (trimPrefix "+" .phone) }} {{`}}`}}) {
+                    vk_id
+                }
+            }
+          # @formatter:on
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range (Root . "vk_phones") }}
+          - url: https://vk.com/id{{ Print .vk_id }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          url: { type: string, format: url }

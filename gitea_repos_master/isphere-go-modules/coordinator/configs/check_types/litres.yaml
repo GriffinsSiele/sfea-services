@@ -1,0 +1,76 @@
+check_types:
+  litres:
+    enabled: true
+    source: { code: litres }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - oneOf:
+            - $ref: "#/definitions/schema/email"
+            - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: litres
+      keydb: { enabled: true, scope: litres, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: litres }
+      tcp:
+        proxy:
+          enabled: true
+          url: "http://tor-proxy-ru.i-sphere.local:8080"
+        template:
+          query: |
+            {{ if not (eq .phone nil) -}}
+            POST /foundation/api/auth/phone-available HTTP/1.1
+            {{ else -}}
+            POST /foundation/api/auth/login-available HTTP/1.1
+            {{ end -}}
+            accept: application/json, text/plain, */*
+            accept-language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+            app-id: 115
+            basket:
+            client-host: www.litres.ru
+            content-type: application/json
+            dnt: 1
+            origin: https://www.litres.ru
+            priority: u=1, i
+            referer: https://www.litres.ru/
+            sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"
+            sec-ch-ua-mobile: ?0
+            sec-ch-ua-platform: "Linux"
+            sec-fetch-dest: empty
+            sec-fetch-mode: cors
+            sec-fetch-site: same-site
+            ui-currency: RUB
+            ui-language-code: ru
+            user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36
+            wishlist:
+            
+            {{ if not (eq .phone nil) -}}
+            {{ EncodeJSON "phone" (trimPrefix "+" .phone) "country_code" "RU" }}
+            {{ else -}}
+            {{ EncodeJSON "login" .email }}
+            {{ end -}}
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- $payload := GetSafeMap . "payload" }}
+          {{- $data := GetSafeMap $payload "data" }}
+          {{- $available := GetSafeMap $data "available"}}
+          {{- if (eq $available false) }} {{/* контакт НЕ свободен для регистрации */}}
+          - ResultCode: FOUND
+            {{- if (not (eq ._input.phone nil)) }}
+            Phone: !!string {{ ._input.phone }}
+            {{- else }}
+            Email: {{ ._input.email }}
+            {{- end }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          ResultCode: { type: string, enum: [ FOUND ] }
+          Phone: { type: string }
+          Email: { type: string, format: email }

@@ -1,0 +1,45 @@
+check_types:
+  names_phone:
+    enabled: true
+    source: { code: names }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: d0o
+      keydb: { enabled: true, scope: names_phone, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: names_phone }
+      graphql:
+        # language=GraphQL
+        query: |
+          query($phone: Tel!) {
+              d0o {
+                  names(phone: $phone) {
+                      surname
+                      name 
+                      count
+                  }
+              }
+          }
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .d0o.names }}
+          - name:                 {{ Quote (StringsJoinInline " " .name .surname) }}
+            firstname:            {{ Quote .name }}
+            lastname:             {{ Quote .surname }}
+            count:        !!int   {{ .count }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          firstname: { type: string }
+          lastname: { type: string }
+          count: { type: number }

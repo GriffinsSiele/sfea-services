@@ -1,0 +1,159 @@
+.item.active:before {
+    display: inline;
+    content: '';
+    background: #255299;
+    width: 8px;
+    border: 4px solid #255299;
+    margin-right: 20px;
+}
+
+.item {
+    margin-bottom: 10px !important;
+    text-transform: uppercase;
+    display: inline-block;
+    font-size: 20px;
+    color: #838383;
+    width: 40%;
+}
+
+.item-title {
+    margin-bottom: 10px !important;
+    text-transform: uppercase;
+    display: inline-block;
+    font-size: 20px;
+    color: #838383;
+}
+
+.item.inactive {
+    margin-left: 27px;
+}
+
+.item.inactive:hover {
+    cursor: pointer;
+}
+
+.item.active {
+    color: #d53732 !important;;
+    font-size: 20px !important;
+    text-transform: uppercase;
+}
+
+.tab-block {
+    border-bottom: 4px solid #eee;
+    margin-bottom: 18px;
+}
+
+.date-block label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.date-block {
+    padding: 10px 10px 0px 40px;
+    margin: 0;
+}
+
+@media only screen and (max-width: 639px) {
+    .date-block {
+        padding: 20px;
+    }
+}
+
+.check-block {
+    padding: 10px 0px 10px 20px;
+    margin-bottom: 10px;
+}
+.check-block label {
+    font-size: 13px;
+}
+.more-info.input-info {
+    display: inline-block;
+}
+
+.driver-licence-line {
+    border-top: 4px solid #eee;
+    padding-top: 18px;
+}
+
+.form-block,
+div.more-info-text.input-info,
+.driver-licence-separator {
+    display: none;
+}
+
+.form-block.visible,
+.driver-licence-separator.visible {
+    display: block;
+}
+
+@media only screen and (min-width: 845px) {
+    .driver-licence-separator_1.driver-licence-separator.visible {
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 1198px) {
+    .driver-licence-separator_2.driver-licence-separator.visible {
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 845px) and (max-width: 1197px) {
+    .driver-licence-separator_3.driver-licence-separator.visible {
+        display: none;
+    }
+}
+
+.add-block {
+    display: inline-block;
+    padding: 5px;
+}
+
+.driver-licence-block {
+    width: 350px;
+    display: none;
+    vertical-align:top;
+}
+
+div.more-info-text.input-info.visible,
+.driver-licence-block.visible {
+    display: inline-block;
+}
+
+div.more-info-text.input-info {
+    position: absolute;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    padding: 7px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    margin-top: 20px;
+    margin-left: 0px;
+    z-index: 10;
+    font-size: 13px;
+    text-align: justify;
+    text-transform: none;
+}
+
+
+
+input[type="text"].policy-info_input,
+.datepicker.policy-info_input {
+    display: inline-block;
+}
+
+@media only screen and (max-width: 639px) {
+    .btn.blue-btn {
+        width: auto;
+        margin-right: 10px;
+    }
+}
+
+.tab-page.active {
+    display: block;
+}
+
+.tab-page.inactive {
+    display: none;
+}

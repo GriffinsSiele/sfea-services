@@ -1,0 +1,26 @@
+services:
+  php-fpm:
+    image: git.i-sphere.local/isphere-services/main-service-1:${CURRENT_BRANCH:-latest}
+    build:
+      dockerfile: .ci/docker/Dockerfile
+      context: ../..
+    env_file:
+      - path: ../../.env
+      - path: ../../.env.local
+        required: false
+    ports:
+      - '8000:80'
+    extra_hosts:
+      - 'loopback.i-sphere.local:host-gateway'
+    volumes:
+      - opt:/opt
+      - ../..:/var/www/html/2.00
+    healthcheck:
+      test: "curl -f http://localhost/fpm-ping || exit 1"
+      interval: 10s
+      retries: 10
+      start_period: 1s
+      timeout: 1s
+
+volumes:
+  opt: ~

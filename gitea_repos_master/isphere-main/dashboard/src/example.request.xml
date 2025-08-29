@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Request>
+        <UserIP>213.87.155.252</UserIP>
+        <UserID>av</UserID>
+        <requestDateTime>2022-03-02T20:32:54</requestDateTime>
+        <requestType>checkphone</requestType>
+        <sources>gosuslugi_phone</sources>
+        <timeout>90</timeout>
+        <recursive>0</recursive>
+        <async>1</async>
+        <PhoneReq>
+            <phone>9039687447</phone>
+        </PhoneReq>
+</Request>

@@ -1,0 +1,70 @@
+imageCredentials:
+  enabled: false
+  registry: ""
+  username: ""
+  password: ""
+
+nameOverride: ""
+fullNameOverride: ""
+
+DOCKER: "${DOCKER}"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  tlsEnabled: false
+
+securityContext:
+  capabilities:
+    drop:
+      - FOWNER
+      - KILL
+      - MKNOD
+      - SETGID
+      - SETUID
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+nodeSelector: {}
+
+tolerations:
+  - key: prod
+    operator: Equal
+    value: "yes"
+    effect: NoSchedule
+
+serviceAccount:
+  create: true
+  annotations: {}
+  createRole: true
+  affinity: {}
+
+persistence:
+  enabled: false
+
+app:
+  replicaCount: 3
+
+  service:
+    port: 80
+
+  image:
+    repository: "${CI_REGISTRY_IMAGE}"
+    pullPolicy: Always
+    tag: "${DRONE_BRANCH}"
+
+  resources:
+    limits:
+      cpu: 20m
+      memory: 16Mi
+    requests:
+      cpu: 10m
+      memory: 8Mi
+
+  env:
+    SENTRY_DSN: "${SENTRY_DSN}"

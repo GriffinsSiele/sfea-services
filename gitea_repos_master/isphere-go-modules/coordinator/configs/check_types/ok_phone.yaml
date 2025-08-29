@@ -1,0 +1,509 @@
+check_types:
+  ok_phone:
+    enabled: true
+    source:
+      code: main-service
+    schema:
+      allOf:
+      - $ref: '#/definitions/schema/default'
+      - $ref: '#/definitions/schema/phone'
+    mutator:
+      template:
+        records: |
+          {{- range .records }}
+          - {{ UnsafeField "Info" .Info }}
+            {{ UnsafeField "Link" .Link }}
+            {{ UnsafeField "Photo" .Photo }}
+            {{ UnsafeField "Email" .Email }}
+            {{ UnsafeField "Name" .Name }}
+            {{ UnsafeField "Result" .Result }}
+            {{ UnsafeField "ResultCode" .ResultCode }}
+            {{ UnsafeField "Phone" .Phone }}
+            {{ UnsafeField "match_code" .match_code }}
+            {{ UnsafeField "friends" .friends }}
+            {{ UnsafeField "photos" .photos }}
+            {{ UnsafeField "groups" .groups }}
+            {{ UnsafeField "games" .games }}
+            {{ UnsafeField "notes" .notes }}
+            {{ UnsafeField "birthday" .birthday }}
+            {{ UnsafeField "birthplace" .birthplace }}
+            {{ UnsafeField "living" .living }}
+            {{ UnsafeField "subscribers" .subscribers }}
+            {{ UnsafeField "collage" .collage }}
+            {{ UnsafeField "school" .school }}
+            {{ UnsafeField "relative" .relative }}
+            {{ UnsafeField "relative_link" .relative_link }}
+            {{ UnsafeField "mother" .mother }}
+            {{ UnsafeField "mother_link" .mother_link }}
+            {{ UnsafeField "father" .father }}
+            {{ UnsafeField "father_link" .father_link }}
+            {{ UnsafeField "aunt" .aunt }}
+            {{ UnsafeField "aunt_link" .aunt_link }}
+            {{ UnsafeField "sister" .sister }}
+            {{ UnsafeField "sister_link" .sister_link }}
+            {{ UnsafeField "godmother" .godmother }}
+            {{ UnsafeField "godmother_link" .godmother_link }}
+            {{ UnsafeField "brother" .brother }}
+            {{ UnsafeField "brother_link" .brother_link }}
+            {{ UnsafeField "uncle" .uncle }}
+            {{ UnsafeField "uncle_link" .uncle_link }}
+            {{ UnsafeField "blocked" .blocked }}
+            {{ UnsafeField "last_visited" .last_visited }}
+            {{ UnsafeField "education" .education }}
+            {{ UnsafeField "daughter" .daughter }}
+            {{ UnsafeField "daughter_link" .daughter_link }}
+            {{ UnsafeField "son" .son }}
+            {{ UnsafeField "son_link" .son_link }}
+            {{ UnsafeField "spouse" .spouse }}
+            {{ UnsafeField "spouse_link" .spouse_link }}
+            {{ UnsafeField "daughterinlaw" .daughterinlaw }}
+            {{ UnsafeField "daughterinlaw_link" .daughterinlaw_link }}
+            {{ UnsafeField "godson" .godson }}
+            {{ UnsafeField "godson_link" .godson_link }}
+            {{ UnsafeField "job" .job }}
+            {{ UnsafeField "goddaughter" .goddaughter }}
+            {{ UnsafeField "goddaughter_link" .goddaughter_link }}
+            {{ UnsafeField "granddaughter" .granddaughter }}
+            {{ UnsafeField "granddaughter_link" .granddaughter_link }}
+            {{ UnsafeField "army" .army }}
+            {{ UnsafeField "motherinlaw_s" .motherinlaw_s }}
+            {{ UnsafeField "motherinlaw_s_link" .motherinlaw_s_link }}
+            {{ UnsafeField "grandmother" .grandmother }}
+            {{ UnsafeField "grandmother_link" .grandmother_link }}
+            {{ UnsafeField "godfather" .godfather }}
+            {{ UnsafeField "godfather_link" .godfather_link }}
+            {{ UnsafeField "previous_job" .previous_job }}
+            {{ UnsafeField "grandfather" .grandfather }}
+            {{ UnsafeField "grandfather_link" .grandfather_link }}
+            {{ UnsafeField "motherinlaw" .motherinlaw }}
+            {{ UnsafeField "motherinlaw_link" .motherinlaw_link }}
+            {{ UnsafeField "grandson" .grandson }}
+            {{ UnsafeField "grandson_link" .grandson_link }}
+            {{ UnsafeField "soninlaw" .soninlaw }}
+            {{ UnsafeField "soninlaw_link" .soninlaw_link }}
+            {{ UnsafeField "fatherinlaw_s" .fatherinlaw_s }}
+            {{ UnsafeField "fatherinlaw_s_link" .fatherinlaw_s_link }}
+            {{ UnsafeField "mate" .mate }}
+            {{ UnsafeField "mate_link" .mate_link }}
+            {{ UnsafeField "family" .family }}
+            {{ UnsafeField "fatherinlaw" .fatherinlaw }}
+            {{ UnsafeField "fatherinlaw_link" .fatherinlaw_link }}
+            {{ UnsafeField "products" .products }}
+            {{ UnsafeField "Age" .Age }}
+            {{ UnsafeField "Location" .Location }}
+            {{ UnsafeField "Created" .Created }}
+            {{ UnsafeField "uid" .uid }}
+            {{ UnsafeField "relative0" .relative0 }}
+            {{ UnsafeField "other0" .other0 }}
+            {{ UnsafeField "videos" .videos }}
+            {{ UnsafeField "relative2" .relative2 }}
+            {{ UnsafeField "city" .city }}
+            {{ UnsafeField "register_date" .register_date }}
+            {{ UnsafeField "Avatar" .Avatar }}
+            {{ UnsafeField "url_profile" .url_profile }}
+            {{ UnsafeField "first_name" .first_name }}
+            {{ UnsafeField "last_name" .last_name }}
+            {{ UnsafeField "birthday_set" .birthday_set }}
+            {{ UnsafeField "gender" .gender }}
+            {{ UnsafeField "locale" .locale }}
+            {{ UnsafeField "location_city" .location_city }}
+            {{ UnsafeField "location_country" .location_country }}
+            {{ UnsafeField "registered_date" .registered_date }}
+            {{ UnsafeField "last_online" .last_online }}
+            {{ UnsafeField "counter_friends" .counter_friends }}
+            {{ UnsafeField "counter_photo_albums" .counter_photo_albums }}
+            {{ UnsafeField "counter_photos_personal" .counter_photos_personal }}
+            {{ UnsafeField "premium" .premium }}
+            {{ UnsafeField "private" .private }}
+            {{ UnsafeField "is_merchant" .is_merchant }}
+            {{ UnsafeField "is_new_user" .is_new_user }}
+            {{ UnsafeField "invited_by_friend" .invited_by_friend }}
+            {{ UnsafeField "access_level_age" .access_level_age }}
+            {{ UnsafeField "access_level_feed" .access_level_feed }}
+            {{ UnsafeField "access_level_now" .access_level_now }}
+            {{ UnsafeField "access_level_video" .access_level_video }}
+            {{ UnsafeField "accessible" .accessible }}
+            {{ UnsafeField "allows_anonym_access" .allows_anonym_access }}
+            {{ UnsafeField "allows_messaging_only_for_friends" .allows_messaging_only_for_friends }}
+            {{ UnsafeField "counter_applications" .counter_applications }}
+            {{ UnsafeField "counter_groups" .counter_groups }}
+            {{ UnsafeField "counter_subscribers" .counter_subscribers }}
+            {{ UnsafeField "Type" .Type }}
+            {{ UnsafeField "communities_type" .communities_type }}
+            {{ UnsafeField "communities_name" .communities_name }}
+            {{ UnsafeField "communities_country" .communities_country }}
+            {{ UnsafeField "communities_city" .communities_city }}
+            {{ UnsafeField "communities_year_from" .communities_year_from }}
+            {{ UnsafeField "communities_year_to" .communities_year_to }}
+            {{ UnsafeField "groups_name" .groups_name }}
+            {{ UnsafeField "groups_created" .groups_created }}
+            {{ UnsafeField "groups_avatar" .groups_avatar }}
+            {{ UnsafeField "groups_members" .groups_members }}
+            {{ UnsafeField "groups_private" .groups_private }}
+            {{ UnsafeField "groups_premium" .groups_premium }}
+            {{ UnsafeField "communities_address" .communities_address }}
+            {{ UnsafeField "communities_abbreviation" .communities_abbreviation }}
+            {{ UnsafeField "bio" .bio }}
+            {{ UnsafeField "firstname" .firstname }}
+            {{ UnsafeField "lastname" .lastname }}
+            {{ UnsafeField "relationships" .relationships }}
+            {{ UnsafeField "location_of_birth_city" .location_of_birth_city }}
+            {{ UnsafeField "nick" .nick }}
+            {{ UnsafeField "counter_products" .counter_products }}
+            {{ UnsafeField "groups_description" .groups_description }}
+            {{ UnsafeField "groups_category" .groups_category }}
+            {{ UnsafeField "location_of_birth_country" .location_of_birth_country }}
+            {{ UnsafeField "Avatar_cropped" .Avatar_cropped }}
+            {{ UnsafeField "register_year" .register_year }}
+          {{- end }}
+      status_code:
+        non_standard: true
+        format: json
+        property_path: code
+        detail_property_path: message
+    upstream:
+      provider: main-service
+      keydb:
+        enabled: true
+        scope: ok_phone
+        ttl: 24h0m0s
+        ttl_failed: 30s
+      rabbitmq:
+        enabled: true
+        scope: ok_phone
+      tcp:
+        template:
+          query: |
+            GET /2.00/handler.php?{{ QueryArguments
+            "auth" (Env "MODULE_MAIN_SERVICE_ACCESS_TOKEN")
+            "plugin" "OKPlugin"
+            "checktype" "ok_phone"
+            "phone" (trimPrefix "+" .phone)
+            }} HTTP/1.1
+    produce:
+      items:
+        properties:
+          Age:
+            type: string
+          Avatar:
+            contentEncoding: base64
+            type: string
+          Avatar_cropped:
+            contentEncoding: base64
+            type: string
+          Created:
+            type: string
+          Email:
+            type: string
+          Info:
+            type: string
+          Link:
+            format: url
+            type: string
+          Location:
+            type: string
+          Name:
+            type: string
+          Phone:
+            type: string
+          Photo:
+            contentEncoding: base64
+            type: string
+          Result:
+            type: string
+          ResultCode:
+            type: string
+          Type:
+            type: string
+          access_level_age:
+            type: string
+          access_level_feed:
+            type: string
+          access_level_now:
+            type: string
+          access_level_video:
+            type: string
+          accessible:
+            type: string
+          allows_anonym_access:
+            type: string
+          allows_messaging_only_for_friends:
+            type: string
+          army:
+            type: string
+          aunt:
+            type: string
+          aunt_link:
+            format: url
+            type: string
+          bio:
+            type: string
+          birthday:
+            type: string
+          birthday_set:
+            type: string
+          birthplace:
+            type: string
+          blocked:
+            type: string
+          brother:
+            type: string
+          brother_link:
+            format: url
+            type: string
+          city:
+            type: string
+          collage:
+            type: string
+          communities_abbreviation:
+            type: string
+          communities_address:
+            type: string
+          communities_city:
+            type: string
+          communities_country:
+            type: string
+          communities_name:
+            type: string
+          communities_type:
+            type: string
+          communities_year_from:
+            type: string
+          communities_year_to:
+            type: string
+          counter_applications:
+            type: integer
+          counter_friends:
+            type: integer
+          counter_groups:
+            type: integer
+          counter_photo_albums:
+            type: integer
+          counter_photos_personal:
+            type: integer
+          counter_products:
+            type: integer
+          counter_subscribers:
+            type: integer
+          daughter:
+            type: string
+          daughter_link:
+            format: url
+            type: string
+          daughterinlaw:
+            type: string
+          daughterinlaw_link:
+            format: url
+            type: string
+          education:
+            type: string
+          family:
+            type: string
+          father:
+            type: string
+          father_link:
+            format: url
+            type: string
+          fatherinlaw:
+            type: string
+          fatherinlaw_link:
+            format: url
+            type: string
+          fatherinlaw_s:
+            type: string
+          fatherinlaw_s_link:
+            format: url
+            type: string
+          first_name:
+            type: string
+          firstname:
+            type: string
+          friends:
+            type: string
+          games:
+            type: string
+          gender:
+            type: string
+          goddaughter:
+            type: string
+          goddaughter_link:
+            format: url
+            type: string
+          godfather:
+            type: string
+          godfather_link:
+            format: url
+            type: string
+          godmother:
+            type: string
+          godmother_link:
+            format: url
+            type: string
+          godson:
+            type: string
+          godson_link:
+            format: url
+            type: string
+          granddaughter:
+            type: string
+          granddaughter_link:
+            format: url
+            type: string
+          grandfather:
+            type: string
+          grandfather_link:
+            format: url
+            type: string
+          grandmother:
+            type: string
+          grandmother_link:
+            format: url
+            type: string
+          grandson:
+            type: string
+          grandson_link:
+            format: url
+            type: string
+          groups:
+            type: string
+          groups_avatar:
+            contentEncoding: base64
+            type: string
+          groups_category:
+            type: string
+          groups_created:
+            format: date-time
+            type: string
+          groups_description:
+            type: string
+          groups_members:
+            type: integer
+          groups_name:
+            type: string
+          groups_premium:
+            type: string
+          groups_private:
+            type: string
+          invited_by_friend:
+            type: string
+          is_merchant:
+            type: string
+          is_new_user:
+            type: string
+          job:
+            type: string
+          last_name:
+            type: string
+          last_online:
+            format: date-time
+            type: string
+          last_visited:
+            type: string
+          lastname:
+            type: string
+          living:
+            type: string
+          locale:
+            type: string
+          location_city:
+            type: string
+          location_country:
+            type: string
+          location_of_birth_city:
+            type: string
+          location_of_birth_country:
+            type: string
+          match_code:
+            type: string
+          mate:
+            type: string
+          mate_link:
+            format: url
+            type: string
+          mother:
+            type: string
+          mother_link:
+            format: url
+            type: string
+          motherinlaw:
+            type: string
+          motherinlaw_link:
+            format: url
+            type: string
+          motherinlaw_s:
+            type: string
+          motherinlaw_s_link:
+            format: url
+            type: string
+          nick:
+            type: string
+          notes:
+            type: string
+          other0:
+            type: string
+          photos:
+            type: string
+          premium:
+            type: string
+          previous_job:
+            type: string
+          private:
+            type: string
+          products:
+            type: string
+          register_date:
+            type: string
+          register_year:
+            type: string
+          registered_date:
+            format: date-time
+            type: string
+          relationships:
+            type: string
+          relative:
+            type: string
+          relative_link:
+            format: url
+            type: string
+          relative0:
+            type: string
+          relative2:
+            type: string
+          school:
+            type: string
+          sister:
+            type: string
+          sister_link:
+            format: url
+            type: string
+          son:
+            type: string
+          son_link:
+            format: url
+            type: string
+          soninlaw:
+            type: string
+          soninlaw_link:
+            format: url
+            type: string
+          spouse:
+            type: string
+          spouse_link:
+            format: url
+            type: string
+          subscribers:
+            type: string
+          uid:
+            type: string
+          uncle:
+            type: string
+          uncle_link:
+            format: url
+            type: string
+          url_profile:
+            format: url
+            type: string
+          videos:
+            type: string
+        type: object
+      type: array

@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.fullname" . }}-configmap
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+  LOG_LEVEL: "info"
+
+  SOCKS5_SERVER_HOST: "0.0.0.0"
+  SOCKS5_SERVER_PORT: "1080"
+
+  BACKWARD_TLS_SERVER_HOST: "proxphere-master-tls.{{ .Release.Namespace }}.svc.cluster.local"
+  TLS_SERVER_HOST: "0.0.0.0"
+  TLS_SERVER_PORT: "443"
+  TLS_CA_CERT_FILE: "var/ssl/ca.crt"
+  TLS_CA_PRIVATE_KEY_FILE: "var/ssl/ca.pem"
+  TLS_SERVER_CERT_FILE: "var/ssl/server.crt"
+  TLS_SERVER_PRIVATE_KEY_FILE: "var/ssl/server.pem"
+  TLS_CA_COMMON_NAME: "proxy"
+  TLS_CA_COMMON_ORG: "isphere"
+  TLS_COMMON_NAME: "proxy"
+  TLS_COMMON_ORG: "isphere"
+  TLS_HOST: "localhost"
+
+  BACKWARD_TCP_SERVER_HOST: "proxphere-master-tcp.{{ .Release.Namespace }}.svc.cluster.local"
+  TCP_SERVER_HOST: "0.0.0.0"
+  TCP_SERVER_PORT: "80"
+
+  PROXY_CHECK_TEST_DIAL_ENDPOINT: "https://i-sphere.ru/2.00/echo.php"
+
+  MAIN_SERVICE_BASE_URL: "https://i-sphere.ru/2.00"
+
+  KAFKA_REST_ADDR: "http://172.16.199.2:8082"
+
+  REDIS_HOST: "keydb.keydb.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_DATABASE: "0"
+
+  HASURA_ENDPOINT: "http://hasura.hasura.svc.cluster.local/v1/graphql"
+
+  TZ: "Europe/Moscow"
+
+

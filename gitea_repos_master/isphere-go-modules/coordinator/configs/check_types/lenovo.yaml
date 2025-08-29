@@ -1,0 +1,47 @@
+check_types:
+  lenovo:
+    enabled: true
+    source: { code: lenovo }
+    schema:
+      allOf:
+        - $ref: "#/definitions/schema/default"
+        - oneOf:
+            - $ref: "#/definitions/schema/email"
+            - $ref: "#/definitions/schema/phone"
+    upstream:
+      provider: lenovo
+      keydb: { enabled: true, scope: lenovo, ttl: 24h, ttl_failed: 30s }
+      rabbitmq: { enabled: true, scope: lenovo }
+      tcp:
+        simple_protocol:
+          status_code_when_found: 400
+          status_code_when_not_found: 200
+        proxy:
+          enabled: true
+          url: "http://tor-proxy-ru.i-sphere.local:8080"
+        template:
+          query: |
+            {{ if not (eq .email nil) -}}
+            POST /glbwebauthnv6/ajaxUserExistedServlet?username={{ .email }} HTTP/1.1
+            {{ else -}}
+            POST /glbwebauthnv6/ajaxUserExistedServlet?username={{ PhoneNumberNumber .phone }}&areacode={{ PhoneNumberRegion .phone }} HTTP/1.1
+            {{ end }}
+            accept: application/json, text/plain, */*
+            accept-language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+            user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36
+
+    mutator:
+      template:
+        # @formatter:off
+        # language=GoTemplate
+        records: |
+          {{- range .records }}
+          - result_code: {{ Quote .result_code }}
+          {{- end }}
+        # @formatter:on
+    produce:
+      type: array
+      items:
+        type: object
+        properties:
+          result_code: { type: string }

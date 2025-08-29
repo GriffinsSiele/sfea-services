@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "main-service.fullname" . }}-configmap
+  labels:
+    {{- include "main-service.labels" . | nindent 4 }}
+data:
+  APP_ENV: "dev"
+
+  DATABASE_SERVER: "172.16.99.4"
+  DATABASE_NAME: "isphere"
+  DATABASE_CONNECT_TIMEOUT: "5"
+  DATABASE_READ_TIMEOUT: "60"
+
+  DATABASE_STAT_SERVER: "172.16.99.3"
+  DATABASE_STAT_NAME: "isphere"
+  DATABASE_STAT_CONNECT_TIMEOUT: "5"
+  DATABASE_STAT_READ_TIMEOUT: "60"
+
+  KEYDB_SERVER_0: "keydb.keydb"
+  KEYDB_SERVER_1: "keydb.keydb"
+  KEYDB_SERVER_2: "keydb.keydb"
+
+  KEYDB_CONNECT_TIMEOUT: "1"
+  KEYDB_READ_TIMEOUT: "1"
+
+  RABBITMQ_HOST: "rabbitmq-simple.rabbitmq-simple"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_VHOST: "/"
+
+  TEXT_CAPTCHA_URLS: "http://textcaptcha.default"
+
+  JAEGER_AGENT_HOST_PORT: "172.16.97.10:6831"
+
+  ISTO_BACKGROUND_MODE: "0"

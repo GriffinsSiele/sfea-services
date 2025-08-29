@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pg-bouncer.fullname" . }}-config
+data:
+  'pgbouncer.ini': |
+    [databases]
+    {{ range $key, $value := .Values.pgbouncer.databases }}
+    {{ $key }} = {{ $value }}
+    {{ end }}
+
+    [pgbouncer]
+    listen_port = 6432
+    listen_addr = *
+    auth_type = {{ .Values.pgbouncer.auth_type }}
+    auth_file = {{ .Values.pgbouncer.auth_file }}
+    ignore_startup_parameters = extra_float_digits
+
+  'userlist.txt': |
+    "gitea" "md56792862e879e15990179c4c479219367"
+
