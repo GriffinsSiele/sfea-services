@@ -1,0 +1,10 @@
+services:
+  huawei-api:
+    build: .
+    container_name: huawei_web_api
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
