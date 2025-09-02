@@ -11,11 +11,16 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from api.router import mount_routers
 from api.middleware import add_middlewares
 from core.settings import get_settings
+import sentry_sdk
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 settings = get_settings()
+
+# Optional Sentry initialization
+if settings.sentry_dsn:
+    sentry_sdk.init(dsn=settings.sentry_dsn, traces_sample_rate=0.0)
 
 
 @asynccontextmanager
