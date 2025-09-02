@@ -18,6 +18,12 @@ class Settings(BaseSettings):
 
     # Proxy (optional)
     proxy_url: Optional[str] = None
+    # Observability
+    sentry_dsn: Optional[str] = None
+    # Rate limiting (optional)
+    redis_url: Optional[str] = None
+    rate_limit_window_seconds: int = 3600
+    rate_limit_max_requests: int = 100
 
     model_config = SettingsConfigDict(
         env_file=".env",
