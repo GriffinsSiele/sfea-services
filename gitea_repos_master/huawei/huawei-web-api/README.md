@@ -22,6 +22,11 @@ Docker (requires Docker Desktop running):
 Copy-Item .env.example .env
 # Optional proxy (example)
 Add-Content .env "PROXY_URL=http://user:pass@host:port"
+# Optional Sentry and Redis rate limiting
+Add-Content .env "SENTRY_DSN=YOUR_SENTRY_DSN"
+Add-Content .env "REDIS_URL=redis://localhost:6379"
+Add-Content .env "RATE_LIMIT_WINDOW_SECONDS=3600"
+Add-Content .env "RATE_LIMIT_MAX_REQUESTS=100"
 docker compose build
 docker compose up -d
 Invoke-RestMethod http://127.0.0.1:8001/health | ConvertTo-Json -Depth 6
