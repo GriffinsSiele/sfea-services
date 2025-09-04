@@ -1,0 +1,11 @@
+services:
+  xiaomi-api:
+    build: .
+    container_name: xiaomi_web_api
+    env_file:
+      - .env
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+
+
