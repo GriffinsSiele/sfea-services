@@ -1,3 +1,18 @@
+"""
+Telegram Search API
+
+A FastAPI-based service for searching Telegram users by phone number or username.
+This service provides both individual search capabilities and batch aggregation
+for multiple inputs.
+
+Features:
+- Search users by phone number or username
+- Batch processing with automatic input type detection
+- Integration with Validator service for input validation
+- Comprehensive error handling and logging
+- Health check endpoints for monitoring
+"""
+
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -23,7 +38,19 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager"""
+    """
+    Application lifespan manager.
+    
+    Handles startup and shutdown events for the FastAPI application.
+    This includes logging configuration, database connections, and
+    cleanup operations.
+    
+    Args:
+        app: The FastAPI application instance
+        
+    Yields:
+        None: Control back to the application during its lifetime
+    """
     # Startup
     logger.info("Starting Telegram Search API...")
     logger.info(f"Environment: {settings.MODE}")
