@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  telegram-api:
+    build:
+      dockerfile: Dockerfile.prod
+      context: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - MODE=production
+      - PORT=8000
+      - MONGO_URL=mongodb://mongo:27017
+      - MONGO_DB=telegram_api
+      - MONGO_COLLECTION=sessions
+      - KEYDB_URL=redis://redis:6379
+      - KEYDB_QUEUE=telegram_search
+      - TELEGRAM_API_ID=${TELEGRAM_API_ID}
+      - TELEGRAM_API_HASH=${TELEGRAM_API_HASH}
+      - TELEGRAM_AUTH_KEY=${TELEGRAM_AUTH_KEY}
+      - TELEGRAM_LIVE=${TELEGRAM_LIVE:-false}
+      - PROXY_URL=${PROXY_URL}
+      - VALIDATOR_ENABLED=${VALIDATOR_ENABLED:-false}
+      - VALIDATOR_BASE_URL=${VALIDATOR_BASE_URL}
+      - VALIDATOR_API_KEY=${VALIDATOR_API_KEY}
+      - VALIDATOR_TIMEOUT_SECONDS=${VALIDATOR_TIMEOUT_SECONDS:-5}
+      - VALIDATOR_MAX_RETRIES=${VALIDATOR_MAX_RETRIES:-2}
+      - SENTRY_URL=${SENTRY_URL}
+      - MAX_REQUESTS_PER_HOUR=${MAX_REQUESTS_PER_HOUR:-100}
+      - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-3600}
+      - MAX_SEARCH_PER_DAY=${MAX_SEARCH_PER_DAY:-29}
+      - SESSION_TIMEOUT=${SESSION_TIMEOUT:-3600}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=telegram_api
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongo_data:
+  redis_data:
