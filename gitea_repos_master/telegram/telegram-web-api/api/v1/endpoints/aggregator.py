@@ -12,14 +12,43 @@ from src.application.dto.search_request import SearchRequest
 from src.infrastructure.validator.client import ValidatorClient
 
 
-router = APIRouter(prefix="/api/v1", tags=["aggregator"])
+router = APIRouter(prefix="/aggregate", tags=["aggregator"])
 
 
-@router.post("/aggregate", response_model=AggregateResponse)
+@router.post(
+    "/", 
+    response_model=AggregateResponse,
+    summary="Aggregate Search Results",
+    description="Search multiple inputs and aggregate results in batch",
+    response_description="Aggregated search results for all inputs"
+)
 async def aggregate(
     payload: AggregateRequest,
     telegram: TelegramController = Depends(get_telegram_controller),
 ) -> AggregateResponse:
+    """
+    Aggregate search results for multiple inputs.
+    
+    This endpoint processes multiple inputs in batch, automatically detecting
+    the type of each input (phone, username, etc.) using the Validator service,
+    and then performing the appropriate search for each input type.
+    
+    Args:
+        payload: Request containing array of inputs to search
+        telegram: Telegram controller dependency for performing searches
+        
+    Returns:
+        AggregateResponse: Aggregated results for all inputs including:
+            - success: Overall success status
+            - results: List of individual search results
+            - errors: Any global errors
+            - metadata: Additional metadata
+            
+    Note:
+        - Inputs are automatically validated and typed using Validator service
+        - Unsupported input types are marked as failed with appropriate error
+        - Each input is processed independently
+    """
     validator = ValidatorClient()
     results: List[ItemResult] = []
 
