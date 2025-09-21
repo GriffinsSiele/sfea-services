@@ -1,4 +1,4 @@
-# xiaomi-aggregator-api
+# xiaomi-request-api
 
 Unified FastAPI controller that accepts a list of inputs (phone/email), detects types via the Validator IS, routes supported types to the Xiaomi parsing service, and returns a standardized aggregated response. Production-ready with schema validation middleware and Docker targets.
 
