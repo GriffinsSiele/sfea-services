@@ -1,4 +1,4 @@
-# Xiaomi Parsing API
+# Xiaomi Recovery API
 
 A DDD-based FastAPI service for parsing input values (phone, email). Provides a unified batch endpoint that auto-detects types via Validator IS and independent per-type endpoints, with standardized responses.
 
