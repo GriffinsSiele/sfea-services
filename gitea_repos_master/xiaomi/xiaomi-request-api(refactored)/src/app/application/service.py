@@ -1,3 +1,4 @@
+
 from typing import List
 
 from app.api.v1.schemas import AggregatedResponse, ParseResponse
@@ -8,7 +9,6 @@ from app.infrastructure.validator import client as validator_client_module
 
 class AggregatorApplicationService:
     def __init__(self) -> None:
-        # Import via modules so external tests can patch using the original paths
         self.validator = validator_client_module.ValidatorClient()
         self.xiaomi_client = xiaomi_client_module.XiaomiServiceClient()
 
