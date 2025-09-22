@@ -22,6 +22,9 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 class ResponseSchemaValidationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable):
         response = await call_next(request)
+        # Only validate successful JSON responses
+        if response.status_code >= 400:
+            return response
         content_type = response.headers.get("Content-Type", "")
         if not content_type.startswith("application/json"):
             return response
