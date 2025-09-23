@@ -18,6 +18,9 @@ class Settings(BaseSettings):
 
     # Proxy (optional)
     proxy_url: Optional[str] = None
+    # Upstream Huawei service
+    huawei_base_url: Optional[str] = None
+    request_timeout_seconds: int = 15
     # Observability
     sentry_dsn: Optional[str] = None
     # Rate limiting (optional)
