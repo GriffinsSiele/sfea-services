@@ -51,9 +51,34 @@ Unified FastAPI controller that accepts a list of inputs (phone/email), detects 
 ```
 - Response matches `ParseResponse` in `src/app/api/v1/schemas.py`.
 
+### POST /api/v1/aggregate
+- Body (supports either key):
+```json
+{ "query": ["79319999999", "user@example.com"] }
+```
+or
+```json
+{ "values": ["79319999999", "user@example.com"] }
+```
+- Response: Array of result items in the required envelope
+```json
+[
+  {
+    "headers": { "sender": "tw.tools.validator" },
+    "body": { "request_data": "79319999999", "type": "phone", "clean_data": "79319999999" },
+    "extra": { "request_data": "79319999999", "clean_data": "79319999999" }
+  },
+  {
+    "headers": { "sender": "xiaomi" },
+    "body": { "request_data": "79319999999", "type": "phone", "clean_data": "79319999999" },
+    "extra": { "records": [{ "result": "Найден", "result_code": "FOUND" }] }
+  }
+]
+```
+
 ## Configuration
 
-Use `.env` (see `.env.sample` for a template):
+Use `.env` (see `env.example` for a template):
 - XIAOMI_REQUEST_API_BASE_URL: Base URL of upstream `xiaomi-request-api` (e.g. `http://localhost:8000`)
 - VALIDATOR_ENABLED, VALIDATOR_BASE_URL, VALIDATOR_API_KEY: Toggle and configure Validator IS (optional)
 - VALIDATOR_TIMEOUT_SECONDS, VALIDATOR_MAX_RETRIES: Validator client tuning
