@@ -1,6 +1,6 @@
 import asyncio
 import re
-from typing import Any, Dict, Literal
+from typing import Any, Dict, Literal, List
 
 import httpx
 
@@ -51,6 +51,34 @@ class ValidatorClient:
         if self.email_re.match(value):
             return {"type": "email", "confidence": 0.5, "source": "fallback"}
         return {"type": "unknown", "confidence": 0.2, "source": "fallback"}
+
+    async def validate_batch(self, values: List[str]) -> List[Dict[str, Any]]:
+        if self.settings.validator_enabled and self.settings.validator_base_url:
+            url = self.settings.validator_base_url.rstrip("/") + "/api/v1/validate"
+            headers: Dict[str, str] = {}
+            if self.settings.validator_api_key:
+                headers["Authorization"] = f"Bearer {self.settings.validator_api_key}"
+            timeout = self.settings.validator_timeout_seconds
+            retries = self.settings.validator_max_retries
+
+            async with httpx.AsyncClient(timeout=timeout, proxies=self.settings.proxy_url or None) as client:
+                for attempt in range(retries + 1):
+                    try:
+                        resp = await client.post(url, headers=headers, json={"query": values})
+                        resp.raise_for_status()
+                        return resp.json()
+                    except Exception:
+                        if attempt >= retries:
+                            break
+                        await asyncio.sleep(0.5 * (2 ** attempt))
+
+        results: List[Dict[str, Any]] = []
+        for v in values:
+            meta = await self.detect_with_meta(v)
+            body: Dict[str, Any] = {"request_data": v, "type": meta.get("type", "unknown"), "clean_data": v}
+            extra: Dict[str, Any] = {"request_data": v, "clean_data": v}
+            results.append({"headers": {"sender": "tw.tools.validator"}, "body": body, "extra": extra})
+        return results
 
 
 
