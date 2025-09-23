@@ -8,6 +8,7 @@ from core.settings import get_settings
 from domain.services.phone_service import PhoneParseService
 from domain.services.email_service import EmailParseService
 from infrastructure.validator.client import ValidatorClient
+from infrastructure.services.huawei_client import HuaweiServiceClient
 
 
 class UnifiedController:
@@ -15,10 +16,12 @@ class UnifiedController:
         self.phone_service = phone_service
         self.email_service = email_service
         self.validator = ValidatorClient()
+        self.huawei = HuaweiServiceClient()
 
     async def parse_phone(self, req: ParseRequest) -> Dict[str, Any]:
         norm = self.phone_service.normalize(req.value)
-        data = self.phone_service.parse(norm)
+        upstream = await self.huawei.parse_phone(norm)
+        data = upstream.get("records") if upstream.get("found") else None
         item = ParseItem(
             input=req.value,
             type="phone",
@@ -31,7 +34,8 @@ class UnifiedController:
 
     async def parse_email(self, req: ParseRequest) -> Dict[str, Any]:
         norm = self.email_service.normalize(req.value)
-        data = self.email_service.parse(norm)
+        upstream = await self.huawei.parse_email(norm)
+        data = upstream.get("records") if upstream.get("found") else None
         item = ParseItem(
             input=req.value,
             type="email",
