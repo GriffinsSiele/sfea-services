@@ -1,37 +1,29 @@
-from functools import lru_cache
+from pydantic_settings import BaseSettings
 from typing import Optional
-
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    mode: str = "development"
-    port: int = 8002
-
-    validator_enabled: bool = False
-    validator_base_url: Optional[str] = None
-    validator_api_key: Optional[str] = None
-    validator_timeout_seconds: int = 5
-    validator_max_retries: int = 2
-
+    """Application settings"""
+    
+    # API Configuration
+    xiaomi_base_url: Optional[str] = "https://account.xiaomi.com"
+    request_timeout_seconds: int = 30
+    
+    # Proxy Configuration
     proxy_url: Optional[str] = None
-    sentry_dsn: Optional[str] = None
-
-    # Rate limiting
-    redis_url: Optional[str] = None
-    rate_limit_window_seconds: int = 3600
-    rate_limit_max_requests: int = 100
-
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore",
-    )
+    
+    # Captcha Configuration
+    captcha_timeout: int = 60
+    captcha_solution_timestamp_lifetime: int = 300
+    
+    # Task Configuration
+    task_timeout: int = 300
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
 
 
-@lru_cache()
 def get_settings() -> Settings:
+    """Get application settings"""
     return Settings()
-
-

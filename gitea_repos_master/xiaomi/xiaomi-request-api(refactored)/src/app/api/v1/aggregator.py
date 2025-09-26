@@ -38,3 +38,5 @@ async def aggregate(payload: Dict[str, List[str]]) -> List[Dict[str, Any]]:
 			})
 
 	return results
+
+

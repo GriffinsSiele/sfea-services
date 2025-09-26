@@ -16,27 +16,49 @@ class UnifiedController:
 
     async def parse_phone(self, req: ParseRequest) -> Dict[str, Any]:
         norm = self.phone_service.normalize(req.value)
-        data = self.phone_service.parse(norm)
+        parsed_data = await self.phone_service.parse(norm)
+        
+        # Extract meaningful data for response
+        extracted_data = parsed_data.get("extracted_data", {}) if parsed_data else {}
+        recovery_status = parsed_data.get("recovery_status", "unknown") if parsed_data else "unknown"
+        confidence = parsed_data.get("confidence", 0.0) if parsed_data else 0.0
+        
         item = ParseItem(
             input=req.value,
             type="phone",
             normalized=norm,
-            data=data,
-            result="Найден" if data else "Не найден",
-            result_code="FOUND" if data else "NOT_FOUND",
+            data=extracted_data,
+            result="Найден" if parsed_data and parsed_data.get("status") == "found" else "Не найден",
+            result_code="FOUND" if parsed_data and parsed_data.get("status") == "found" else "NOT_FOUND",
+            notes=[
+                f"Статус восстановления: {recovery_status}",
+                f"Уверенность: {confidence:.2f}",
+                f"Источник: {parsed_data.get('source', 'xiaomi')}" if parsed_data else "Ошибка"
+            ] if parsed_data else ["Ошибка парсинга"]
         )
         return ParseResponse(item=item).model_dump()
 
     async def parse_email(self, req: ParseRequest) -> Dict[str, Any]:
         norm = self.email_service.normalize(req.value)
-        data = self.email_service.parse(norm)
+        parsed_data = await self.email_service.parse(norm)
+        
+        # Extract meaningful data for response
+        extracted_data = parsed_data.get("extracted_data", {}) if parsed_data else {}
+        recovery_status = parsed_data.get("recovery_status", "unknown") if parsed_data else "unknown"
+        confidence = parsed_data.get("confidence", 0.0) if parsed_data else 0.0
+        
         item = ParseItem(
             input=req.value,
             type="email",
             normalized=norm,
-            data=data,
-            result="Найден" if data else "Не найден",
-            result_code="FOUND" if data else "NOT_FOUND",
+            data=extracted_data,
+            result="Найден" if parsed_data and parsed_data.get("status") == "found" else "Не найден",
+            result_code="FOUND" if parsed_data and parsed_data.get("status") == "found" else "NOT_FOUND",
+            notes=[
+                f"Статус восстановления: {recovery_status}",
+                f"Уверенность: {confidence:.2f}",
+                f"Источник: {parsed_data.get('source', 'xiaomi')}" if parsed_data else "Ошибка"
+            ] if parsed_data else ["Ошибка парсинга"]
         )
         return ParseResponse(item=item).model_dump()
 
